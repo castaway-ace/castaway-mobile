@@ -1,11 +1,19 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+const baseUrl = Platform.OS === 'android' 
+? 'http://10.0.2.2:3000' 
+: 'http://localhost:3000';
 
 const apiClient = axios.create({
-    baseURL: 'http://10.0.2.2:3000',
+    baseURL: baseUrl,
     timeout: 10000,
   });
 
+export const getAlbumArtUrl = (albumId: string): string => {
+  return `${baseUrl}/music/albums/${albumId}/art`;
+};
 
   // Request interceptor for authentication
 apiClient.interceptors.request.use(

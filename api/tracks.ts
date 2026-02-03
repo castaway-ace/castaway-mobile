@@ -1,9 +1,15 @@
+import { Album } from './album';
+import { Artist } from './artists';
+import { AudioFile } from './audioFile';
 import apiClient from './client';
 
 export interface Track {
     id: string;
     title: string;
     duration: number;
+    artists: Artist[];
+    album: Album;
+    audioFile: AudioFile;
   }
 
   export interface TracksResponse {
@@ -17,6 +23,11 @@ export interface Track {
         params: { page, pageSize },
       });
       return data;
+    },
+
+    getAlbumArtUrl: async (albumId: string): Promise<string> => {
+      const { data } = await apiClient.get(`/music/albums/${albumId}/art`);
+      return data.data.url;
     },
     
     getById: async (id: string): Promise<Track> => {
