@@ -1,15 +1,12 @@
-import { Album } from './album';
-import { Artist } from './artists';
-import { AudioFile } from './audioFile';
 import apiClient from './client';
 
 export interface Track {
-    id: string;
-    title: string;
-    duration: number;
-    artists: Artist[];
-    album: Album;
-    audioFile: AudioFile;
+  id: string;
+  title: string;
+  duration: number;
+  artistName: string;
+  albumId: string;
+  albumTitle: string;
   }
 
   export interface TracksResponse {
