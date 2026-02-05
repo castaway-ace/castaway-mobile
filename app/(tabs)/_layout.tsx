@@ -50,7 +50,7 @@ export default function TabLayout() {
         options={{
           title: "Explore",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="explore.fill" color={color} />
+            <IconSymbol size={28} name="0.circle" color={color} />
           ),
         }}
       />
