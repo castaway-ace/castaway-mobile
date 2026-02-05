@@ -9,6 +9,10 @@ import "react-native-reanimated";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useColorScheme } from "react-native";
+import TrackPlayer from "react-native-track-player";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+TrackPlayer.registerPlaybackService(() => require("./service"));
 
 const RootLayout = () => {
   const colorScheme = useColorScheme();
