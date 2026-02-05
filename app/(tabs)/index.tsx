@@ -1,5 +1,5 @@
 import { TrackItem } from "@/components/trackItem";
-import { useTracks } from "@/services/useTracks";
+import { useTracks } from "@/queries/tracks";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
@@ -14,9 +14,7 @@ export default function HomeScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
       <View style={styles.filterSection}>
-        <Text>
-          {tracks.length} Tracks
-        </Text>
+        <Text>{tracks.length} Tracks</Text>
       </View>
       {tracks.map((track) => (
         <TrackItem key={track.id} track={track} />

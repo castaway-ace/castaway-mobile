@@ -22,7 +22,9 @@ const MAPPING = {
   'person.fill': 'person',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'ellipsis': 'more-vert'
+  'ellipsis': 'more-vert',
+  "pause.fill": "pause",
+  "play.fill": "play-arrow",
 } as IconMapping;
 
 /**

@@ -1,20 +1,27 @@
-import { getAlbumArtUrl } from "@/api/client";
-import { Track } from "@/api/tracks";
+import { trackApi } from "@/api/tracks";
+import { useTrack } from "@/queries/tracks";
+import { ListTrackItem } from "@/types/tracks";
 import { FC } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "./ui/icon-symbol";
 
 interface TrackItemProps {
-  track: Track;
+  track: ListTrackItem;
 }
 
 export const TrackItem: FC<TrackItemProps> = ({ track }) => {
-  const { artistName, albumTitle, albumId, title } = track;
+  const { artistName, albumTitle, albumId, title, id } = track;
+  const { data: trackWithMedia, isLoading } = useTrack(id);
+
+  if (isLoading || !trackWithMedia) {
+    return null;
+  }
+
   return (
-    <View key={track.id} style={styles.container}>
+    <Pressable style={styles.container}>
       <View style={styles.containerContent}>
         <Image
-          source={{ uri: getAlbumArtUrl(albumId) }}
+          source={{ uri: trackApi.getAlbumArtUrl(albumId) }}
           style={styles.albumArt}
         />
         <View style={styles.info}>
@@ -28,7 +35,7 @@ export const TrackItem: FC<TrackItemProps> = ({ track }) => {
       <Pressable>
         <IconSymbol size={28} name="ellipsis" color={"black"} />
       </Pressable>
-    </View>
+    </Pressable>
   );
 };
 

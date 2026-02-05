@@ -1,5 +1,6 @@
 import { trackApi } from "@/api/tracks";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { fetchTrackWithMedia } from "../services/track-service";
 
 export const useTracks = () => {
     return useInfiniteQuery({
@@ -22,7 +23,7 @@ export const useTracks = () => {
 export const useTrack = (id: string) => {
     return useQuery({
         queryKey: ['track', id],
-        queryFn: () => trackApi.getById(id),
+        queryFn: () => fetchTrackWithMedia(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
