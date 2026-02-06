@@ -1,5 +1,5 @@
-import { Track, TrackItemsResponse } from "@/types/tracks";
-import apiClient, { baseUrl } from "../client";
+import { StreamItem, Track, TrackItemsResponse } from "@/types/tracks";
+import apiClient from "../client";
 
 export const trackApi = {
   getAll: async (page = 1, pageSize = 20): Promise<TrackItemsResponse> => {
@@ -9,8 +9,9 @@ export const trackApi = {
     return data;
   },
 
-  getAlbumArtUrl: (albumId: string): string => {
-    return `${baseUrl}/music/albums/${albumId}/art`;
+  getAlbumArt: async (albumId: string): Promise<StreamItem> => {
+    const { data } = await apiClient.get(`/music/albums/${albumId}/art`);
+    return data
   },
 
   getById: async (id: string): Promise<Track> => {
@@ -18,7 +19,8 @@ export const trackApi = {
     return data.data;
   },
 
-  getStream: (id: string): string => {
-    return `${baseUrl}/music/tracks/${id}/stream`;
+  getStream: async (id: string): Promise<StreamItem> => {
+    const { data } = await apiClient.get(`/music/tracks/${id}/stream`);
+    return data
   }
 };

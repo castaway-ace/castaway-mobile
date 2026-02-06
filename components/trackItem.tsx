@@ -1,4 +1,3 @@
-import { trackApi } from "@/api/tracks";
 import { useTrack } from "@/queries/tracks";
 import { ListTrackItem } from "@/types/tracks";
 import { FC } from "react";
@@ -10,7 +9,7 @@ interface TrackItemProps {
 }
 
 export const TrackItem: FC<TrackItemProps> = ({ track }) => {
-  const { artistName, albumTitle, albumId, title, id } = track;
+  const { artistName, albumTitle, title, id } = track;
   const { data: trackWithMedia, isLoading } = useTrack(id);
 
   if (isLoading || !trackWithMedia) {
@@ -21,7 +20,7 @@ export const TrackItem: FC<TrackItemProps> = ({ track }) => {
     <Pressable style={styles.container}>
       <View style={styles.containerContent}>
         <Image
-          source={{ uri: trackApi.getAlbumArtUrl(albumId) }}
+          source={{ uri: trackWithMedia.albumArt.url }}
           style={styles.albumArt}
         />
         <View style={styles.info}>

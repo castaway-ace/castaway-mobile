@@ -12,19 +12,24 @@ export interface ListTrackItem {
 }
 
 export interface Track {
-  id: string,
-  title: string,
-  trackNumber: number | null,
-  discNumber: number | null,
-  duration: number | null,
-  artists: Artist[],
-  album: Album,
-  audioFile: AudioFile
+  id: string;
+  title: string;
+  trackNumber: number | null;
+  discNumber: number | null;
+  duration: number | null;
+  artists: Artist[];
+  album: Album;
+  audioFile: AudioFile;
+}
+
+export interface StreamItem {
+  url: string
+  expiresIn: number
 }
 
 export interface TrackWithMedia extends Track {
-  albumArtUrl: string | undefined;
-  streamUrl: string;
+  albumArt: StreamItem;
+  stream: StreamItem;
 }
 
 export interface TrackItemsResponse {
