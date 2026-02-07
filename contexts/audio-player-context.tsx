@@ -1,3 +1,4 @@
+import { Track } from "@/types/tracks";
 import { useAudioPlayer } from "expo-audio";
 import {
   createContext,
@@ -8,9 +9,9 @@ import {
 } from "react";
 
 interface AudioPlayerContextValue {
-  currentTrack: { id: string; url: string; title?: string } | null;
+  currentTrack: Track | null;
   isPlaying: boolean;
-  loadTrack: (trackId: string, url: string, title?: string) => void;
+  loadTrack: (track: Track) => void;
   play: () => void;
   pause: () => void;
   stop: () => void;
@@ -21,14 +22,10 @@ const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
 );
 
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTrack, setCurrentTrack] = useState<{
-    id: string;
-    url: string;
-    title?: string;
-  } | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const player = useAudioPlayer(currentTrack?.url, {
+  const player = useAudioPlayer(currentTrack?.trackUrl, {
     updateInterval: 1000,
     downloadFirst: true,
   });
@@ -41,11 +38,11 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player?.playing]);
 
-  const loadTrack = (trackId: string, url: string, title?: string) => {
+  const loadTrack = (track: Track) => {
     if (player?.playing) {
       player.pause();
     }
-    setCurrentTrack({ id: trackId, url, title });
+    setCurrentTrack(track);
   };
 
   const play = () => {

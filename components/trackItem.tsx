@@ -1,4 +1,3 @@
-import { useTrack } from "@/queries/tracks";
 import { ListTrackItem } from "@/types/tracks";
 import { FC } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -9,26 +8,19 @@ interface TrackItemProps {
 }
 
 export const TrackItem: FC<TrackItemProps> = ({ track }) => {
-  const { artistName, albumTitle, title, id } = track;
-  const { data: trackWithMedia, isLoading } = useTrack(id);
-
-  if (isLoading || !trackWithMedia) {
-    return null;
-  }
+  const { artists, album, title, albumUrl, duration } = track;
 
   return (
     <Pressable style={styles.container}>
       <View style={styles.containerContent}>
-        <Image
-          source={{ uri: trackWithMedia.albumArt.url }}
-          style={styles.albumArt}
-        />
+        <Image source={{ uri: albumUrl }} style={styles.albumArt} />
         <View style={styles.info}>
           <Text style={styles.trackTitle}>{title}</Text>
 
           <Text>
-            {artistName} - {albumTitle}
+            {artists.map((artist) => artist.name).join(", ")} - {album.title}
           </Text>
+          <Text>{duration}</Text>
         </View>
       </View>
       <Pressable>
@@ -45,7 +37,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     gap: 8,
-    backgroundColor: "gray",
+    backgroundColor: "red",
     borderRadius: 8,
     justifyContent: "space-between",
     alignItems: "center",

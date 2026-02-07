@@ -14,11 +14,11 @@ export default function HomeScreen() {
   if (tracks.length === 0) return <Text>No tracks found</Text>;
 
   const handlePlayTrack = () => {
-    if (track?.stream?.url) {
+    if (track?.trackUrl) {
       if (isPlaying && currentTrack?.id === track.id) {
         pause();
       } else {
-        loadTrack(track.id, track.stream.url, track.title);
+        loadTrack(track);
         setTimeout(() => play(), 100);
       }
     }

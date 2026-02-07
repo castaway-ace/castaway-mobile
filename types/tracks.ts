@@ -6,20 +6,20 @@ export interface ListTrackItem {
   id: string;
   title: string;
   duration: number;
-  artistName: string;
-  albumId: string;
-  albumTitle: string;
+  artists: Artist[];
+  album: Album;
+  albumUrl: string;
 }
 
 export interface Track {
   id: string;
   title: string;
-  trackNumber: number | null;
-  discNumber: number | null;
   duration: number | null;
   artists: Artist[];
   album: Album;
   audioFile: AudioFile;
+  albumUrl: string;
+  trackUrl: string;
 }
 
 export interface StreamItem {
