@@ -5,13 +5,14 @@ import { IconSymbol } from "./ui/icon-symbol";
 
 interface TrackItemProps {
   track: ListTrackItem;
+  onPress: () => void;
 }
 
-export const TrackItem: FC<TrackItemProps> = ({ track }) => {
+export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
   const { artists, album, title, albumUrl, duration } = track;
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.containerContent}>
         <Image source={{ uri: albumUrl }} style={styles.albumArt} />
         <View style={styles.info}>

@@ -1,27 +1,26 @@
 import { TrackItem } from "@/components/trackItem";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useTrack, useTracks } from "@/queries/tracks";
+import { useTracks } from "@/queries/tracks";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { data } = useTracks();
-  const { data: track } = useTrack("ae2fc12c-355c-4f98-8b90-9bfeb44d5ff1");
-  const { loadTrack, pause, isPlaying, currentTrack, play } =
-    useAudioPlayerContext();
+  const { loadTrack, pause, isPlaying, play } = useAudioPlayerContext();
 
   const tracks = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (tracks.length === 0) return <Text>No tracks found</Text>;
 
   const handlePlayTrack = () => {
-    if (track?.trackUrl) {
-      if (isPlaying && currentTrack?.id === track.id) {
-        pause();
-      } else {
-        loadTrack(track);
-        setTimeout(() => play(), 100);
-      }
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
     }
+  };
+
+  const onTrackPress = (trackId: string) => {
+    loadTrack(trackId);
   };
 
   return (
@@ -30,12 +29,13 @@ export default function HomeScreen() {
         <Text>{tracks.length} Tracks</Text>
       </View>
       {tracks.map((track) => (
-        <TrackItem key={track.id} track={track} />
+        <TrackItem
+          key={track.id}
+          track={track}
+          onPress={() => onTrackPress(track.id)}
+        />
       ))}
-      <Button
-        title={isPlaying && currentTrack?.id === track?.id ? "Pause" : "Play"}
-        onPress={handlePlayTrack}
-      />
+      <Button title={isPlaying ? "Pause" : "Play"} onPress={handlePlayTrack} />
     </ScrollView>
   );
 }

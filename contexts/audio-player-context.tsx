@@ -1,3 +1,4 @@
+import { trackApi } from "@/api/tracks";
 import { Track } from "@/types/tracks";
 import { useAudioPlayer } from "expo-audio";
 import {
@@ -11,7 +12,7 @@ import {
 interface AudioPlayerContextValue {
   currentTrack: Track | null;
   isPlaying: boolean;
-  loadTrack: (track: Track) => void;
+  loadTrack: (trackId: string) => Promise<void>;
   play: () => void;
   pause: () => void;
   stop: () => void;
@@ -38,11 +39,13 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player?.playing]);
 
-  const loadTrack = (track: Track) => {
+  const loadTrack = async (trackId: string) => {
+    const track = await trackApi.getById(trackId);
     if (player?.playing) {
       player.pause();
     }
     setCurrentTrack(track);
+    player.play();
   };
 
   const play = () => {
