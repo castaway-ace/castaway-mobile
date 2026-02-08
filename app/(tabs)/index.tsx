@@ -1,23 +1,15 @@
 import { TrackItem } from "@/components/trackItem";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTracks } from "@/queries/tracks";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { data } = useTracks();
-  const { loadTrack, pause, isPlaying, play } = useAudioPlayerContext();
+  const { loadTrack } = useAudioPlayerContext();
 
   const tracks = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (tracks.length === 0) return <Text>No tracks found</Text>;
-
-  const handlePlayTrack = () => {
-    if (isPlaying) {
-      pause();
-    } else {
-      play();
-    }
-  };
 
   const onTrackPress = (trackId: string) => {
     loadTrack(trackId);
@@ -35,7 +27,6 @@ export default function HomeScreen() {
           onPress={() => onTrackPress(track.id)}
         />
       ))}
-      <Button title={isPlaying ? "Pause" : "Play"} onPress={handlePlayTrack} />
     </ScrollView>
   );
 }

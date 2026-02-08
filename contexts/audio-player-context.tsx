@@ -31,7 +31,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     downloadFirst: true,
   });
 
-  // Monitor playing state
   useEffect(() => {
     if (player) {
       setIsPlaying(player.playing);
@@ -45,7 +44,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       player.pause();
     }
     setCurrentTrack(track);
-    player.play();
+    play();
   };
 
   const play = () => {

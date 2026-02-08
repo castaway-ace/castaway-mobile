@@ -1,12 +1,12 @@
 import { Album } from "./albums";
-import { Artist } from "./artists";
+import { TrackArtist } from "./artists";
 import { AudioFile } from "./audioFile";
 
 export interface ListTrackItem {
   id: string;
   title: string;
   duration: number;
-  artists: Artist[];
+  artists: TrackArtist[];
   album: Album;
   albumUrl: string;
 }
@@ -15,7 +15,7 @@ export interface Track {
   id: string;
   title: string;
   duration: number | null;
-  artists: Artist[];
+  artists: TrackArtist[]; 
   album: Album;
   audioFile: AudioFile;
   albumUrl: string;
