@@ -28,6 +28,9 @@ const MusicPlayer = () => {
         <Text style={styles.title}>{currentTrack.title}</Text>
         <Text style={styles.artist}>{artists}</Text>
       </View>
+      <Pressable>
+        <IconSymbol size={28} name={"circle.badge.plus"} color={"black"} />
+      </Pressable>
       <Pressable onPress={handlePlayTrack}>
         <IconSymbol
           size={28}

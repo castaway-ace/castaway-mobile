@@ -27,6 +27,7 @@ const MAPPING = {
   ellipsis: "more-vert",
   "pause.fill": "pause",
   "play.fill": "play-arrow",
+  "circle.badge.plus": "add-circle-outline",
 } as IconMapping;
 
 /**
