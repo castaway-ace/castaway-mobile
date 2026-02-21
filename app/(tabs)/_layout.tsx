@@ -37,8 +37,12 @@ export default function TabLayout() {
         name="library"
         options={{
           title: "Library",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="book.fill" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <IconSymbol
+              size={28}
+              name={focused ? "book.fill" : "book"}
+              color={color}
+            />
           ),
         }}
       />
@@ -46,8 +50,12 @@ export default function TabLayout() {
         name="search"
         options={{
           title: "Search",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="magnifyingglass" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <IconSymbol
+              size={28}
+              name={focused ? "magnifyingglass.circle.fill" : "magnifyingglass"}
+              color={color}
+            />
           ),
         }}
       />
@@ -56,8 +64,12 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.fill" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <IconSymbol
+              size={28}
+              name={focused ? "person.fill" : "person"}
+              color={color}
+            />
           ),
         }}
       />
