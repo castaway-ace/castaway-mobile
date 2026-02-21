@@ -23,14 +23,20 @@ const MusicPlayer = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: currentTrack.albumUrl }} style={styles.albumArt} />
-      <View style={styles.info}>
-        <Text style={styles.title}>{currentTrack.title}</Text>
-        <Text style={styles.artist}>{artists}</Text>
+      <View style={styles.leftContainer}>
+        <Image
+          source={{ uri: currentTrack.albumUrl }}
+          style={styles.albumArt}
+        />
+        <View style={styles.info}>
+          <Text style={styles.title} numberOfLines={1}>
+            {currentTrack.title}
+          </Text>
+          <Text style={styles.artist} numberOfLines={1}>
+            {artists}
+          </Text>
+        </View>
       </View>
-      <Pressable>
-        <IconSymbol size={28} name={"circle.badge.plus"} color={"black"} />
-      </Pressable>
       <Pressable onPress={handlePlayTrack}>
         <IconSymbol
           size={28}
@@ -44,22 +50,27 @@ const MusicPlayer = () => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 80,
-    gap: 12,
     backgroundColor: "#f0f0f0",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
     borderTopWidth: 1,
+    marginHorizontal: 16,
     borderTopColor: "#e0e0e0",
   },
+  leftContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   title: {
-    marginRight: 16,
+    fontWeight: 700,
+    fontSize: 16,
   },
   albumArt: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     borderRadius: 4,
   },
   artist: {

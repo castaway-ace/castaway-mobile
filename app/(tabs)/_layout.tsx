@@ -3,7 +3,6 @@ import React from "react";
 
 import CustomTabBar from "@/components/custom-tab-bar";
 import { HapticTab } from "@/components/haptic-tab";
-import Header from "@/components/header";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "react-native";
@@ -17,7 +16,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         tabBarButton: HapticTab,
-        header: () => <Header />,
+        headerShown: false,
       }}
     >
       <Tabs.Screen

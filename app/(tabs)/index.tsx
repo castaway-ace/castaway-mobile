@@ -16,9 +16,9 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.filterSection}>
-        <Text>{tracks.length} Tracks</Text>
+        <Text style={styles.filterSectionTitle}>Favorite Tracks</Text>
       </View>
       {tracks.map((track) => (
         <TrackItem
@@ -34,6 +34,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   filterSection: {
     display: "flex",
-    marginBottom: 8,
+    padding: 16,
+  },
+  filterSectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });

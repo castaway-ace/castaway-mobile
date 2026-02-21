@@ -6,7 +6,6 @@ import {
 } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import "react-native-reanimated";
 
@@ -20,7 +19,6 @@ const RootLayout = () => {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <StatusBar style="auto" />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
