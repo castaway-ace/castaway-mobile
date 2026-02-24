@@ -2,6 +2,7 @@ import { TrackItem } from "@/components/trackItem";
 import { getAlbumCoverUrl } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
+import { useArtists } from "@/queries/artists";
 import { useTracks } from "@/queries/tracks";
 import { Album } from "@/types/albums";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -10,13 +11,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const HomeScreen = () => {
   const { data: trackData } = useTracks();
   const { data: albumData } = useAlbums();
+  const { data: artistData } = useArtists();
   const { loadTrack } = useAudioPlayerContext();
 
   const albums: Album[] = albumData?.data ?? [];
   const tracks = trackData?.pages.flatMap((page) => page.data) ?? [];
+  const artists = artistData?.pages.flatMap((page) => page.data) ?? [];
 
   const albumsAvailable = albums.length > 0;
   const tracksAvailable = tracks.length > 0;
+  const artistsAvailable = artists.length > 0;
 
   const onTrackPress = (trackId: string) => {
     loadTrack(trackId);
@@ -56,6 +60,28 @@ const HomeScreen = () => {
             <Text style={styles.noAlbumsText}>No albums found</Text>
           )}
         </View>
+        <View style={styles.albumsContainer}>
+          <Text style={styles.albumsContainerTitle}>Random Albums</Text>
+          {albumsAvailable ? (
+            albums.map((album) => (
+              <Image
+                key={album.id}
+                source={{ uri: getAlbumCoverUrl(album.id) }}
+                style={styles.albumArt}
+              />
+            ))
+          ) : (
+            <Text style={styles.noAlbumsText}>No albums found</Text>
+          )}
+        </View>
+        <View style={styles.artistsContainer}>
+          <Text style={styles.artistsContainerTitle}>Random Artists</Text>
+          {artistsAvailable ? (
+            artists.map((artist) => <Text key={artist.id}>{artist.name}</Text>)
+          ) : (
+            <Text style={styles.noArtistsText}>No artists found</Text>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -65,7 +91,7 @@ const styles = StyleSheet.create({
   albumArt: {
     width: 100,
     height: 100,
-    borderRadius: 10,
+    borderRadius: 12,
   },
   container: {
     flex: 1,
@@ -103,6 +129,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   noAlbumsText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 16,
+  },
+  artistsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+  artistsContainerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  noArtistsText: {
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
