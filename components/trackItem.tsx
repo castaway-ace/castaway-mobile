@@ -34,7 +34,13 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
       </View>
       <View style={styles.rightContainer}>
         <Text style={styles.duration}>{formattedDuration}</Text>
-        <Pressable style={styles.ellipsis}>
+        <Pressable
+          style={styles.ellipsis}
+          onPress={(e) => {
+            e.stopPropagation();
+            // TODO: open track menu
+          }}
+        >
           <IconSymbol size={24} name="ellipsis" color={"black"} />
         </Pressable>
       </View>
@@ -44,16 +50,14 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
     flexDirection: "row",
     paddingVertical: 8,
-    paddingHorizontal: 16,
     justifyContent: "space-between",
     alignItems: "center",
   },
 
   containerContent: {
-    display: "flex",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -65,25 +69,24 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   trackTitle: {
-    fontWeight: 700,
+    fontWeight: "700",
     fontSize: 16,
-    maxWidth: "90%",
   },
   trackArtist: {
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   info: {
-    display: "flex",
+    flex: 1,
     flexDirection: "column",
     gap: 8,
   },
   duration: {
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   rightContainer: {
-    display: "flex",
+    paddingLeft: 8,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,

@@ -6,3 +6,8 @@ export interface Album {
     genre: string,
     albumArtKey: string,
 }
+
+export interface AlbumItemsResponse {
+    statusCode: number;
+    data: Album[];
+}

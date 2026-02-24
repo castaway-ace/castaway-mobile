@@ -1,43 +1,103 @@
 import { TrackItem } from "@/components/trackItem";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
+import { useAlbums } from "@/queries/albums";
 import { useTracks } from "@/queries/tracks";
+import { Album } from "@/types/albums";
+import { ListTrackItem } from "@/types/tracks";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function HomeScreen() {
-  const { data } = useTracks();
+const HomeScreen = () => {
+  const { data: trackData } = useTracks();
+  const { data: albumData } = useAlbums();
   const { loadTrack } = useAudioPlayerContext();
 
-  const tracks = data?.pages.flatMap((page) => page.data) ?? [];
+  const albums: Album[] = albumData?.data ?? [];
+  const tracks: ListTrackItem[] =
+    trackData?.pages.flatMap((page) => page.data) ?? [];
 
-  if (tracks.length === 0) return <Text>No tracks found</Text>;
+  const albumsAvailable = albums.length > 0;
+  const tracksAvailable = tracks.length > 0;
 
   const onTrackPress = (trackId: string) => {
     loadTrack(trackId);
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={styles.filterSection}>
-        <Text style={styles.filterSectionTitle}>Favorite Tracks</Text>
-      </View>
-      {tracks.map((track) => (
-        <TrackItem
-          key={track.id}
-          track={track}
-          onPress={() => onTrackPress(track.id)}
-        />
-      ))}
-    </ScrollView>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.tracksContainer}>
+          <Text style={styles.tracksContainerTitle}>Favorite Tracks</Text>
+          {tracksAvailable ? (
+            tracks.map((track) => (
+              <TrackItem
+                key={track.id}
+                track={track}
+                onPress={() => onTrackPress(track.id)}
+              />
+            ))
+          ) : (
+            <Text style={styles.noTracksText}>No tracks found</Text>
+          )}
+        </View>
+        <View style={styles.albumsContainer}>
+          <Text style={styles.albumsContainerTitle}>Rediscover Albums</Text>
+          {albumsAvailable ? (
+            albums.map((album) => <Text key={album.id}>{album.title}</Text>)
+          ) : (
+            <Text style={styles.noAlbumsText}>No albums found</Text>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  filterSection: {
-    display: "flex",
-    padding: 16,
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
   },
-  filterSectionTitle: {
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    gap: 16,
+  },
+  tracksContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+  tracksContainerTitle: {
     fontSize: 20,
     fontWeight: "bold",
   },
+  noTracksText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 16,
+  },
+  albumsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+  albumsContainerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  noAlbumsText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 16,
+  },
 });
+
+export default HomeScreen;
