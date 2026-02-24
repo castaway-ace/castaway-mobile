@@ -11,8 +11,8 @@ export const useTracks = () => {
             }
             return allPages.length + 1;
         },
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
         initialPageParam: 1,
     });
 }
@@ -22,6 +22,6 @@ export const useTrack = (id: string) => {
         queryKey: ['track', id],
         queryFn: () => trackApi.getById(id),
         enabled: !!id,
-        staleTime: 10 * 60 * 1000,
+        staleTime: 10 * 60 * 1000, // 10 minutes
     });
 };

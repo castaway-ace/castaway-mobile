@@ -3,7 +3,6 @@ import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
 import { useTracks } from "@/queries/tracks";
 import { Album } from "@/types/albums";
-import { ListTrackItem } from "@/types/tracks";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,8 +12,7 @@ const HomeScreen = () => {
   const { loadTrack } = useAudioPlayerContext();
 
   const albums: Album[] = albumData?.data ?? [];
-  const tracks: ListTrackItem[] =
-    trackData?.pages.flatMap((page) => page.data) ?? [];
+  const tracks = trackData?.pages.flatMap((page) => page.data) ?? [];
 
   const albumsAvailable = albums.length > 0;
   const tracksAvailable = tracks.length > 0;

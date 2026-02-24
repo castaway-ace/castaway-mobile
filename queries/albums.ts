@@ -13,6 +13,6 @@ export const useAlbum = (id: string) => {
         queryKey: ['album', id],
         queryFn: () => albumApi.getById(id),
         enabled: !!id,
-        staleTime: 10 * 60 * 1000,
+        staleTime: 10 * 60 * 1000, // 10 minutes
     });
 };

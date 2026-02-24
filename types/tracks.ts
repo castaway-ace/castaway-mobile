@@ -2,13 +2,32 @@ import { Album } from "./albums";
 import { TrackArtist } from "./artists";
 import { AudioFile } from "./audioFile";
 
-export interface ListTrackItem {
+export interface TrackArtistDto {
+  id: string;
+  name: string;
+}
+
+export interface TrackAlbumDto {
+  id: string;
+  title: string;
+  coverUrl: string | null;
+}
+
+export interface TrackItemDto {
   id: string;
   title: string;
   duration: number;
-  artists: TrackArtist[];
-  album: Album;
-  albumUrl: string;
+  album: TrackAlbumDto;
+  artists: TrackArtistDto[];
+}
+
+export interface TrackItemsResponseDto {
+  data: TrackItemDto[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+  };
 }
 
 export interface Track {
@@ -30,9 +49,4 @@ export interface StreamItem {
 export interface TrackWithMedia extends Track {
   albumArt: StreamItem;
   stream: StreamItem;
-}
-
-export interface TrackItemsResponse {
-  statusCode: number;
-  data: ListTrackItem[];
 }
