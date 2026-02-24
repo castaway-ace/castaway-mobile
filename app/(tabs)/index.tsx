@@ -1,9 +1,10 @@
 import { TrackItem } from "@/components/trackItem";
+import { getAlbumCoverUrl } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
 import { useTracks } from "@/queries/tracks";
 import { Album } from "@/types/albums";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
@@ -44,7 +45,13 @@ const HomeScreen = () => {
         <View style={styles.albumsContainer}>
           <Text style={styles.albumsContainerTitle}>Rediscover Albums</Text>
           {albumsAvailable ? (
-            albums.map((album) => <Text key={album.id}>{album.title}</Text>)
+            albums.map((album) => (
+              <Image
+                key={album.id}
+                source={{ uri: getAlbumCoverUrl(album.id) }}
+                style={styles.albumArt}
+              />
+            ))
           ) : (
             <Text style={styles.noAlbumsText}>No albums found</Text>
           )}
@@ -55,6 +62,11 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  albumArt: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",

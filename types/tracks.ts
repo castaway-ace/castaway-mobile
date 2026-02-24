@@ -1,7 +1,3 @@
-import { Album } from "./albums";
-import { TrackArtist } from "./artists";
-import { AudioFile } from "./audioFile";
-
 export interface TrackArtistDto {
   id: string;
   name: string;
@@ -10,7 +6,6 @@ export interface TrackArtistDto {
 export interface TrackAlbumDto {
   id: string;
   title: string;
-  coverUrl: string | null;
 }
 
 export interface TrackItemDto {
@@ -30,23 +25,12 @@ export interface TrackItemsResponseDto {
   };
 }
 
-export interface Track {
+export interface TrackDto {
   id: string;
   title: string;
   duration: number | null;
-  artists: TrackArtist[]; 
-  album: Album;
-  audioFile: AudioFile;
-  albumUrl: string;
-  trackUrl: string;
-}
-
-export interface StreamItem {
-  url: string
-  expiresIn: number
-}
-
-export interface TrackWithMedia extends Track {
-  albumArt: StreamItem;
-  stream: StreamItem;
+  trackNumber: number | null;
+  discNumber: number | null;
+  album: TrackAlbumDto;
+  artists: TrackArtistDto[];
 }

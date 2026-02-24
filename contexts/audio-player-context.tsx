@@ -1,5 +1,6 @@
 import { trackApi } from "@/api/tracks";
-import { Track } from "@/types/tracks";
+import { API_BASE } from "@/config/api";
+import { TrackDto } from "@/types/tracks";
 import { useAudioPlayer } from "expo-audio";
 import {
   createContext,
@@ -10,7 +11,7 @@ import {
 } from "react";
 
 interface AudioPlayerContextValue {
-  currentTrack: Track | null;
+  currentTrack: TrackDto | null;
   isPlaying: boolean;
   loadTrack: (trackId: string) => Promise<void>;
   play: () => void;
@@ -23,10 +24,14 @@ const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
 );
 
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const player = useAudioPlayer(currentTrack?.trackUrl, {
+  const streamUrl = currentTrack
+    ? `${API_BASE}/music/tracks/${currentTrack.id}/stream`
+    : null;
+
+  const player = useAudioPlayer(streamUrl, {
     updateInterval: 1000,
     downloadFirst: true,
   });
@@ -40,6 +45,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const loadTrack = async (trackId: string) => {
     const track = await trackApi.getById(trackId);
+
     if (player?.playing) {
       player.pause();
     }

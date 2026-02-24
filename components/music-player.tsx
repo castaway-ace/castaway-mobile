@@ -1,3 +1,4 @@
+import { getAlbumCoverUrl } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "./ui/icon-symbol";
@@ -17,17 +18,14 @@ const MusicPlayer = () => {
     }
   };
 
-  const artists = currentTrack.artists
-    .map((artist) => artist.artist.name)
-    .join(", ");
+  const artists = currentTrack.artists.map((artist) => artist.name).join(", ");
+
+  const coverUrl = getAlbumCoverUrl(currentTrack.album.id);
 
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>
-        <Image
-          source={{ uri: currentTrack.albumUrl }}
-          style={styles.albumArt}
-        />
+        <Image source={{ uri: coverUrl }} style={styles.albumArt} />
         <View style={styles.info}>
           <Text style={styles.title} numberOfLines={1}>
             {currentTrack.title}

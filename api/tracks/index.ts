@@ -1,4 +1,4 @@
-import { Track, TrackItemsResponseDto } from "@/types/tracks";
+import { TrackDto, TrackItemsResponseDto } from "@/types/tracks";
 import apiClient from "../client";
 
 export const trackApi = {
@@ -9,8 +9,8 @@ export const trackApi = {
     return data;
   },
 
-  getById: async (id: string): Promise<Track> => {
+  getById: async (id: string): Promise<TrackDto> => {
     const { data } = await apiClient.get(`/music/tracks/${id}`);
-    return data.data;
+    return data;
   },
 };
