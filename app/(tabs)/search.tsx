@@ -1,16 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Search = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={styles.filterSection}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ScrollView style={styles.filterSection}>
         <Text style={styles.filterSectionTitle}>Search</Text>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   filterSection: {
     display: "flex",
     padding: 16,
