@@ -28,6 +28,9 @@ const MAPPING = {
   "pause.fill": "pause",
   "play.fill": "play",
   "circle.badge.plus": "add-circle-outline",
+  "square.stack.fill": "albums",
+  "music.note": "musical-note",
+  "music.note.list": "musical-notes",
 } as IconMapping;
 
 /**

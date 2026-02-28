@@ -1,12 +1,14 @@
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { StyleSheet, Text, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Search = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView style={styles.filterSection}>
-        <Text style={styles.filterSectionTitle}>Search</Text>
-      </ScrollView>
+      <Text style={styles.title}>Search</Text>
+      <TextInput style={styles.search} placeholder="Search">
+        <IconSymbol name="magnifyingglass" size={24} color="black" />
+      </TextInput>
     </SafeAreaView>
   );
 };
@@ -15,14 +17,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  filterSection: {
-    display: "flex",
     padding: 16,
   },
-  filterSectionTitle: {
+  title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 16,
+  },
+  search: {
+    padding: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#000",
+    backgroundColor: "#f0f0f0",
   },
 });
 

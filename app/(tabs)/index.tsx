@@ -28,10 +28,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView style={styles.scrollView}>
         <View style={styles.tracksContainer}>
           <Text style={styles.tracksContainerTitle}>Favorite Tracks</Text>
           {tracksAvailable ? (
@@ -96,13 +93,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    padding: 16,
   },
   scrollView: {
     flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    gap: 16,
   },
   tracksContainer: {
     display: "flex",
