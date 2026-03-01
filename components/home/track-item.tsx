@@ -2,7 +2,7 @@ import { getAlbumCoverUrl } from "@/config/api";
 import { TrackItemDto } from "@/types/tracks";
 import { FC } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { IconSymbol } from "./ui/icon-symbol";
+import { IconSymbol } from "../ui/icon-symbol";
 
 const formatDuration = (duration: number) => {
   const minutes = Math.floor(duration / 60);
