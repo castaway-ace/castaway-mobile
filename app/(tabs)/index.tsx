@@ -1,4 +1,4 @@
-import { TrackItem } from "@/components/trackItem";
+import { TrackItem } from "@/components/home/track-item";
 import { getAlbumCoverUrl } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
@@ -9,9 +9,24 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
-  const { data: trackData } = useTracks();
-  const { data: albumData } = useAlbums();
-  const { data: artistData } = useArtists();
+  const {
+    data: trackData,
+    isLoading: tracksLoading,
+    isError: tracksError,
+  } = useTracks();
+
+  const {
+    data: albumData,
+    isLoading: albumsLoading,
+    isError: albumsError,
+  } = useAlbums();
+
+  const {
+    data: artistData,
+    isLoading: artistsLoading,
+    isError: artistsError,
+  } = useArtists();
+
   const { loadTrack } = useAudioPlayerContext();
 
   const albums: Album[] = albumData?.data ?? [];
@@ -28,56 +43,60 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.tracksContainer}>
-          <Text style={styles.tracksContainerTitle}>Favorite Tracks</Text>
-          {tracksAvailable ? (
-            tracks.map((track) => (
-              <TrackItem
-                key={track.id}
-                track={track}
-                onPress={() => onTrackPress(track.id)}
-              />
-            ))
-          ) : (
-            <Text style={styles.noTracksText}>No tracks found</Text>
-          )}
-        </View>
-        <View style={styles.albumsContainer}>
-          <Text style={styles.albumsContainerTitle}>Rediscover Albums</Text>
-          {albumsAvailable ? (
-            albums.map((album) => (
-              <Image
-                key={album.id}
-                source={{ uri: getAlbumCoverUrl(album.id) }}
-                style={styles.albumArt}
-              />
-            ))
-          ) : (
-            <Text style={styles.noAlbumsText}>No albums found</Text>
-          )}
-        </View>
-        <View style={styles.albumsContainer}>
-          <Text style={styles.albumsContainerTitle}>Random Albums</Text>
-          {albumsAvailable ? (
-            albums.map((album) => (
-              <Image
-                key={album.id}
-                source={{ uri: getAlbumCoverUrl(album.id) }}
-                style={styles.albumArt}
-              />
-            ))
-          ) : (
-            <Text style={styles.noAlbumsText}>No albums found</Text>
-          )}
-        </View>
-        <View style={styles.artistsContainer}>
-          <Text style={styles.artistsContainerTitle}>Random Artists</Text>
-          {artistsAvailable ? (
-            artists.map((artist) => <Text key={artist.id}>{artist.name}</Text>)
-          ) : (
-            <Text style={styles.noArtistsText}>No artists found</Text>
-          )}
+      <ScrollView>
+        <View style={styles.itemContainerWrapper}>
+          <View style={styles.itemsContainer}>
+            <Text style={styles.itemsContainerTitle}>Favorite Tracks</Text>
+            {tracksAvailable ? (
+              tracks.map((track) => (
+                <TrackItem
+                  key={track.id}
+                  track={track}
+                  onPress={() => onTrackPress(track.id)}
+                />
+              ))
+            ) : (
+              <Text style={styles.unavailableText}>No tracks found</Text>
+            )}
+          </View>
+          <View style={styles.itemsContainer}>
+            <Text style={styles.itemsContainerTitle}>Rediscover Albums</Text>
+            {albumsAvailable ? (
+              albums.map((album) => (
+                <Image
+                  key={album.id}
+                  source={{ uri: getAlbumCoverUrl(album.id) }}
+                  style={styles.albumArt}
+                />
+              ))
+            ) : (
+              <Text style={styles.unavailableText}>No albums found</Text>
+            )}
+          </View>
+          <View style={styles.itemsContainer}>
+            <Text style={styles.itemsContainerTitle}>Random Albums</Text>
+            {albumsAvailable ? (
+              albums.map((album) => (
+                <Image
+                  key={album.id}
+                  source={{ uri: getAlbumCoverUrl(album.id) }}
+                  style={styles.albumArt}
+                />
+              ))
+            ) : (
+              <Text style={styles.unavailableText}>No albums found</Text>
+            )}
+          </View>
+          <View style={styles.itemsContainer}>
+            <Text style={styles.itemsContainerTitle}>Random Artists</Text>
+            {artistsAvailable ? (
+              artists.map((artist) => (
+                <Text key={artist.id}>{artist.name}</Text>
+              ))
+            ) : (
+              <Text style={styles.unavailableText}>No artists found</Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -95,53 +114,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
   },
-  scrollView: {
-    flex: 1,
-  },
-  tracksContainer: {
+  itemsContainer: {
     display: "flex",
     flexDirection: "column",
     gap: 16,
   },
-  tracksContainerTitle: {
+  itemsContainerTitle: {
     fontSize: 20,
     fontWeight: "bold",
   },
-  noTracksText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 16,
-  },
-  albumsContainer: {
+  itemContainerWrapper: {
     display: "flex",
     flexDirection: "column",
     gap: 16,
   },
-  albumsContainerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  noAlbumsText: {
+  unavailableText: {
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 16,
-  },
-  artistsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-  },
-  artistsContainerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  noArtistsText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 16,
   },
 });
 
