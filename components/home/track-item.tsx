@@ -54,7 +54,6 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingVertical: 8,
     justifyContent: "space-between",
     alignItems: "center",
   },

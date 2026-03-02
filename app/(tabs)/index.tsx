@@ -77,10 +77,10 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.containerContent}>
         <View style={styles.itemContainerWrapper}>
-          <View style={[styles.itemsContainer, styles.paddingHorizontal]}>
-            <Text style={styles.itemsContainerTitle}>Favorite Tracks</Text>
+          <View style={styles.itemsContainer}>
+            <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
             {tracksAvailable ? (
               tracks.map((track) => (
                 <TrackItem
@@ -94,11 +94,7 @@ const HomeScreen = () => {
             )}
           </View>
           <View style={styles.itemsContainer}>
-            <Text
-              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
-            >
-              Rediscover Albums
-            </Text>
+            <Text style={[styles.itemsContainerTitle]}>Rediscover Albums</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -111,8 +107,8 @@ const HomeScreen = () => {
                       source={{ uri: sampleImageUrl }}
                       style={styles.albumArt}
                     />
-                    <Text>{album.name}</Text>
-                    <Text>{album.artistName}</Text>
+                    <Text style={styles.albumName}>{album.name}</Text>
+                    <Text style={styles.albumArtist}>{album.artistName}</Text>
                   </View>
                 ))
               ) : (
@@ -121,11 +117,7 @@ const HomeScreen = () => {
             </ScrollView>
           </View>
           <View style={styles.itemsContainer}>
-            <Text
-              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
-            >
-              Last Played Albums
-            </Text>
+            <Text style={[styles.itemsContainerTitle]}>Last Played Albums</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -138,8 +130,8 @@ const HomeScreen = () => {
                       source={{ uri: sampleImageUrl }}
                       style={styles.albumArt}
                     />
-                    <Text>{album.name}</Text>
-                    <Text>{album.artistName}</Text>
+                    <Text style={styles.albumName}>{album.name}</Text>
+                    <Text style={styles.albumArtist}>{album.artistName}</Text>
                   </View>
                 ))
               ) : (
@@ -165,7 +157,7 @@ const HomeScreen = () => {
                       source={{ uri: sampleImageUrl }}
                       style={styles.artistArt}
                     />
-                    <Text>{artist.name}</Text>
+                    <Text style={styles.artistName}>{artist.name}</Text>
                   </View>
                 ))
               ) : (
@@ -190,10 +182,12 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 8,
   },
+  containerContent: {
+    paddingBottom: 48,
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingBottom: 64,
   },
   itemsContainer: {
     display: "flex",
@@ -203,11 +197,12 @@ const styles = StyleSheet.create({
   itemsContainerTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    paddingHorizontal: 16,
   },
   itemContainerWrapper: {
     display: "flex",
     flexDirection: "column",
-    gap: 16,
+    gap: 32,
   },
   unavailableText: {
     fontSize: 16,
@@ -220,14 +215,23 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingHorizontal: 16,
   },
-  paddingHorizontal: {
-    padding: 16,
-  },
   artistScrollContent: {
     display: "flex",
     flexDirection: "row",
     gap: 16,
     paddingHorizontal: 16,
+  },
+  albumName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  albumArtist: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  artistName: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
