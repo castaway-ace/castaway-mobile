@@ -8,23 +8,11 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
-  const {
-    data: trackData,
-    isLoading: tracksLoading,
-    isError: tracksError,
-  } = useTracks();
+  const { data: trackData } = useTracks();
 
-  const {
-    data: albumData,
-    isLoading: albumsLoading,
-    isError: albumsError,
-  } = useAlbums();
+  const { data: albumData } = useAlbums();
 
-  const {
-    data: artistData,
-    isLoading: artistsLoading,
-    isError: artistsError,
-  } = useArtists();
+  const { data: artistData } = useArtists();
 
   const { loadTrack } = useAudioPlayerContext();
 
@@ -81,17 +69,19 @@ const HomeScreen = () => {
         <View style={styles.itemContainerWrapper}>
           <View style={styles.itemsContainer}>
             <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
-            {tracksAvailable ? (
-              tracks.map((track) => (
-                <TrackItem
-                  key={track.id}
-                  track={track}
-                  onPress={() => onTrackPress(track.id)}
-                />
-              ))
-            ) : (
-              <Text style={styles.unavailableText}>No tracks found</Text>
-            )}
+            <View style={styles.trackListContainer}>
+              {tracksAvailable ? (
+                tracks.map((track) => (
+                  <TrackItem
+                    key={track.id}
+                    track={track}
+                    onPress={() => onTrackPress(track.id)}
+                  />
+                ))
+              ) : (
+                <Text style={styles.unavailableText}>No tracks found</Text>
+              )}
+            </View>
           </View>
           <View style={styles.itemsContainer}>
             <Text style={[styles.itemsContainerTitle]}>Rediscover Albums</Text>
@@ -152,7 +142,7 @@ const HomeScreen = () => {
             >
               {artistsAvailable ? (
                 artists.map((artist) => (
-                  <View key={artist.id}>
+                  <View key={artist.id} style={styles.artistItem}>
                     <Image
                       source={{ uri: sampleImageUrl }}
                       style={styles.artistArt}
@@ -178,9 +168,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   artistArt: {
-    width: 160,
-    height: 160,
-    borderRadius: 8,
+    width: 60,
+    height: 60,
+    borderRadius: 32,
   },
   containerContent: {
     paddingBottom: 48,
@@ -197,6 +187,12 @@ const styles = StyleSheet.create({
   itemsContainerTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    paddingHorizontal: 16,
+  },
+  trackListContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
     paddingHorizontal: 16,
   },
   itemContainerWrapper: {
@@ -232,6 +228,17 @@ const styles = StyleSheet.create({
   artistName: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  artistItem: {
+    display: "flex",
+    backgroundColor: "#f0f0f0",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 8,
+    gap: 8,
+    width: 240,
+    height: 72,
+    borderRadius: 12,
   },
 });
 
