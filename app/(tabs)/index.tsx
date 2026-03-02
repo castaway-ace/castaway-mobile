@@ -1,5 +1,4 @@
 import { TrackItem } from "@/components/home/track-item";
-import { getAlbumCoverUrl } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
 import { useArtists } from "@/queries/artists";
@@ -41,11 +40,46 @@ const HomeScreen = () => {
     loadTrack(trackId);
   };
 
+  const sampleAlbums = [
+    {
+      id: "1",
+      name: "Album 1",
+      imageUrl: "https://picsum.photos/200/300",
+      artistName: "Artist 1",
+    },
+    {
+      id: "2",
+      name: "Album 2",
+      imageUrl: "https://picsum.photos/200/300",
+      artistName: "Artist 2",
+    },
+    {
+      id: "3",
+      name: "Album 3",
+      imageUrl: "https://picsum.photos/200/300",
+      artistName: "Artist 3",
+    },
+    {
+      id: "4",
+      name: "Album 4",
+      imageUrl: "https://picsum.photos/200/300",
+      artistName: "Artist 4",
+    },
+    {
+      id: "5",
+      name: "Album 5",
+      imageUrl: "https://picsum.photos/200/300",
+      artistName: "Artist 5",
+    },
+  ];
+
+  const sampleImageUrl = "https://picsum.photos/200/300";
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView>
         <View style={styles.itemContainerWrapper}>
-          <View style={styles.itemsContainer}>
+          <View style={[styles.itemsContainer, styles.paddingHorizontal]}>
             <Text style={styles.itemsContainerTitle}>Favorite Tracks</Text>
             {tracksAvailable ? (
               tracks.map((track) => (
@@ -60,42 +94,84 @@ const HomeScreen = () => {
             )}
           </View>
           <View style={styles.itemsContainer}>
-            <Text style={styles.itemsContainerTitle}>Rediscover Albums</Text>
-            {albumsAvailable ? (
-              albums.map((album) => (
-                <Image
-                  key={album.id}
-                  source={{ uri: getAlbumCoverUrl(album.id) }}
-                  style={styles.albumArt}
-                />
-              ))
-            ) : (
-              <Text style={styles.unavailableText}>No albums found</Text>
-            )}
+            <Text
+              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
+            >
+              Rediscover Albums
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.albumScrollContent}
+            >
+              {albumsAvailable ? (
+                sampleAlbums.map((album) => (
+                  <View key={album.id}>
+                    <Image
+                      source={{ uri: sampleImageUrl }}
+                      style={styles.albumArt}
+                    />
+                    <Text>{album.name}</Text>
+                    <Text>{album.artistName}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.unavailableText}>No albums found</Text>
+              )}
+            </ScrollView>
           </View>
           <View style={styles.itemsContainer}>
-            <Text style={styles.itemsContainerTitle}>Random Albums</Text>
-            {albumsAvailable ? (
-              albums.map((album) => (
-                <Image
-                  key={album.id}
-                  source={{ uri: getAlbumCoverUrl(album.id) }}
-                  style={styles.albumArt}
-                />
-              ))
-            ) : (
-              <Text style={styles.unavailableText}>No albums found</Text>
-            )}
+            <Text
+              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
+            >
+              Last Played Albums
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.albumScrollContent}
+            >
+              {albumsAvailable ? (
+                sampleAlbums.map((album) => (
+                  <View key={album.id}>
+                    <Image
+                      source={{ uri: sampleImageUrl }}
+                      style={styles.albumArt}
+                    />
+                    <Text>{album.name}</Text>
+                    <Text>{album.artistName}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.unavailableText}>No albums found</Text>
+              )}
+            </ScrollView>
           </View>
           <View style={styles.itemsContainer}>
-            <Text style={styles.itemsContainerTitle}>Random Artists</Text>
-            {artistsAvailable ? (
-              artists.map((artist) => (
-                <Text key={artist.id}>{artist.name}</Text>
-              ))
-            ) : (
-              <Text style={styles.unavailableText}>No artists found</Text>
-            )}
+            <Text
+              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
+            >
+              Random Artists
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.artistScrollContent}
+            >
+              {artistsAvailable ? (
+                artists.map((artist) => (
+                  <View key={artist.id}>
+                    <Image
+                      source={{ uri: sampleImageUrl }}
+                      style={styles.artistArt}
+                    />
+                    <Text>{artist.name}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.unavailableText}>No artists found</Text>
+              )}
+            </ScrollView>
           </View>
         </View>
       </ScrollView>
@@ -105,14 +181,19 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   albumArt: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
+    width: 160,
+    height: 160,
+    borderRadius: 8,
+  },
+  artistArt: {
+    width: 160,
+    height: 160,
+    borderRadius: 8,
   },
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 16,
+    paddingBottom: 64,
   },
   itemsContainer: {
     display: "flex",
@@ -132,6 +213,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  albumScrollContent: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 16,
+    paddingHorizontal: 16,
+  },
+  paddingHorizontal: {
+    padding: 16,
+  },
+  artistScrollContent: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 16,
+    paddingHorizontal: 16,
   },
 });
 

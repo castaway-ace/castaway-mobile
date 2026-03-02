@@ -5,6 +5,7 @@ export interface Album {
     releaseYear: string,
     genre: string,
     albumArtKey: string,
+    artistName: string,
 }
 
 export interface AlbumItemsResponse {
