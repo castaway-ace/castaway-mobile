@@ -31,6 +31,8 @@ const MAPPING = {
   "square.stack.fill": "albums",
   "music.note": "musical-note",
   "music.note.list": "musical-notes",
+  "gearshape.fill": "settings",
+  gearshape: "settings-outline",
 } as IconMapping;
 
 /**

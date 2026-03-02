@@ -17,6 +17,9 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         tabBarButton: HapticTab,
         headerShown: false,
+        tabBarLabelStyle: {
+          marginTop: 4,
+        },
       }}
     >
       <Tabs.Screen
@@ -60,13 +63,13 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profile"
+        name="settings"
         options={{
-          title: "Profile",
+          title: "Settings",
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol
               size={28}
-              name={focused ? "person.fill" : "person"}
+              name={focused ? "gearshape.fill" : "gearshape"}
               color={color}
             />
           ),
