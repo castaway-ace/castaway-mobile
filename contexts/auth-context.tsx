@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        console.log("Restoring session...");
         const storedToken = await SecureStore.getItemAsync("accessToken");
         if (storedToken) {
           setAccessToken(storedToken);
@@ -32,7 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Failed to restore session:", error);
       } finally {
-        console.log("Session restore complete");
         setIsLoading(false);
       }
     };
