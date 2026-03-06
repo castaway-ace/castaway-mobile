@@ -1,5 +1,4 @@
 import OAuthButton from "@/components/auth/oauthButton";
-import { useAuth } from "@/contexts/auth-context";
 import * as WebBrowser from "expo-web-browser";
 import { useRef } from "react";
 import { Animated, StyleSheet } from "react-native";
@@ -9,43 +8,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
-  const { login } = useAuth();
-
   const fadeGoogle = useRef(new Animated.Value(1)).current;
   const fadeFacebook = useRef(new Animated.Value(1)).current;
 
   const handleOAuthLogin = async (provider: "google" | "facebook") => {
-    const backendUrl = `http://dev-backend.anthonyostia.com/auth/${provider}`;
-    const redirectUri = "castaway://auth/callback";
-
-    try {
-      const result = await WebBrowser.openAuthSessionAsync(
-        backendUrl,
-        redirectUri,
-      );
-
-      if (result.type === "success" && result.url) {
-        const url = new URL(result.url);
-        const code = url.searchParams.get("code");
-
-        if (code) {
-          // Exchange the authorization code for tokens via your backend
-          const tokenResponse = await fetch(
-            "http://dev-backend.anthonyostia.com/auth/token",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ code }),
-            },
-          );
-
-          const { accessToken, refreshToken } = await tokenResponse.json();
-          await login(accessToken, refreshToken);
-        }
-      }
-    } catch (error) {
-      console.error(`${provider} OAuth failed:`, error);
-    }
+    const backendUrl = `https://dev-backend.anthonyostia.com/auth/${provider}`;
+    await WebBrowser.openAuthSessionAsync(
+      backendUrl,
+      "castaway://auth/callback",
+    );
   };
 
   const handleGoogleLogin = () => {
