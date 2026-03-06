@@ -1,5 +1,5 @@
+import { baseUrl } from "@/api/client";
 import { trackApi } from "@/api/tracks";
-import { API_BASE } from "@/config/api";
 import { TrackDto } from "@/types/tracks";
 import { useAudioPlayer } from "expo-audio";
 import {
@@ -9,6 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useAuth } from "./auth-context";
 
 interface AudioPlayerContextValue {
   currentTrack: TrackDto | null;
@@ -26,14 +27,10 @@ const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const { accessToken } = useAuth();
 
-  const streamUrl = currentTrack
-    ? `${API_BASE}/music/tracks/${currentTrack.id}/stream`
-    : null;
-
-  const player = useAudioPlayer(streamUrl, {
+  const player = useAudioPlayer(null, {
     updateInterval: 1000,
-    downloadFirst: true,
   });
 
   useEffect(() => {
@@ -50,6 +47,13 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       player.pause();
     }
     setCurrentTrack(track);
+    const streamUrl = `${baseUrl}/music/tracks/${track.id}/stream`;
+    player.replace({
+      uri: streamUrl,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     play();
   };
 

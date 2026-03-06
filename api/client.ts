@@ -11,7 +11,7 @@ const apiClient = axios.create({
   // Request interceptor for authentication
 apiClient.interceptors.request.use(
     async (config) => {
-      const token = await SecureStore.getItemAsync('access_token');
+      const token = await SecureStore.getItemAsync('accessToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -30,13 +30,13 @@ apiClient.interceptors.request.use(
         originalRequest._retry = true;
         
         try {
-          const refreshToken = await SecureStore.getItemAsync('refresh_token');
-          const { data } = await axios.post(`${process.env.API_BASE_URL}/auth/refresh`, {
+          const refreshToken = await SecureStore.getItemAsync('refreshToken');
+          const { data } = await axios.post(`${baseUrl}/auth/refresh`, {
             refreshToken,
           });
           
-          await SecureStore.setItemAsync('access_token', data.accessToken);
-          await SecureStore.setItemAsync('refresh_token', data.refreshToken);
+          await SecureStore.setItemAsync('accessToken', data.accessToken);
+          await SecureStore.setItemAsync('refreshToken', data.refreshToken);
           
           originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
           return apiClient(originalRequest);

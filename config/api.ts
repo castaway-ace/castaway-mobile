@@ -1,5 +1,9 @@
-export const API_BASE = process.env.EXPO_PUBLIC_API_URL;
+import { baseUrl } from "@/api/client";
 
 export const getAlbumCoverUrl = (albumId: string): string => {
-  return `${API_BASE}/music/albums/${albumId}/cover`;
+  return `${baseUrl}/music/albums/${albumId}/cover`;
+}
+
+export const getArtistImage = (artistId: string): string => {
+  return `${baseUrl}/music/artists/${artistId}/image`;
 }

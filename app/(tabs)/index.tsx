@@ -1,4 +1,5 @@
 import { TrackItem } from "@/components/home/track-item";
+import { getAlbumCoverUrl, getArtistImage } from "@/config/api";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAlbums } from "@/queries/albums";
 import { useArtists } from "@/queries/artists";
@@ -28,41 +29,6 @@ const HomeScreen = () => {
     loadTrack(trackId);
   };
 
-  const sampleAlbums = [
-    {
-      id: "1",
-      name: "Album 1",
-      imageUrl: "https://picsum.photos/200/300",
-      artistName: "Artist 1",
-    },
-    {
-      id: "2",
-      name: "Album 2",
-      imageUrl: "https://picsum.photos/200/300",
-      artistName: "Artist 2",
-    },
-    {
-      id: "3",
-      name: "Album 3",
-      imageUrl: "https://picsum.photos/200/300",
-      artistName: "Artist 3",
-    },
-    {
-      id: "4",
-      name: "Album 4",
-      imageUrl: "https://picsum.photos/200/300",
-      artistName: "Artist 4",
-    },
-    {
-      id: "5",
-      name: "Album 5",
-      imageUrl: "https://picsum.photos/200/300",
-      artistName: "Artist 5",
-    },
-  ];
-
-  const sampleImageUrl = "https://picsum.photos/200/300";
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.containerContent}>
@@ -91,10 +57,10 @@ const HomeScreen = () => {
               contentContainerStyle={styles.albumScrollContent}
             >
               {albumsAvailable ? (
-                sampleAlbums.map((album) => (
+                albums.map((album) => (
                   <View key={album.id}>
                     <Image
-                      source={{ uri: sampleImageUrl }}
+                      source={{ uri: getAlbumCoverUrl(album.id) }}
                       style={styles.albumArt}
                     />
                     <Text style={styles.albumName}>{album.name}</Text>
@@ -114,10 +80,10 @@ const HomeScreen = () => {
               contentContainerStyle={styles.albumScrollContent}
             >
               {albumsAvailable ? (
-                sampleAlbums.map((album) => (
+                albums.map((album) => (
                   <View key={album.id}>
                     <Image
-                      source={{ uri: sampleImageUrl }}
+                      source={{ uri: getAlbumCoverUrl(album.id) }}
                       style={styles.albumArt}
                     />
                     <Text style={styles.albumName}>{album.name}</Text>
@@ -144,7 +110,7 @@ const HomeScreen = () => {
                 artists.map((artist) => (
                   <View key={artist.id} style={styles.artistItem}>
                     <Image
-                      source={{ uri: sampleImageUrl }}
+                      source={{ uri: getArtistImage(artist.id) }}
                       style={styles.artistArt}
                     />
                     <Text style={styles.artistName}>{artist.name}</Text>
