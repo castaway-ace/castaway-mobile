@@ -24,12 +24,10 @@ const AuthCallback = () => {
         );
 
         const data = await response.json();
-        console.log("Token response:", JSON.stringify(data));
 
         if (data.accessToken && data.refreshToken) {
           await login(String(data.accessToken), String(data.refreshToken));
         } else {
-          console.error("Unexpected token response shape:", data);
           router.replace("/(auth)/login");
         }
       } catch (error) {

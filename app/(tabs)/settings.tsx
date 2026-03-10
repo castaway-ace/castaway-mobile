@@ -1,10 +1,13 @@
-import { StyleSheet, Text } from "react-native";
+import { useAuth } from "@/contexts/auth-context";
+import { Button, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Settings = () => {
+  const { logout } = useAuth();
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Settings</Text>
+      <Button title="Logout" onPress={logout} />
     </SafeAreaView>
   );
 };
