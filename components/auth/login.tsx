@@ -26,11 +26,13 @@ export const makeStyles = (colors: ThemeColors) =>
     },
     inputLabel: {
       fontSize: 16,
+      color: colors.primary,
     },
     inputField: {
       backgroundColor: colors.surface,
       borderColor: colors.primary,
       borderWidth: 1,
+      color: colors.primary,
       paddingHorizontal: 8,
       paddingVertical: 16,
       borderRadius: 8,
@@ -46,6 +48,7 @@ export const makeStyles = (colors: ThemeColors) =>
     },
     passwordInput: {
       flex: 1,
+      color: colors.primary,
       paddingHorizontal: 8,
       paddingVertical: 16,
     },
@@ -78,6 +81,7 @@ export const makeStyles = (colors: ThemeColors) =>
     },
     signupText: {
       fontSize: 18,
+      color: colors.primary,
     },
     signupLink: {
       fontSize: 18,

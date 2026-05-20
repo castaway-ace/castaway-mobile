@@ -81,6 +81,7 @@ const Login = () => {
           autoCapitalize="none"
           autoCorrect={false}
           selectionColor={colors.accent}
+          placeholderTextColor={colors.secondary}
           keyboardType="email-address"
           textContentType="emailAddress"
           placeholder="Email Address"
@@ -99,6 +100,7 @@ const Login = () => {
             placeholder="Password"
             value={password}
             selectionColor={colors.accent}
+            placeholderTextColor={colors.secondary}
             onChangeText={onPasswordChange}
             secureTextEntry={!isPasswordVisible}
             autoCapitalize="none"
