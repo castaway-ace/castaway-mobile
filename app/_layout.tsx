@@ -1,15 +1,11 @@
 import { AudioPlayerProvider } from "@/contexts/audio-player-context";
 import { AuthProvider, useAuth } from "@/contexts/auth-context";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { ActivityIndicator, useColorScheme, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import "react-native-reanimated";
+import ThemeProvider from "../contexts/theme-context";
 
 const queryClient = new QueryClient();
 
@@ -50,24 +46,19 @@ const RootNavigator = () => {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="auth/callback" />
     </Stack>
   );
 };
 
 const RootLayout = () => {
-  const colorScheme = useColorScheme();
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AudioPlayerProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
+        <ThemeProvider>
+          <AudioPlayerProvider>
             <RootNavigator />
-          </ThemeProvider>
-        </AudioPlayerProvider>
+          </AudioPlayerProvider>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
