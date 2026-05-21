@@ -1,3 +1,4 @@
+import { isTokenValid } from "@/utils/auth";
 import * as SecureStore from "expo-secure-store";
 import {
   createContext,
@@ -39,21 +40,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (token: string, refreshToken: string) => {
-    await SecureStore.setItemAsync("accessToken", token);
-    await SecureStore.setItemAsync("refreshToken", refreshToken);
-    setAccessToken(token);
+    try {
+      await SecureStore.setItemAsync("accessToken", token);
+      await SecureStore.setItemAsync("refreshToken", refreshToken);
+      setAccessToken(token);
+    } catch (error) {
+      console.error("Failed to persist session:", error);
+      await SecureStore.deleteItemAsync("accessToken").catch(() => {});
+      await SecureStore.deleteItemAsync("refreshToken").catch(() => {});
+      setAccessToken(null);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("accessToken");
-    await SecureStore.deleteItemAsync("refreshToken");
-    setAccessToken(null);
+    try {
+      await SecureStore.deleteItemAsync("accessToken");
+      await SecureStore.deleteItemAsync("refreshToken");
+    } catch (error) {
+      console.error("Failed to clear session:", error);
+    } finally {
+      setAccessToken(null);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: !!accessToken,
+        isAuthenticated: isTokenValid(accessToken),
         isLoading,
         accessToken,
         login,

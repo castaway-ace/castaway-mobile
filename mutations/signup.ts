@@ -1,16 +1,15 @@
 import { baseUrl } from '@/api/client';
-import { AuthResponseSchema, AuthResponseType, LoginSchemaType } from '@/constants/auth';
+import { AuthResponseSchema, AuthResponseType, SignUpSchemaType } from '@/constants/auth';
 import { useAuth } from '@/contexts/auth-context';
 import { useMutation } from '@tanstack/react-query';
 import * as Device from "expo-device";
 import * as SecureStore from 'expo-secure-store';
 
 
-export const useLogin = () => {
+export const useSignUp = () => {
     const { login } = useAuth();
-
     return useMutation({
-        mutationFn: async (credentials: LoginSchemaType) => {
+        mutationFn: async (credentials: SignUpSchemaType) => {
             const clientId = await SecureStore.getItemAsync("clientId");
             const data = {
                 ...credentials,
@@ -20,14 +19,14 @@ export const useLogin = () => {
                     clientId,
                 }
             }
-            const response = await fetch(`${baseUrl}/auth/login`, {
+            const response = await fetch(`${baseUrl}/auth/signup`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
             if (!response.ok) {
                 const body = await response.json().catch(() => null);
-                throw new Error(body?.message ?? "Login failed");
+                throw new Error(body?.message ?? "Sign up failed");
             }
             const json = await response.json();
             const parsed = AuthResponseSchema.safeParse(json);

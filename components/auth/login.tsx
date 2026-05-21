@@ -7,7 +7,7 @@ export const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       paddingHorizontal: 32,
       backgroundColor: colors.background,
-      paddingTop: 100,
+      justifyContent: "center",
       gap: 36,
     },
     logoContainer: {

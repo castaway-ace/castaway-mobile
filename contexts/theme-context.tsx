@@ -1,6 +1,6 @@
+import { ThemeColors, ThemeName, Themes } from "@/constants/theme";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-import { ThemeColors, ThemeName, Themes } from "../utils/theme";
 
 interface ThemeContextProps {
   theme: ThemeName;
