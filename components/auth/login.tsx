@@ -5,10 +5,7 @@ export const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 32,
       backgroundColor: colors.background,
-      justifyContent: "center",
-      gap: 36,
     },
     logoContainer: {
       display: "flex",

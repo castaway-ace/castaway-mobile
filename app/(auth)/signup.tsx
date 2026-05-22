@@ -69,7 +69,12 @@ const Signup = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{
+          flex: 1,
+          gap: 32,
+          justifyContent: "center",
+          paddingHorizontal: 32,
+        }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View style={styles.logoContainer}>
