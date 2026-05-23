@@ -1,43 +1,42 @@
-import { baseUrl } from '@/api/client';
 import { AuthResponseSchema, AuthResponseType, LoginSchemaType } from '@/constants/auth';
 import { useAuth } from '@/contexts/auth-context';
 import { useMutation } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import * as Device from "expo-device";
-import * as SecureStore from 'expo-secure-store';
+import apiClient from '../api/client';
+import { getOrCreateClientId } from '../lib/client-id';
 
 
 export const useLogin = () => {
-    const { login } = useAuth();
+    const { logIn } = useAuth();
 
     return useMutation({
         mutationFn: async (credentials: LoginSchemaType) => {
-            const clientId = await SecureStore.getItemAsync("clientId");
-            const data = {
+            const clientId = await getOrCreateClientId();
+            const response = await apiClient.post('/auth/login', {
                 ...credentials,
                 deviceInfo: {
                     name: Device.deviceName,
                     model: Device.modelName,
                     clientId,
-                }
-            }
-            const response = await fetch(`${baseUrl}/auth/login`, {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                },
             });
-            if (!response.ok) {
-                const body = await response.json().catch(() => null);
-                throw new Error(body?.message ?? "Login failed");
-            }
-            const json = await response.json();
-            const parsed = AuthResponseSchema.safeParse(json);
+            const parsed = AuthResponseSchema.safeParse(response.data);
             if (!parsed.success) {
-            throw new Error("Server returned an invalid auth response");
+                throw new Error("Server returned an invalid auth response");
             }
             return parsed.data;
         },
         onSuccess: async (data: AuthResponseType) => {
-            await login(data.accessToken, data.refreshToken)
+            await logIn(data.accessToken, data.refreshToken)
         },
+        onError: async (error) => {
+            if (isAxiosError(error)) {
+                console.log('Requested URL:', error.config?.baseURL, error.config?.url);
+                console.log('Status:', error.response?.status);
+              } else {
+                console.log(error);
+              }
+        }
     });
 };

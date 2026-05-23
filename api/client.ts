@@ -1,41 +1,42 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-export const baseUrl = process.env.EXPO_PUBLIC_API_URL
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
+interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 const apiClient = axios.create({
-  baseURL: baseUrl,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
   timeout: 10000,
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 let onAuthFailure: (() => void) | null = null;
+
 export function setAuthFailureHandler(handler: (() => void) | null) {
   onAuthFailure = handler;
 }
 
-// Request interceptor for authentication
-apiClient.interceptors.request.use(
-  async (config) => {
-    const token = await SecureStore.getItemAsync('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-let refreshPromise: Promise<string> | null = null;
-
-async function performRefresh(): Promise<string> {
+async function refreshTokens(): Promise<string> {
   const refreshToken = await SecureStore.getItemAsync('refreshToken');
   if (!refreshToken) {
     throw new Error('No refresh token available');
   }
 
-  const { data } = await axios.post(`${baseUrl}/auth/refresh`, {
-    refreshToken,
-  });
+  const { data } = await axios.post<RefreshResponse>(
+    `${BASE_URL}/auth/refresh`,
+    { refreshToken },
+  );
 
   if (!data?.accessToken || !data?.refreshToken) {
     throw new Error('Malformed refresh response');
@@ -46,18 +47,27 @@ async function performRefresh(): Promise<string> {
   return data.accessToken;
 }
 
-// Response interceptor for token refresh
+apiClient.interceptors.request.use(
+  async (config) => {
+    const token = await SecureStore.getItemAsync("accessToken")
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  async (error: AxiosError) => {
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
-
       try {
         if (!refreshPromise) {
-          refreshPromise = performRefresh().finally(() => {
+          refreshPromise = refreshTokens().finally(() => {
             refreshPromise = null;
           });
         }
@@ -74,9 +84,8 @@ apiClient.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
 
-export default apiClient;
+export default apiClient
