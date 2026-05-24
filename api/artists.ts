@@ -1,5 +1,5 @@
 import { ArtistItemsResponse } from "@/types/artists";
-import apiClient from "../client";
+import apiClient from "./client";
 
 export const artistApi = {
   getAll: async (page = 1, pageSize = 20): Promise<ArtistItemsResponse> => {

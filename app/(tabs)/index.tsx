@@ -1,12 +1,11 @@
-import { TrackItem } from "@/components/home/track-item";
-import { getAlbumCoverUrl, getArtistImage } from "@/config/api";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useAlbums } from "@/queries/albums";
-import { useArtists } from "@/queries/artists";
-import { useTracks } from "@/queries/tracks";
 import { Album } from "@/types/albums";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAlbums } from "../../api/queries/albums";
+import { useArtists } from "../../api/queries/artists";
+import { useTracks } from "../../api/queries/tracks";
+import { TrackItem } from "../../components/home/track-item";
+import { useAudioPlayerContext } from "../../contexts/audio-player-context";
 
 const HomeScreen = () => {
   const { data: trackData } = useTracks();
@@ -60,7 +59,7 @@ const HomeScreen = () => {
                 albums.map((album) => (
                   <View key={album.id}>
                     <Image
-                      source={{ uri: getAlbumCoverUrl(album.id) }}
+                      // source={{ uri: getAlbumCoverUrl(album.id) }}
                       style={styles.albumArt}
                     />
                     <Text style={styles.albumName}>{album.name}</Text>
@@ -83,7 +82,7 @@ const HomeScreen = () => {
                 albums.map((album) => (
                   <View key={album.id}>
                     <Image
-                      source={{ uri: getAlbumCoverUrl(album.id) }}
+                      // source={{ uri: getAlbumCoverUrl(album.id) }}
                       style={styles.albumArt}
                     />
                     <Text style={styles.albumName}>{album.name}</Text>
@@ -110,7 +109,7 @@ const HomeScreen = () => {
                 artists.map((artist) => (
                   <View key={artist.id} style={styles.artistItem}>
                     <Image
-                      source={{ uri: getArtistImage(artist.id) }}
+                      // source={{ uri: getArtistImage(artist.id) }}
                       style={styles.artistArt}
                     />
                     <Text style={styles.artistName}>{artist.name}</Text>

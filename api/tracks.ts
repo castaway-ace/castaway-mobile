@@ -1,5 +1,5 @@
 import { TrackDto, TrackItemsResponseDto } from "@/types/tracks";
-import apiClient from "../client";
+import apiClient from "./client";
 
 export const trackApi = {
   getAll: async (page = 1, pageSize = 20): Promise<TrackItemsResponseDto> => {

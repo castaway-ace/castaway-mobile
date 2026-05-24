@@ -1,5 +1,5 @@
 import { Album, AlbumItemsResponse } from "@/types/albums";
-import apiClient from "../client";
+import apiClient from "./client";
 
 export const albumApi = {
   getAll: async (): Promise<AlbumItemsResponse> => {

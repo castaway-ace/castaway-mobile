@@ -1,5 +1,5 @@
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { BottomTabBar } from "@react-navigation/bottom-tabs";
+import { BottomTabBar } from "expo-router/js-tabs";
 import { View } from "react-native";
 import MusicPlayer from "./music-player";
 

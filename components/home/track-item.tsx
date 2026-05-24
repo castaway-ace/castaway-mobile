@@ -1,4 +1,3 @@
-import { getAlbumCoverUrl } from "@/config/api";
 import { TrackItemDto } from "@/types/tracks";
 import { FC } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -20,7 +19,7 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
 
   const formattedDuration = formatDuration(duration ?? 0);
 
-  const coverUrl = getAlbumCoverUrl(album.id);
+  const coverUrl = "";
 
   return (
     <Pressable style={styles.container} onPress={onPress}>
