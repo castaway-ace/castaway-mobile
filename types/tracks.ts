@@ -1,36 +1,10 @@
-export interface TrackArtistDto {
-  id: string;
-  name: string;
-}
-
-export interface TrackAlbumDto {
+export interface Track {
   id: string;
   title: string;
-}
-
-export interface TrackItemDto {
-  id: string;
-  title: string;
+  releaseDate: Date;
+  genres: string[];
   duration: number;
-  album: TrackAlbumDto;
-  artists: TrackArtistDto[];
-}
-
-export interface TrackItemsResponseDto {
-  data: TrackItemDto[];
-  meta: {
-    page: number;
-    pageSize: number;
-    total: number;
-  };
-}
-
-export interface TrackDto {
-  id: string;
-  title: string;
-  duration: number | null;
-  trackNumber: number | null;
-  discNumber: number | null;
-  album: TrackAlbumDto;
-  artists: TrackArtistDto[];
+  album: string;
+  artists: string[];
+  albumId: string;
 }

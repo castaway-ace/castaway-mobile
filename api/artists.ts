@@ -1,11 +1,16 @@
-import { ArtistItemsResponse } from "@/types/artists";
+import { Artist } from "@/types/artists";
 import apiClient from "./client";
 
 export const artistApi = {
-  getAll: async (page = 1, pageSize = 20): Promise<ArtistItemsResponse> => {
-    const { data } = await apiClient.get('/music/artists', {
-      params: { page, pageSize },
+  getAll: async (limit = 100, offset = 0): Promise<Artist[]> => {
+    const { data } = await apiClient.get('/artists', {
+      params: { limit, offset },
     });
+    return data;
+  },
+
+  getStream: async (id: string): Promise<string> => {
+    const { data } = await apiClient.get(`/artists/${id}/stream`);
     return data;
   },
 };

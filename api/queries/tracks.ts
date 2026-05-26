@@ -1,19 +1,21 @@
 import { trackApi } from "@/api/tracks";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
+const PAGE_SIZE = 100;
+
 export const useTracks = () => {
     return useInfiniteQuery({
         queryKey: ['tracks'],
-        queryFn: ({ pageParam }) => trackApi.getAll(pageParam, 20),
+        queryFn: ({ pageParam }) => trackApi.getAll(PAGE_SIZE, pageParam),
         getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.data.length < 20) {
+            if (lastPage.length < 20) {
                 return undefined;
             }
-            return allPages.length + 1;
+            return allPages.length * PAGE_SIZE;
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
-        initialPageParam: 1,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+        initialPageParam: 0,
     });
 }
 
@@ -22,6 +24,6 @@ export const useTrack = (id: string) => {
         queryKey: ['track', id],
         queryFn: () => trackApi.getById(id),
         enabled: !!id,
-        staleTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 10 * 60 * 1000,
     });
 };

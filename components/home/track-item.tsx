@@ -1,6 +1,8 @@
-import { TrackItemDto } from "@/types/tracks";
+import { useAlbumCover } from "@/api/queries/albums";
+import { Track } from "@/types/tracks";
+import { Image } from "expo-image";
 import { FC } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 
 const formatDuration = (duration: number) => {
@@ -10,27 +12,27 @@ const formatDuration = (duration: number) => {
 };
 
 interface TrackItemProps {
-  track: TrackItemDto;
+  track: Track;
   onPress: () => void;
 }
 
 export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
-  const { artists, title, album, duration } = track;
+  const { artists, title, duration, albumId } = track;
+
+  const { data: albumCover } = useAlbumCover(albumId);
 
   const formattedDuration = formatDuration(duration ?? 0);
-
-  const coverUrl = "";
 
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.containerContent}>
-        <Image source={{ uri: coverUrl }} style={styles.albumArt} />
+        <Image source={albumCover} style={styles.albumArt} />
         <View style={styles.info}>
           <Text style={styles.trackTitle} numberOfLines={1}>
             {title}
           </Text>
           <Text style={styles.trackArtist} numberOfLines={1}>
-            {artists.map((artist) => artist.name).join(", ")}
+            {artists.map((artist) => artist).join(", ")}
           </Text>
         </View>
       </View>
@@ -40,7 +42,6 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
           style={styles.ellipsis}
           onPress={(e) => {
             e.stopPropagation();
-            // TODO: open track menu
           }}
         >
           <IconSymbol size={24} name="ellipsis" color={"black"} />

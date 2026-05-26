@@ -1,5 +1,6 @@
-import { Album } from "@/types/albums";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import AlbumItem from "@/components/home/album-item";
+import ArtistItem from "@/components/home/artist-item";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbums } from "../../api/queries/albums";
 import { useArtists } from "../../api/queries/artists";
@@ -16,9 +17,9 @@ const HomeScreen = () => {
 
   const { loadTrack } = useAudioPlayerContext();
 
-  const albums: Album[] = albumData?.data ?? [];
-  const tracks = trackData?.pages.flatMap((page) => page.data) ?? [];
-  const artists = artistData?.pages.flatMap((page) => page.data) ?? [];
+  const albums = albumData?.pages.flatMap((page) => page) ?? [];
+  const tracks = trackData?.pages.flatMap((page) => page) ?? [];
+  const artists = artistData?.pages.flatMap((page) => page) ?? [];
 
   const albumsAvailable = albums.length > 0;
   const tracksAvailable = tracks.length > 0;
@@ -57,14 +58,7 @@ const HomeScreen = () => {
             >
               {albumsAvailable ? (
                 albums.map((album) => (
-                  <View key={album.id}>
-                    <Image
-                      // source={{ uri: getAlbumCoverUrl(album.id) }}
-                      style={styles.albumArt}
-                    />
-                    <Text style={styles.albumName}>{album.name}</Text>
-                    <Text style={styles.albumArtist}>{album.artistName}</Text>
-                  </View>
+                  <AlbumItem album={album} key={album.id} />
                 ))
               ) : (
                 <Text style={styles.unavailableText}>No albums found</Text>
@@ -80,14 +74,7 @@ const HomeScreen = () => {
             >
               {albumsAvailable ? (
                 albums.map((album) => (
-                  <View key={album.id}>
-                    <Image
-                      // source={{ uri: getAlbumCoverUrl(album.id) }}
-                      style={styles.albumArt}
-                    />
-                    <Text style={styles.albumName}>{album.name}</Text>
-                    <Text style={styles.albumArtist}>{album.artistName}</Text>
-                  </View>
+                  <AlbumItem album={album} key={album.id} />
                 ))
               ) : (
                 <Text style={styles.unavailableText}>No albums found</Text>
@@ -107,13 +94,7 @@ const HomeScreen = () => {
             >
               {artistsAvailable ? (
                 artists.map((artist) => (
-                  <View key={artist.id} style={styles.artistItem}>
-                    <Image
-                      // source={{ uri: getArtistImage(artist.id) }}
-                      style={styles.artistArt}
-                    />
-                    <Text style={styles.artistName}>{artist.name}</Text>
-                  </View>
+                  <ArtistItem key={artist.id} artist={artist} />
                 ))
               ) : (
                 <Text style={styles.unavailableText}>No artists found</Text>

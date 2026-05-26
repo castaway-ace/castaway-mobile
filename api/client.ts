@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
 
 declare module 'axios' {
   export interface AxiosRequestConfig {

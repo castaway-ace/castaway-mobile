@@ -1,18 +1,29 @@
 import { artistApi } from "@/api/artists";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+
+const PAGE_SIZE = 100;
 
 export const useArtists = () => {
     return useInfiniteQuery({
         queryKey: ['artists'],
-        queryFn: ({ pageParam }) => artistApi.getAll(pageParam, 20),
+        queryFn: ({ pageParam }) => artistApi.getAll(PAGE_SIZE, pageParam),
         getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.data.length < 20) {
+            if (lastPage.length < 20) {
                 return undefined;
             }
-            return allPages.length + 1;
+            return allPages.length * PAGE_SIZE;
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
-        initialPageParam: 1,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+        initialPageParam: 0,
+    });
+}
+
+export const useArtistCover = (id: string) => {
+    return useQuery({
+        queryKey: ['artist-image', id],
+        queryFn: () => artistApi.getStream(id),
+        enabled: !!id,
+        staleTime: 10 * 60 * 1000,
     });
 }

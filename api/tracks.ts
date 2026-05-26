@@ -1,16 +1,16 @@
-import { TrackDto, TrackItemsResponseDto } from "@/types/tracks";
+import { Track } from "@/types/tracks";
 import apiClient from "./client";
 
 export const trackApi = {
-  getAll: async (page = 1, pageSize = 20): Promise<TrackItemsResponseDto> => {
-    const { data } = await apiClient.get('/music/tracks', {
-      params: { page, pageSize },
+  getAll: async (limit = 100, offset = 0): Promise<Track[]> => {
+    const { data } = await apiClient.get('/tracks', {
+      params: { limit, offset },
     });
     return data;
   },
 
-  getById: async (id: string): Promise<TrackDto> => {
-    const { data } = await apiClient.get(`/music/tracks/${id}`);
+  getById: async (id: string): Promise<Track> => {
+    const { data } = await apiClient.get(`/tracks/${id}`);
     return data;
   },
 };

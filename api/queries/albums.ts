@@ -1,10 +1,21 @@
 import { albumApi } from "@/api/albums";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+
+const PAGE_SIZE = 100;
 
 export const useAlbums = () => {
-    return useQuery({
+    return useInfiniteQuery({
         queryKey: ['albums'],
-        queryFn: () => albumApi.getAll(),
+        queryFn: ({ pageParam }) => albumApi.getAll(PAGE_SIZE, pageParam),
+        getNextPageParam: (lastPage, allPages) => {
+            if (lastPage.length < 20) {
+                return undefined;
+            }
+            return allPages.length * PAGE_SIZE;
+        },
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+        initialPageParam: 0,
     });
 }
 
@@ -13,6 +24,15 @@ export const useAlbum = (id: string) => {
         queryKey: ['album', id],
         queryFn: () => albumApi.getById(id),
         enabled: !!id,
-        staleTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 10 * 60 * 1000,
     });
 };
+
+export const useAlbumCover = (id: string) => {
+    return useQuery({
+        queryKey: ['album-cover', id],
+        queryFn: () => albumApi.getStream(id),
+        enabled: !!id,
+        staleTime: 10 * 60 * 1000,
+    });
+}
