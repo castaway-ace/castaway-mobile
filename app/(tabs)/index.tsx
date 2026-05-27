@@ -8,25 +8,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbums } from "../../api/queries/albums";
 import { useArtists } from "../../api/queries/artists";
 import { useTracks } from "../../api/queries/tracks";
-import { TrackItem } from "../../components/home/track-item";
+import TrackItem from "../../components/home/track-item";
 import { useAudioPlayerContext } from "../../contexts/audio-player-context";
 
 const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { data: trackData } = useTracks();
-  const { data: albumData } = useAlbums();
-  const { data: artistData } = useArtists();
+
+  const { data: favoriteTracksData } = useTracks({ starred: true });
+  const { data: albumsData } = useAlbums();
+  const { data: favoriteArtistsData } = useArtists({ starred: true });
 
   const { loadTrack } = useAudioPlayerContext();
 
-  const albums = albumData?.pages.flatMap((page) => page) ?? [];
-  const tracks = trackData?.pages.flatMap((page) => page) ?? [];
-  const artists = artistData?.pages.flatMap((page) => page) ?? [];
+  const albums = albumsData?.pages.flatMap((page) => page) ?? [];
+  const favoriteTracks =
+    favoriteTracksData?.pages.flatMap((page) => page) ?? [];
+  const favoriteArtists =
+    favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
   const albumsAvailable = albums.length > 0;
-  const tracksAvailable = tracks.length > 0;
-  const artistsAvailable = artists.length > 0;
+  const favoriteTracksAvailable = favoriteTracks.length > 0;
+  const favoriteArtistsAvailable = favoriteArtists.length > 0;
 
   const onTrackPress = (trackId: string) => {
     loadTrack(trackId);
@@ -39,14 +42,16 @@ const HomeScreen = () => {
           <View style={styles.itemsContainer}>
             <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
             <View style={styles.trackListContainer}>
-              {tracksAvailable ? (
-                tracks.map((track) => (
-                  <TrackItem
-                    key={track.id}
-                    track={track}
-                    onPress={() => onTrackPress(track.id)}
-                  />
-                ))
+              {favoriteTracksAvailable ? (
+                favoriteTracks
+                  .slice(0, 6)
+                  .map((track) => (
+                    <TrackItem
+                      key={track.id}
+                      track={track}
+                      onPress={() => onTrackPress(track.id)}
+                    />
+                  ))
               ) : (
                 <Text style={styles.unavailableText}>No tracks found</Text>
               )}
@@ -88,15 +93,15 @@ const HomeScreen = () => {
             <Text
               style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
             >
-              Random Artists
+              Favorite Artists
             </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.artistScrollContent}
             >
-              {artistsAvailable ? (
-                artists.map((artist) => (
+              {favoriteArtistsAvailable ? (
+                favoriteArtists.map((artist) => (
                   <ArtistItem key={artist.id} artist={artist} />
                 ))
               ) : (
@@ -125,7 +130,7 @@ const makeStyles = (colors: ThemeColors) =>
       gap: 16,
     },
     itemsContainerTitle: {
-      fontSize: 20,
+      fontSize: 24,
       fontWeight: "bold",
       paddingHorizontal: 16,
       color: colors.primary,
@@ -145,6 +150,7 @@ const makeStyles = (colors: ThemeColors) =>
       fontSize: 16,
       fontWeight: "bold",
       textAlign: "center",
+      color: colors.primary,
     },
     albumScrollContent: {
       display: "flex",

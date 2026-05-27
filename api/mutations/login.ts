@@ -1,4 +1,4 @@
-import { AuthResponseSchema, AuthResponseType, LoginSchemaType } from '@/constants/auth';
+import { AuthResponseSchema, AuthResponseType, LoginSchemaType } from '@/constants/schema';
 import { useAuth } from '@/contexts/auth-context';
 import { useMutation } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';

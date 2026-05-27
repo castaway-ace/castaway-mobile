@@ -1,10 +1,23 @@
 import { Artist } from "@/types/artists";
+import { OrderBy } from "./albums";
 import apiClient from "./client";
 
+export enum ArtistOrder {
+  NAME = 'name',
+}
+
+interface ArtistParams {
+  limit: number
+  offset: number
+  order: ArtistOrder
+  orderBy: OrderBy
+  starred: boolean
+}
+
 export const artistApi = {
-  getAll: async (limit = 100, offset = 0): Promise<Artist[]> => {
+  getAll: async ({limit, offset, order, orderBy, starred}: ArtistParams): Promise<Artist[]> => {
     const { data } = await apiClient.get('/artists', {
-      params: { limit, offset },
+      params: { limit, offset, order, orderBy, starred },
     });
     return data;
   },

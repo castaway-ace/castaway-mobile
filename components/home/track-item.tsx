@@ -1,7 +1,9 @@
 import { useAlbumCover } from "@/api/queries/albums";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/theme-context";
 import { Track } from "@/types/tracks";
 import { Image } from "expo-image";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 
@@ -16,7 +18,10 @@ interface TrackItemProps {
   onPress: () => void;
 }
 
-export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
+const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { artists, title, duration, albumId } = track;
 
   const { data: albumCover } = useAlbumCover(albumId);
@@ -44,56 +49,62 @@ export const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
             e.stopPropagation();
           }}
         >
-          <IconSymbol size={24} name="ellipsis" color={"black"} />
+          <IconSymbol size={24} name="ellipsis" color={colors.primary} />
         </Pressable>
       </View>
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
 
-  containerContent: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
+    containerContent: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
 
-  albumArt: {
-    width: 48,
-    height: 48,
-    borderRadius: 4,
-  },
-  trackTitle: {
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  trackArtist: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  info: {
-    flex: 1,
-    flexDirection: "column",
-    gap: 8,
-  },
-  duration: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  rightContainer: {
-    paddingLeft: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  ellipsis: {
-    padding: 8,
-  },
-});
+    albumArt: {
+      width: 48,
+      height: 48,
+      borderRadius: 4,
+    },
+    trackTitle: {
+      fontWeight: "700",
+      fontSize: 16,
+      color: colors.primary,
+    },
+    trackArtist: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: colors.secondary,
+    },
+    info: {
+      flex: 1,
+      flexDirection: "column",
+      gap: 8,
+    },
+    duration: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: colors.primary,
+    },
+    rightContainer: {
+      paddingLeft: 8,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    ellipsis: {
+      padding: 8,
+    },
+  });
+
+export default TrackItem;

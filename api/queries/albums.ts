@@ -1,17 +1,30 @@
-import { albumApi } from "@/api/albums";
+import { albumApi, AlbumOrder, OrderBy } from "@/api/albums";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-const PAGE_SIZE = 100;
+interface AlbumOptions {
+    order: AlbumOrder
+    orderBy: OrderBy,
+    limit: number,
+    starred: boolean
+}
 
-export const useAlbums = () => {
+const DEFAULT_ALBUM_OPTIONS: AlbumOptions = {
+    limit: 100,
+    order: AlbumOrder.TITLE,
+    orderBy: OrderBy.ASC,
+    starred: false,
+};
+
+export const useAlbums = (options: Partial<AlbumOptions> = {}) => {
+    const { limit, orderBy, order, starred } = { ...DEFAULT_ALBUM_OPTIONS, ...options };
     return useInfiniteQuery({
-        queryKey: ['albums'],
-        queryFn: ({ pageParam }) => albumApi.getAll(PAGE_SIZE, pageParam),
+        queryKey: ['albums', { limit, order, orderBy, starred }],
+        queryFn: ({ pageParam }) => albumApi.getAll({ limit, offset: pageParam, orderBy, order, starred }),
         getNextPageParam: (lastPage, allPages) => {
-            if (lastPage.length < 20) {
+            if (lastPage.length < limit) {
                 return undefined;
             }
-            return allPages.length * PAGE_SIZE;
+            return allPages.length * limit;
         },
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,

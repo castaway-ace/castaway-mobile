@@ -1,5 +1,5 @@
 import apiClient from '@/api/client';
-import { AuthResponseSchema, AuthResponseType, SignUpSchemaType } from '@/constants/auth';
+import { AuthResponseSchema, AuthResponseType, SignUpSchemaType } from '@/constants/schema';
 import { useAuth } from '@/contexts/auth-context';
 import { useMutation } from '@tanstack/react-query';
 import * as Device from "expo-device";

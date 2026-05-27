@@ -1,7 +1,9 @@
 import { useArtistCover } from "@/api/queries/artists";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/theme-context";
 import { Artist } from "@/types/artists";
 import { Image } from "expo-image";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface ArtistItemProps {
@@ -9,6 +11,9 @@ interface ArtistItemProps {
 }
 
 const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { data: artistCover } = useArtistCover(artist.id);
   return (
     <View key={artist.id} style={styles.artistItem}>
@@ -18,27 +23,29 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  artistItem: {
-    display: "flex",
-    backgroundColor: "#f0f0f0",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 8,
-    gap: 8,
-    width: 240,
-    height: 72,
-    borderRadius: 12,
-  },
-  artistArt: {
-    width: 60,
-    height: 60,
-    borderRadius: 32,
-  },
-  artistName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    artistItem: {
+      display: "flex",
+      backgroundColor: colors.secondary,
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 12,
+      gap: 8,
+      width: 240,
+      height: 72,
+      borderRadius: 12,
+    },
+    artistArt: {
+      width: 48,
+      height: 48,
+      borderRadius: 32,
+    },
+    artistName: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: colors.primary,
+    },
+  });
 
 export default ArtistItem;

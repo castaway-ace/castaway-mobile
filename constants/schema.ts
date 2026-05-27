@@ -15,7 +15,6 @@ export const LoginSchema = z.object({
 
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 
-
 export const SignUpSchema = z.object({
     userName: z
       .string()

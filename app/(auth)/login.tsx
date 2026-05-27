@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLogin } from "../../api/mutations/login";
-import { LoginSchema } from "../../constants/auth";
+import { LoginSchema } from "../../constants/schema";
 import { ThemeColors } from "../../constants/theme";
 import { useTheme } from "../../contexts/theme-context";
 

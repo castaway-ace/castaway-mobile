@@ -4,15 +4,22 @@ import React from "react";
 import CustomTabBar from "@/components/custom-tab-bar";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useTheme } from "@/contexts/theme-context";
 
-export default function TabLayout() {
+const TabLayout = () => {
+  const { colors } = useTheme();
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: "red",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.secondary,
         tabBarButton: HapticTab,
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.primary,
+        },
         tabBarLabelStyle: {
           marginTop: 4,
         },
@@ -73,4 +80,6 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;
