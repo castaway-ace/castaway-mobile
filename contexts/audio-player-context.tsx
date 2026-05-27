@@ -1,23 +1,18 @@
-import { baseUrl } from "@/api/client";
 import { trackApi } from "@/api/tracks";
-import { TrackDto } from "@/types/tracks";
 import { useAudioPlayer } from "expo-audio";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { useAuth } from "./auth-context";
+import { createContext, ReactNode, useContext, useState } from "react";
+import { albumApi } from "../api/albums";
+import { Track } from "../types/tracks";
 
 interface AudioPlayerContextValue {
-  currentTrack: TrackDto | null;
+  currentTrack: Track | null;
+  coverArt: string | null;
   isPlaying: boolean;
+  isLoading: boolean;
+  error: Error | null;
   loadTrack: (trackId: string) => Promise<void>;
   play: () => void;
   pause: () => void;
-  stop: () => void;
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
@@ -25,67 +20,65 @@ const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
 );
 
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTrack, setCurrentTrack] = useState<TrackDto | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const { accessToken } = useAuth();
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [coverArt, setCoverArt] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const player = useAudioPlayer(null, {
     updateInterval: 1000,
   });
 
-  useEffect(() => {
-    if (player) {
-      setIsPlaying(player.playing);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player?.playing]);
-
   const loadTrack = async (trackId: string) => {
-    const track = await trackApi.getById(trackId);
+    setIsLoading(true);
+    setError(null);
 
-    if (player?.playing) {
-      player.pause();
+    try {
+      const [track, streamUrl] = await Promise.all([
+        trackApi.getById(trackId),
+        trackApi.getStream(trackId),
+      ]);
+
+      const albumArt = await albumApi.getStream(track.albumId);
+
+      if (player.playing) {
+        player.pause();
+      }
+
+      setCurrentTrack(track);
+      setCoverArt(albumArt);
+
+      player.replace({ uri: streamUrl });
+      player.play();
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to load track"));
+      setCurrentTrack(null);
+    } finally {
+      setIsLoading(false);
     }
-    setCurrentTrack(track);
-    const streamUrl = `${baseUrl}/music/tracks/${track.id}/stream`;
-    player.replace({
-      uri: streamUrl,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    play();
   };
 
   const play = () => {
     if (player) {
       player.play();
-      setIsPlaying(true);
     }
   };
 
   const pause = () => {
     if (player) {
       player.pause();
-      setIsPlaying(false);
     }
-  };
-
-  const stop = () => {
-    if (player) {
-      player.pause();
-      setIsPlaying(false);
-    }
-    setCurrentTrack(null);
   };
 
   const value = {
     currentTrack,
-    isPlaying,
+    coverArt,
+    isPlaying: player.playing,
+    isLoading,
+    error,
     loadTrack,
     play,
     pause,
-    stop,
   };
 
   return (

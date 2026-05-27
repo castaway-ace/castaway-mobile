@@ -29,4 +29,9 @@ export const trackApi = {
     const { data } = await apiClient.get(`/tracks/${id}`);
     return data;
   },
+
+  getStream: async (id: string): Promise<string> => {
+    const { data } = await apiClient.get(`/tracks/${id}/stream`);
+    return data;
+  },
 };
