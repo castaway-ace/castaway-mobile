@@ -1,3 +1,4 @@
+import { AlbumOrder } from "@/api/albums";
 import AlbumItem from "@/components/home/album-item";
 import ArtistItem from "@/components/home/artist-item";
 import { ThemeColors } from "@/constants/theme";
@@ -16,18 +17,28 @@ const HomeScreen = () => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { data: favoriteTracksData } = useTracks({ starred: true });
-  const { data: albumsData } = useAlbums();
+  const { data: favoriteAlbumsData } = useAlbums({ starred: true });
+  const { data: recentlyAddedAlbumsData } = useAlbums({
+    order: AlbumOrder.ADDED,
+  });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
+  const { data: albumsData } = useAlbums();
 
   const { loadTrack } = useAudioPlayerContext();
 
   const albums = albumsData?.pages.flatMap((page) => page) ?? [];
+  const recentlyAddedAlbums =
+    recentlyAddedAlbumsData?.pages.flatMap((page) => page) ?? [];
+  const favoriteAlbums =
+    favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteTracks =
     favoriteTracksData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
   const albumsAvailable = albums.length > 0;
+  const recentlyAddedAlbumsAvailable = recentlyAddedAlbums.length > 0;
+  const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
   const favoriteTracksAvailable = favoriteTracks.length > 0;
   const favoriteArtistsAvailable = favoriteArtists.length > 0;
 
@@ -39,40 +50,38 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.containerContent}>
         <View style={styles.itemContainerWrapper}>
-          <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
-            <View style={styles.trackListContainer}>
-              {favoriteTracksAvailable ? (
-                favoriteTracks
-                  .slice(0, 6)
-                  .map((track) => (
-                    <TrackItem
-                      key={track.id}
-                      track={track}
-                      onPress={() => onTrackPress(track.id)}
-                    />
-                  ))
-              ) : (
-                <Text style={styles.unavailableText}>No tracks found</Text>
-              )}
+          {favoriteAlbumsAvailable && (
+            <View style={styles.itemsContainer}>
+              <>
+                <Text style={[styles.itemsContainerTitle]}>
+                  Favorite Albums
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.albumScrollContent}
+                >
+                  {favoriteAlbums.map((album) => (
+                    <AlbumItem album={album} key={album.id} />
+                  ))}
+                </ScrollView>
+              </>
             </View>
-          </View>
-          <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Rediscover Albums</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.albumScrollContent}
-            >
-              {albumsAvailable ? (
-                albums.map((album) => (
-                  <AlbumItem album={album} key={album.id} />
-                ))
-              ) : (
-                <Text style={styles.unavailableText}>No albums found</Text>
-              )}
-            </ScrollView>
-          </View>
+          )}
+          {favoriteTracksAvailable && (
+            <View style={styles.itemsContainer}>
+              <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
+              <View style={styles.trackListContainer}>
+                {favoriteTracks.slice(0, 6).map((track) => (
+                  <TrackItem
+                    key={track.id}
+                    track={track}
+                    onPress={() => onTrackPress(track.id)}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
           <View style={styles.itemsContainer}>
             <Text style={[styles.itemsContainerTitle]}>Last Played Albums</Text>
             <ScrollView
@@ -89,26 +98,42 @@ const HomeScreen = () => {
               )}
             </ScrollView>
           </View>
-          <View style={styles.itemsContainer}>
-            <Text
-              style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
-            >
-              Favorite Artists
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.artistScrollContent}
-            >
-              {favoriteArtistsAvailable ? (
-                favoriteArtists.map((artist) => (
+          {favoriteArtistsAvailable && (
+            <View style={styles.itemsContainer}>
+              <Text
+                style={[styles.itemsContainerTitle, { paddingHorizontal: 16 }]}
+              >
+                Favorite Artists
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.artistScrollContent}
+              >
+                {favoriteArtists.map((artist) => (
                   <ArtistItem key={artist.id} artist={artist} />
-                ))
-              ) : (
-                <Text style={styles.unavailableText}>No artists found</Text>
-              )}
-            </ScrollView>
-          </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+          {recentlyAddedAlbumsAvailable && (
+            <View style={styles.itemsContainer}>
+              <>
+                <Text style={[styles.itemsContainerTitle]}>
+                  Recently Added Albums
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.albumScrollContent}
+                >
+                  {recentlyAddedAlbums.map((album) => (
+                    <AlbumItem album={album} key={album.id} />
+                  ))}
+                </ScrollView>
+              </>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
