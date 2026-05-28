@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
@@ -78,9 +78,19 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        await SecureStore.deleteItemAsync('accessToken').catch(() => {});
-        await SecureStore.deleteItemAsync('refreshToken').catch(() => {});
-        onAuthFailure?.();
+        let isAuthRejection = false;
+        
+        if (isAxiosError(refreshError)) {
+          const status = refreshError.response?.status;
+          isAuthRejection = status === 401 || status === 403;
+        }
+
+        if (isAuthRejection) {
+          await SecureStore.deleteItemAsync('accessToken').catch(() => {});
+          await SecureStore.deleteItemAsync('refreshToken').catch(() => {});
+          onAuthFailure?.();
+        }
+
         return Promise.reject(refreshError);
       }
     }

@@ -4,11 +4,11 @@ import { useTheme } from "@/contexts/theme-context";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -26,7 +26,7 @@ const Library = () => {
           <View style={styles.row}>
             <TouchableOpacity
               style={styles.libraryItem}
-              onPress={() => router.navigate("/tracks")}
+              onPress={() => router.navigate("/library/tracks")}
             >
               <IconSymbol name="music.note" size={24} color="black" />
               <Text>Tracks</Text>

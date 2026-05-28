@@ -78,8 +78,6 @@ const TabLayout = () => {
           ),
         }}
       />
-
-      <Tabs.Screen name="tracks" options={{ href: null }} />
     </Tabs>
   );
 };

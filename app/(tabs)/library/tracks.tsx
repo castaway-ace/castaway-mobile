@@ -18,7 +18,7 @@ const Tracks = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <Pressable onPress={() => router.navigate("/library")}>
+      <Pressable onPress={() => router.back()}>
         <Text style={{ color: colors.primary }}>Go Back</Text>
       </Pressable>
       <Text style={styles.title}>Tracks</Text>
