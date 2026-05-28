@@ -24,6 +24,7 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  accessToken: string | null;
   logIn: (token: string, refreshToken: string) => Promise<void>;
   signUp: (token: string, refreshToken: string) => Promise<void>;
   logOut: () => Promise<void>;
@@ -43,6 +44,7 @@ async function clearTokens(): Promise<void> {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -56,11 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         const { data } = await apiClient.get<User>("/user/me");
         if (!cancelled) {
+          setAccessToken(token);
           setUser(data);
         }
       } catch {
         if (!cancelled) {
           await clearTokens();
+          setAccessToken(null);
           setUser(null);
         }
       } finally {
@@ -114,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        accessToken,
         isAuthenticated: user !== null,
         isLoading,
         logIn,

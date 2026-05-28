@@ -28,11 +28,6 @@ export const albumApi = {
     return data;
   },
 
-  getStream: async (id: string): Promise<string> => {
-    const { data } = await apiClient.get(`/albums/${id}/stream`);
-    return data;
-  },
-
   getById: async (id: string): Promise<Album> => {
     const { data } = await apiClient.get(`/albums/${id}`);
     return data.data;

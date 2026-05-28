@@ -1,11 +1,14 @@
+import { BASE_URL } from "@/api/client";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
+import { useAuth } from "@/contexts/auth-context";
 import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "./ui/icon-symbol";
 
 const MusicPlayer = () => {
-  const { isPlaying, pause, play, currentTrack, coverArt } =
-    useAudioPlayerContext();
+  const { isPlaying, pause, play, currentTrack } = useAudioPlayerContext();
+
+  const { accessToken } = useAuth();
 
   if (!currentTrack) {
     return null;
@@ -24,7 +27,15 @@ const MusicPlayer = () => {
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>
-        <Image source={coverArt} style={styles.albumArt} />
+        <Image
+          source={{
+            uri: `${BASE_URL}/albums/${currentTrack.albumId}/stream`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }}
+          style={styles.albumArt}
+        />
         <View style={styles.info}>
           <Text style={styles.title} numberOfLines={1}>
             {currentTrack.title}

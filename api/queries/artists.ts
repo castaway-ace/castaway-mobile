@@ -1,5 +1,5 @@
 import { artistApi, ArtistOrder } from "@/api/artists";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { OrderBy } from "../albums";
 
 interface ArtistOptions {
@@ -30,14 +30,5 @@ export const useArtists = (options: Partial<ArtistOptions> = {}) => {
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
         initialPageParam: 0,
-    });
-}
-
-export const useArtistCover = (id: string) => {
-    return useQuery({
-        queryKey: ['artist-image', id],
-        queryFn: () => artistApi.getStream(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
     });
 }

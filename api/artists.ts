@@ -21,9 +21,4 @@ export const artistApi = {
     });
     return data;
   },
-
-  getStream: async (id: string): Promise<string> => {
-    const { data } = await apiClient.get(`/artists/${id}/stream`);
-    return data;
-  },
 };

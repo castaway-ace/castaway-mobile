@@ -1,5 +1,6 @@
-import { useAlbumCover } from "@/api/queries/albums";
+import { BASE_URL } from "@/api/client";
 import { ThemeColors } from "@/constants/theme";
+import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Track } from "@/types/tracks";
 import { Image } from "expo-image";
@@ -20,18 +21,25 @@ interface TrackItemProps {
 
 const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
   const { colors } = useTheme();
+  const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { artists, title, duration, albumId } = track;
-
-  const { data: albumCover } = useAlbumCover(albumId);
 
   const formattedDuration = formatDuration(duration ?? 0);
 
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.containerContent}>
-        <Image source={albumCover} style={styles.albumArt} />
+        <Image
+          source={{
+            uri: `${BASE_URL}/albums/${albumId}/stream`,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }}
+          style={styles.albumArt}
+        />
         <View style={styles.info}>
           <Text style={styles.trackTitle} numberOfLines={1}>
             {title}
