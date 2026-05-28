@@ -1,17 +1,26 @@
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { BottomTabBar } from "expo-router/js-tabs";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import MusicPlayer from "./music-player";
 
 const CustomTabBar = (props: any) => {
   const { currentTrack } = useAudioPlayerContext();
 
   return (
-    <View>
+    <View style={styles.container}>
       {currentTrack && <MusicPlayer />}
       <BottomTabBar {...props} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "transparent",
+  },
+});
 
 export default CustomTabBar;

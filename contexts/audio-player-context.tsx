@@ -1,12 +1,12 @@
+import { BASE_URL } from "@/api/client";
 import { trackApi } from "@/api/tracks";
 import { useAudioPlayer } from "expo-audio";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { albumApi } from "../api/albums";
 import { Track } from "../types/tracks";
+import { useAuth } from "./auth-context";
 
 interface AudioPlayerContextValue {
   currentTrack: Track | null;
-  coverArt: string | null;
   isPlaying: boolean;
   isLoading: boolean;
   error: Error | null;
@@ -21,7 +21,8 @@ const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
 
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [coverArt, setCoverArt] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const { accessToken } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -34,25 +35,27 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      const [track, streamUrl] = await Promise.all([
-        trackApi.getById(trackId),
-        trackApi.getStream(trackId),
-      ]);
-
-      const albumArt = await albumApi.getStream(track.albumId);
+      const track = await trackApi.getById(trackId);
 
       if (player.playing) {
         player.pause();
+        setIsPlaying(false);
       }
 
       setCurrentTrack(track);
-      setCoverArt(albumArt);
 
-      player.replace({ uri: streamUrl });
+      player.replace({
+        uri: `${BASE_URL}/tracks/${track.id}/stream`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setIsPlaying(true);
       player.play();
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load track"));
       setCurrentTrack(null);
+      setIsPlaying(false);
     } finally {
       setIsLoading(false);
     }
@@ -61,19 +64,20 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const play = () => {
     if (player) {
       player.play();
+      setIsPlaying(true);
     }
   };
 
   const pause = () => {
     if (player) {
       player.pause();
+      setIsPlaying(false);
     }
   };
 
   const value = {
     currentTrack,
-    coverArt,
-    isPlaying: player.playing,
+    isPlaying,
     isLoading,
     error,
     loadTrack,
