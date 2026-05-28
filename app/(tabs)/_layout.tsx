@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
-import CustomTabBar from "@/components/custom-tab-bar";
-import { HapticTab } from "@/components/haptic-tab";
+import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
+import { HapticTab } from "@/components/(tabs)/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useTheme } from "@/contexts/theme-context";
 
@@ -78,6 +78,8 @@ const TabLayout = () => {
           ),
         }}
       />
+
+      <Tabs.Screen name="tracks" options={{ href: null }} />
     </Tabs>
   );
 };

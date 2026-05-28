@@ -11,7 +11,10 @@ const TabHeader: FC = () => {
       <View style={styles.brandContainer}>
         <Text style={styles.brandTitle}>Castaway</Text>
       </View>
-      <Pressable onPress={(() => router.navigate("/profile"))} style={styles.profile}>
+      <Pressable
+        onPress={() => router.navigate("/settings")}
+        style={styles.profile}
+      >
         <Ionicons name="person" size={20} color="white" />
       </Pressable>
     </SafeAreaView>
@@ -39,7 +42,7 @@ const styles = StyleSheet.create({
   },
   profile: {
     padding: 8,
-  }
+  },
 });
 
 export default TabHeader;

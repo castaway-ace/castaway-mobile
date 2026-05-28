@@ -1,4 +1,8 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/theme-context";
+import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,13 +13,21 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Library = () => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Library</Text>
       <ScrollView>
         <View style={styles.grid}>
           <View style={styles.row}>
-            <TouchableOpacity style={styles.libraryItem}>
+            <TouchableOpacity
+              style={styles.libraryItem}
+              onPress={() => router.navigate("/tracks")}
+            >
               <IconSymbol name="music.note" size={24} color="black" />
               <Text>Tracks</Text>
             </TouchableOpacity>
@@ -40,35 +52,38 @@ const Library = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  libraryItem: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    padding: 16,
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    gap: 16,
-  },
-  grid: {
-    gap: 16,
-  },
-});
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      padding: 16,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      marginBottom: 16,
+      color: colors.primary,
+    },
+    libraryItem: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      padding: 16,
+      flex: 1,
+      backgroundColor: colors.primary,
+      borderRadius: 8,
+      color: colors.secondary,
+    },
+    row: {
+      display: "flex",
+      flexDirection: "row",
+      gap: 16,
+    },
+    grid: {
+      gap: 16,
+    },
+  });
 
 export default Library;

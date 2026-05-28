@@ -6,7 +6,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { IconSymbol } from "./ui/icon-symbol";
+import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
   const { isPlaying, pause, play, currentTrack } = useAudioPlayerContext();

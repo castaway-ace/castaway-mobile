@@ -1,6 +1,6 @@
 import { AlbumOrder } from "@/api/albums";
-import AlbumItem from "@/components/home/album-item";
-import ArtistItem from "@/components/home/artist-item";
+import AlbumItem from "@/components/(tabs)/album-item";
+import ArtistItem from "@/components/(tabs)/artist-item";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { useMemo } from "react";
@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbums } from "../../api/queries/albums";
 import { useArtists } from "../../api/queries/artists";
 import { useTracks } from "../../api/queries/tracks";
-import TrackItem from "../../components/home/track-item";
+import TrackItem from "../../components/(tabs)/track-item";
 import { useAudioPlayerContext } from "../../contexts/audio-player-context";
 
 const HomeScreen = () => {
