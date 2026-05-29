@@ -15,8 +15,6 @@ const Artists = () => {
 
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  console.log(artistData);
-
   const artists = artistData?.pages.flatMap((page) => page) ?? [];
 
   return (

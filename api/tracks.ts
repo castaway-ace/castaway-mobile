@@ -1,4 +1,4 @@
-import { Track } from "@/types/tracks";
+import { Track, TrackSummary } from "@/types/tracks";
 import { OrderBy } from "./albums";
 import apiClient from "./client";
 
@@ -18,7 +18,7 @@ interface TrackParams {
 }
 
 export const trackApi = {
-  getAll: async ({limit, offset, order, orderBy, starred}: TrackParams): Promise<Track[]> => {
+  getAll: async ({limit, offset, order, orderBy, starred}: TrackParams): Promise<TrackSummary[]> => {
     const { data } = await apiClient.get('/tracks', {
       params: { limit, offset, order, orderBy, starred },
     });
@@ -27,11 +27,6 @@ export const trackApi = {
 
   getById: async (id: string): Promise<Track> => {
     const { data } = await apiClient.get(`/tracks/${id}`);
-    return data;
-  },
-
-  getStream: async (id: string): Promise<string> => {
-    const { data } = await apiClient.get(`/tracks/${id}/stream`);
     return data;
   },
 };

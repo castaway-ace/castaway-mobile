@@ -1,4 +1,4 @@
-import { Artist } from "@/types/artists";
+import { Artist, ArtistSummary } from "@/types/artists";
 import { OrderBy } from "./albums";
 import apiClient from "./client";
 
@@ -15,10 +15,15 @@ interface ArtistParams {
 }
 
 export const artistApi = {
-  getAll: async ({limit, offset, order, orderBy, starred}: ArtistParams): Promise<Artist[]> => {
+  getAll: async ({limit, offset, order, orderBy, starred}: ArtistParams): Promise<ArtistSummary[]> => {
     const { data } = await apiClient.get('/artists', {
       params: { limit, offset, order, orderBy, starred },
     });
+    return data;
+  },
+
+  getById: async (id: string): Promise<Artist> => {
+    const { data } = await apiClient.get(`/artists/${id}`);
     return data;
   },
 };

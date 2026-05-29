@@ -1,4 +1,4 @@
-import { Album } from "@/types/albums";
+import { Album, AlbumSummary } from "@/types/albums";
 import apiClient from "./client";
 
 export enum OrderBy {
@@ -21,7 +21,7 @@ interface AlbumParams {
 }
 
 export const albumApi = {
-  getAll: async ({limit, offset, order, orderBy, starred}: AlbumParams): Promise<Album[]> => {
+  getAll: async ({limit, offset, order, orderBy, starred}: AlbumParams): Promise<AlbumSummary[]> => {
     const { data } = await apiClient.get('/albums', {
       params: { limit, offset, order, orderBy, starred },
     });

@@ -2,20 +2,15 @@ import { BASE_URL } from "@/api/client";
 import { ThemeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
-import { Track } from "@/types/tracks";
+import { TrackSummary } from "@/types/tracks";
+import { formatDuration } from "@/utils/converter";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 
-const formatDuration = (duration: number) => {
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
-
 interface TrackItemProps {
-  track: Track;
+  track: TrackSummary;
   onPress: () => void;
 }
 
@@ -24,7 +19,7 @@ const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
   const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { artists, title, duration, albumId } = track;
+  const { artistNames, title, duration, albumId } = track;
 
   const formattedDuration = formatDuration(duration ?? 0);
 
@@ -45,7 +40,7 @@ const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
             {title}
           </Text>
           <Text style={styles.trackArtist} numberOfLines={1}>
-            {artists.map((artist) => artist).join(", ")}
+            {artistNames.map((artist) => artist).join(", ")}
           </Text>
         </View>
       </View>

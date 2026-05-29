@@ -16,8 +16,6 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  console.log(`${BASE_URL}/artists/${artist.id}/stream`);
-
   return (
     <View key={artist.id} style={styles.artistItem}>
       <Image
