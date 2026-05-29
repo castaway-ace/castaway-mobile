@@ -24,6 +24,7 @@ const MAPPING = {
   "person.fill": "person",
   person: "person-outline",
   "chevron.right": "chevron-forward",
+  "chevron.left": "chevron-back",
   ellipsis: "ellipsis-vertical",
   "pause.fill": "pause",
   "play.fill": "play",

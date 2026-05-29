@@ -1,8 +1,7 @@
-import { useTracks } from "@/api/queries/tracks";
-import LibraryTrack from "@/components/(tabs)/library/libraryTrack";
+import { useAlbums } from "@/api/queries/albums";
+import AlbumItem from "@/components/(tabs)/album-item";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
@@ -10,19 +9,13 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tracks = () => {
-  const { data: trackData } = useTracks();
+  const { data: albumData } = useAlbums();
   const { colors } = useTheme();
-  const router = useRouter();
-
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { loadTrack } = useAudioPlayerContext();
+  const albums = albumData?.pages.flatMap((page) => page) ?? [];
 
-  const tracks = trackData?.pages.flatMap((page) => page) ?? [];
-
-  const onTrackPress = (trackId: string) => {
-    loadTrack(trackId);
-  };
+  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -30,15 +23,11 @@ const Tracks = () => {
         <Pressable onPress={() => router.back()}>
           <IconSymbol size={20} name={"chevron.left"} color={colors.primary} />
         </Pressable>
-        <Text style={styles.title}>Tracks</Text>
+        <Text style={styles.title}>Albums</Text>
       </View>
-      <View style={styles.contentContainer}>
-        {tracks.map((track) => (
-          <LibraryTrack
-            key={track.id}
-            track={track}
-            onPress={() => onTrackPress(track.id)}
-          />
+      <View>
+        {albums.map((album) => (
+          <AlbumItem key={album.id} album={album} />
         ))}
       </View>
     </SafeAreaView>
@@ -64,11 +53,6 @@ const makeStyles = (colors: ThemeColors) =>
       fontWeight: "bold",
       marginBottom: 16,
       color: colors.primary,
-    },
-    contentContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 12,
     },
   });
 

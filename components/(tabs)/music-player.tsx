@@ -73,10 +73,10 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: "space-between",
       alignItems: "center",
       paddingHorizontal: 8,
-      paddingVertical: 4,
+      paddingVertical: 8,
     },
     leftContainer: {
-      display: "flex",
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
       gap: 8,
@@ -87,8 +87,8 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.primary,
     },
     albumArt: {
-      width: 60,
-      height: 60,
+      width: 48,
+      height: 48,
       borderRadius: 4,
     },
     artist: {
@@ -96,7 +96,7 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.secondary,
     },
     info: {
-      display: "flex",
+      flex: 1,
       flexDirection: "column",
       gap: 4,
     },
