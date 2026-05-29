@@ -2,13 +2,13 @@ import { BASE_URL } from "@/api/client";
 import { ThemeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
-import { Album } from "@/types/albums";
+import { AlbumSummary } from "@/types/albums";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface AlbumProps {
-  album: Album;
+  album: AlbumSummary;
 }
 
 const AlbumItem: FC<AlbumProps> = ({ album }) => {

@@ -1,9 +1,11 @@
 import { AudioPlayerProvider } from "@/contexts/audio-player-context";
 import { AuthProvider, useAuth } from "@/contexts/auth-context";
+import { PlayerModalProvider } from "@/contexts/player-modal-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import ThemeProvider from "../contexts/theme-context";
 
@@ -56,7 +58,11 @@ const RootLayout = () => {
       <AuthProvider>
         <ThemeProvider>
           <AudioPlayerProvider>
-            <RootNavigator />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <PlayerModalProvider>
+                <RootNavigator />
+              </PlayerModalProvider>
+            </GestureHandlerRootView>
           </AudioPlayerProvider>
         </ThemeProvider>
       </AuthProvider>

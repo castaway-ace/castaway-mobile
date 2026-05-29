@@ -2,13 +2,13 @@ import { BASE_URL } from "@/api/client";
 import { ThemeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
-import { Artist } from "@/types/artists";
+import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface ArtistItemProps {
-  artist: Artist;
+  artist: ArtistSummary;
 }
 
 const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {

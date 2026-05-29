@@ -2,6 +2,7 @@ import { BASE_URL } from "@/api/client";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAuth } from "@/contexts/auth-context";
+import { usePlayerModal } from "@/contexts/player-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
 import { useMemo } from "react";
@@ -10,6 +11,7 @@ import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
   const { isPlaying, pause, play, currentTrack } = useAudioPlayerContext();
+  const { open } = usePlayerModal();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
@@ -30,7 +32,7 @@ const MusicPlayer = () => {
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        <View style={styles.leftContainer}>
+        <Pressable style={styles.leftContainer} onPress={open}>
           <Image
             source={{
               uri: `${BASE_URL}/albums/${currentTrack.albumId}/stream`,
@@ -48,7 +50,7 @@ const MusicPlayer = () => {
               {currentTrack.artistNames}
             </Text>
           </View>
-        </View>
+        </Pressable>
         <Pressable onPress={handlePlayTrack}>
           <IconSymbol
             size={28}
