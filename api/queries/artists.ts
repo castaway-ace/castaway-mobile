@@ -19,7 +19,7 @@ const DEFAULT_ARTIST_OPTIONS: ArtistOptions = {
 export const useArtists = (options: Partial<ArtistOptions> = {}) => {
     const { limit, orderBy, order, starred } = { ...DEFAULT_ARTIST_OPTIONS, ...options };
     return useInfiniteQuery({
-        queryKey: ['artists'],
+        queryKey: ['artists', { limit, order, orderBy, starred }],
         queryFn: ({ pageParam }) => artistApi.getAll({ limit, offset: pageParam, orderBy, order, starred }),
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.length < limit) {

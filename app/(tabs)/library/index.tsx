@@ -40,7 +40,10 @@ const Library = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <TouchableOpacity style={styles.libraryItem}>
+            <TouchableOpacity
+              style={styles.libraryItem}
+              onPress={() => router.navigate("/library/artists")}
+            >
               <IconSymbol name="person.fill" size={24} color="black" />
               <Text>Artists</Text>
             </TouchableOpacity>

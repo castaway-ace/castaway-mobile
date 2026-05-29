@@ -1,5 +1,4 @@
 import { BASE_URL } from "@/api/client";
-import { useArtistCover } from "@/api/queries/artists";
 import { ThemeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -17,7 +16,8 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: artistCover } = useArtistCover(artist.id);
+  console.log(`${BASE_URL}/artists/${artist.id}/stream`);
+
   return (
     <View key={artist.id} style={styles.artistItem}>
       <Image
