@@ -45,7 +45,7 @@ const MusicPlayer = () => {
               {currentTrack.title}
             </Text>
             <Text style={styles.artist} numberOfLines={1}>
-              {currentTrack.artists}
+              {currentTrack.artistNames}
             </Text>
           </View>
         </View>
