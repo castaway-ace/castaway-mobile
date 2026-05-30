@@ -47,7 +47,10 @@ const Library = () => {
               <IconSymbol name="person.fill" size={24} color="black" />
               <Text>Artists</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.libraryItem}>
+            <TouchableOpacity
+              style={styles.libraryItem}
+              onPress={() => router.navigate("/library/playlists")}
+            >
               <IconSymbol name="music.note.list" size={24} color="black" />
               <Text>Playlists</Text>
             </TouchableOpacity>
