@@ -3,8 +3,8 @@ import React from "react";
 
 import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
 import { HapticTab } from "@/components/(tabs)/haptic-tab";
-import Modal from "@/components/modal";
-import ModalContent from "@/components/modalContent";
+import Modal from "@/components/(tabs)/modal";
+import ModalContent from "@/components/(tabs)/modal/content";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { usePlayerModal } from "@/contexts/player-modal-context";

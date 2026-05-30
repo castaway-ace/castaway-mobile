@@ -1,7 +1,18 @@
 import { BASE_URL } from "@/api/client";
 import { trackApi } from "@/api/tracks";
-import { useAudioPlayer } from "expo-audio";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+} from "expo-audio";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Track } from "../types/tracks";
 import { useAuth } from "./auth-context";
 
@@ -13,22 +24,42 @@ interface AudioPlayerContextValue {
   loadTrack: (trackId: string) => Promise<void>;
   play: () => void;
   pause: () => void;
+  skipForward: () => void;
+  skipBackward: () => void;
+  moveTarget: (target: number) => void;
+  currentTime: number;
+  duration: number;
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
   undefined,
 );
 
+const SKIP_SECONDS = 10;
+
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const { accessToken } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [seekTarget, setSeekTarget] = useState<number | null>(null);
+
+  const { accessToken } = useAuth();
+
+  const seekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const player = useAudioPlayer(null, {
-    updateInterval: 1000,
+    updateInterval: 250,
   });
+
+  const status = useAudioPlayerStatus(player);
+
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: "doNotMix",
+    });
+  }, []);
 
   const loadTrack = async (trackId: string) => {
     setIsLoading(true);
@@ -39,7 +70,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
       if (player.playing) {
         player.pause();
-        setIsPlaying(false);
       }
 
       setCurrentTrack(track);
@@ -50,39 +80,68 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setIsPlaying(true);
       player.play();
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load track"));
       setCurrentTrack(null);
-      setIsPlaying(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const play = () => {
-    if (player) {
-      player.play();
-      setIsPlaying(true);
+  const play = () => player?.play();
+  const pause = () => player?.pause();
+
+  const clearSeekTarget = () => {
+    setSeekTarget(null);
+    if (seekTimer.current) {
+      clearTimeout(seekTimer.current);
+      seekTimer.current = null;
     }
   };
 
-  const pause = () => {
-    if (player) {
-      player.pause();
-      setIsPlaying(false);
-    }
+  const moveTarget = (target: number) => {
+    if (!player) return;
+    player.seekTo(target);
+    setSeekTarget(target);
+    if (seekTimer.current) clearTimeout(seekTimer.current);
+    seekTimer.current = setTimeout(clearSeekTarget, 1500); // guaranteed unstick
   };
+
+  const skipForward = () => {
+    if (!player) return;
+    const base = seekTarget ?? status.currentTime;
+    moveTarget(Math.min(base + SKIP_SECONDS, status.duration));
+  };
+
+  const skipBackward = () => {
+    if (!player) return;
+    const base = seekTarget ?? status.currentTime;
+    moveTarget(Math.max(base - SKIP_SECONDS, 0));
+  };
+
+  useEffect(() => {
+    if (seekTarget === null) return;
+    if (Math.abs(status.currentTime - seekTarget) < 1.25) {
+      clearSeekTarget();
+    }
+  }, [status.currentTime, seekTarget]);
+
+  const effectiveTime = seekTarget ?? status.currentTime;
 
   const value = {
     currentTrack,
-    isPlaying,
+    isPlaying: status.playing,
     isLoading,
     error,
     loadTrack,
     play,
     pause,
+    skipForward,
+    skipBackward,
+    moveTarget,
+    currentTime: effectiveTime,
+    duration: status.duration,
   };
 
   return (
