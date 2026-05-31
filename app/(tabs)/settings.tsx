@@ -2,7 +2,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { useMemo } from "react";
-import { Button, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Settings = () => {
@@ -14,7 +14,11 @@ const Settings = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Settings</Text>
-      <Button title="Logout" onPress={logOut} />
+      <View style={styles.buttonContainer}>
+        <Pressable onPress={logOut} style={styles.button}>
+          <Text style={styles.buttonText}>Log Out</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };
@@ -31,6 +35,23 @@ const makeStyles = (colors: ThemeColors) =>
       fontWeight: "bold",
       marginBottom: 16,
       color: colors.primary,
+    },
+    buttonContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+    },
+    button: {
+      display: "flex",
+      backgroundColor: colors.primary,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+    },
+    buttonText: {
+      color: colors.background,
+      fontSize: 16,
     },
   });
 

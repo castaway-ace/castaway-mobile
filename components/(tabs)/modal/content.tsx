@@ -38,7 +38,7 @@ const ModalContent: FC<ModalContentProps> = ({ track }) => {
         <Pressable onPress={close}>
           <IconSymbol size={32} name={"chevron.down"} color={colors.primary} />
         </Pressable>
-        <Text style={styles.titleText}>Playing Now</Text>
+        <Text style={styles.headerText}>Playing Now</Text>
         <IconSymbol size={32} name={"ellipsis"} color={colors.primary} />
       </View>
       <View style={styles.albumArtContainer}>
@@ -104,6 +104,11 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: "space-between",
       alignItems: "center",
       marginBottom: 32,
+    },
+    headerText: {
+      color: colors.primary,
+      fontWeight: 500,
+      fontSize: 20,
     },
     albumArtContainer: {
       display: "flex",

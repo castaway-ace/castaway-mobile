@@ -64,13 +64,7 @@ const TabLayout = () => {
           options={{
             title: "Search",
             tabBarIcon: ({ color, focused }) => (
-              <IconSymbol
-                size={28}
-                name={
-                  focused ? "magnifyingglass.circle.fill" : "magnifyingglass"
-                }
-                color={color}
-              />
+              <IconSymbol size={28} name={"magnifyingglass"} color={color} />
             ),
           }}
         />
