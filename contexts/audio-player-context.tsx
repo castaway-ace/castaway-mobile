@@ -5,6 +5,7 @@ import {
   useAudioPlayer,
   useAudioPlayerStatus,
 } from "expo-audio";
+import * as SecureStore from "expo-secure-store";
 import {
   createContext,
   ReactNode,
@@ -14,7 +15,6 @@ import {
   useState,
 } from "react";
 import { Track } from "../types/tracks";
-import { useAuth } from "./auth-context";
 
 interface AudioPlayerContextValue {
   currentTrack: Track | null;
@@ -42,8 +42,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [seekTarget, setSeekTarget] = useState<number | null>(null);
-
-  const { accessToken } = useAuth();
 
   const seekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -74,10 +72,12 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
       setCurrentTrack(track);
 
+      const token = await SecureStore.getItemAsync("accessToken");
+
       player.replace({
         uri: `${BASE_URL}/tracks/${track.id}/stream`,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       player.play();

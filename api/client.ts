@@ -1,4 +1,4 @@
-import axios, { AxiosError, isAxiosError } from 'axios';
+import axios, { AxiosError, create, isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
@@ -14,7 +14,7 @@ interface RefreshResponse {
   refreshToken: string;
 }
 
-const apiClient = axios.create({
+const apiClient = create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   timeout: 10000,
 });
@@ -27,7 +27,7 @@ export function setAuthFailureHandler(handler: (() => void) | null) {
   onAuthFailure = handler;
 }
 
-async function refreshTokens(): Promise<string> {
+export const refreshTokens = async (): Promise<string> => {
   const refreshToken = await SecureStore.getItemAsync('refreshToken');
   if (!refreshToken) {
     throw new Error('No refresh token available');
