@@ -1,4 +1,4 @@
-import axios, { AxiosError, create, isAxiosError } from 'axios';
+import axios, { AxiosError, isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
@@ -14,7 +14,7 @@ interface RefreshResponse {
   refreshToken: string;
 }
 
-const apiClient = create({
+const apiClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
   timeout: 10000,
 });

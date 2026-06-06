@@ -1,0 +1,18 @@
+appId: com.anthonyostia.castaway
+---
+- launchApp:
+    clearState: true
+- tapOn: "castaway, http://10.28.89.210:8081"
+- tapOn: "Close"
+- tapOn: "Email Address"
+- inputText: test@hotmail.com
+- tapOn:
+    text: "Password"
+    index: 1
+- inputText: A1234567053232
+- tapOn: "Log In"
+- assertVisible: "Home, tab, 1 of 4"
+- assertVisible: "Library, tab, 2 of 4"
+- assertVisible: "Search, tab, 3 of 4"
+- assertVisible: "Settings, tab, 4 of 4"
+

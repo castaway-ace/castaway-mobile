@@ -7,7 +7,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 
@@ -15,16 +15,16 @@ interface ModalProps {
   visible: boolean;
   onClose: () => void;
   children: ReactNode;
-  backgroundColor: string;
 }
 
-const Modal = ({ visible, onClose, children, backgroundColor }: ModalProps) => {
-  const { height } = useWindowDimensions();
-  const translateY = useSharedValue(height);
-  const [rendered, setRendered] = useState(false);
-
+const Modal = ({ visible, onClose, children }: ModalProps) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const [rendered, setRendered] = useState(false);
+
+  const { height } = useWindowDimensions();
+  const translateY = useSharedValue(height);
 
   useEffect(() => {
     if (visible) {
@@ -67,7 +67,11 @@ const Modal = ({ visible, onClose, children, backgroundColor }: ModalProps) => {
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <GestureDetector gesture={pan}>
         <Animated.View
-          style={[styles.sheet, { backgroundColor }, animatedStyle]}
+          style={[
+            styles.sheet,
+            { backgroundColor: colors.background },
+            animatedStyle,
+          ]}
         >
           {children}
         </Animated.View>
@@ -80,8 +84,6 @@ const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     sheet: {
       ...StyleSheet.absoluteFill,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
     },
   });
 

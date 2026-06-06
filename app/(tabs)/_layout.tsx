@@ -84,12 +84,8 @@ const TabLayout = () => {
         />
       </Tabs>
       {currentTrack && (
-        <Modal
-          visible={isOpen}
-          onClose={close}
-          backgroundColor={colors.background}
-        >
-          <ModalContent track={currentTrack} />
+        <Modal visible={isOpen} onClose={close}>
+          <ModalContent />
         </Modal>
       )}
     </>

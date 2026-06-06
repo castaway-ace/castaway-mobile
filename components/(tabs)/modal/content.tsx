@@ -4,7 +4,6 @@ import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAuth } from "@/contexts/auth-context";
 import { usePlayerModal } from "@/contexts/player-modal-context";
 import { useTheme } from "@/contexts/theme-context";
-import { Track } from "@/types/tracks";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,17 +11,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { IconSymbol } from "../../ui/icon-symbol";
 import ProgressBar from "./progressBar";
 
-interface ModalContentProps {
-  track: Track;
-}
-
-const ModalContent: FC<ModalContentProps> = ({ track }) => {
+const ModalContent: FC = () => {
   const { colors } = useTheme();
-  const { isPlaying, pause, play, skipForward, skipBackward } =
+  const { isPlaying, pause, play, skipForward, skipBackward, currentTrack } =
     useAudioPlayerContext();
   const { close } = usePlayerModal();
   const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  if (!currentTrack) {
+    return null;
+  }
 
   const handlePlayTrack = () => {
     if (isPlaying) {
@@ -44,7 +43,7 @@ const ModalContent: FC<ModalContentProps> = ({ track }) => {
       <View style={styles.albumArtContainer}>
         <Image
           source={{
-            uri: `${BASE_URL}/albums/${track.albumId}/stream`,
+            uri: `${BASE_URL}/albums/${currentTrack.albumId}/stream`,
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
@@ -55,10 +54,10 @@ const ModalContent: FC<ModalContentProps> = ({ track }) => {
       <View style={styles.middle}>
         <View style={styles.trackInfoContainer}>
           <Text style={styles.titleText} numberOfLines={1}>
-            {track.title}
+            {currentTrack.title}
           </Text>
           <Text style={styles.artistText} numberOfLines={1}>
-            {track.artistNames}
+            {currentTrack.artistNames}
           </Text>
         </View>
         <Pressable>
@@ -95,7 +94,6 @@ const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       display: "flex",
-      backgroundColor: colors.background,
       padding: 16,
     },
     header: {
