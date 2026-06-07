@@ -16,7 +16,7 @@
         "expo-audio": "~56.0.11",
         "expo-constants": "~56.0.16",
         "expo-crypto": "~56.0.4",
-        "expo-dev-client": "~56.0.18",
+        "expo-dev-client": "~56.0.19",
         "expo-device": "~56.0.4",
         "expo-font": "~56.0.5",
         "expo-haptics": "~56.0.3",
@@ -853,9 +853,9 @@
 
     "expo-crypto": ["expo-crypto@56.0.4", "", { "peerDependencies": { "expo": "*" } }, "sha512-fRNEhoXRXgAWBpe3/hq5X+KXTit3OZqdiAGts1YvNEUHQb+H5591mpPac0Yw+sZg9pXcrjRnzo5AxvZaENpc7g=="],
 
-    "expo-dev-client": ["expo-dev-client@56.0.18", "", { "dependencies": { "expo-dev-launcher": "~56.0.18", "expo-dev-menu": "~56.0.16", "expo-dev-menu-interface": "~56.0.0", "expo-manifests": "~56.0.4", "expo-updates-interface": "~56.0.1" }, "peerDependencies": { "expo": "*" } }, "sha512-pTfDcYTOvrs4vCgAaM+vP2OEO93oGkczgGpTAzCY7ZTIvtPhpekJURHBxfOnKvfn97IF3Hk+8J9tMozsNDj0Gw=="],
+    "expo-dev-client": ["expo-dev-client@56.0.19", "", { "dependencies": { "expo-dev-launcher": "~56.0.19", "expo-dev-menu": "~56.0.16", "expo-dev-menu-interface": "~56.0.0", "expo-manifests": "~56.0.4", "expo-updates-interface": "~56.0.1" }, "peerDependencies": { "expo": "*" } }, "sha512-Mk2AsYGPBb+G30rwNHZvIE0Mi5Zd0yIZ2UdvIqllZjaWITiLbSqHklTgwY3KUs4/HrusXdZrfX7GqJGcUhOPiw=="],
 
-    "expo-dev-launcher": ["expo-dev-launcher@56.0.18", "", { "dependencies": { "@expo/schema-utils": "^56.0.0", "expo-dev-menu": "~56.0.16", "expo-manifests": "~56.0.4" }, "peerDependencies": { "expo": "*", "react-native": "*" } }, "sha512-7acFJlkAbp3cMz7Uy787todMR/3A/Row2EOPD21RRoetvzJe4DTm9s7RwJ8PDtyNyued9rooD4+Q6rD8ijpTgw=="],
+    "expo-dev-launcher": ["expo-dev-launcher@56.0.19", "", { "dependencies": { "@expo/schema-utils": "^56.0.0", "expo-dev-menu": "~56.0.16", "expo-manifests": "~56.0.4" }, "peerDependencies": { "expo": "*", "react-native": "*" } }, "sha512-O1oJPNYLtVQT+ByIFVm3VsEdjeyvXVr5qCV4DXKGDNg+rXNqRh4GrmLRkupHb1T3tdgLAJ7FRsZL9XY3GoAyPA=="],
 
     "expo-dev-menu": ["expo-dev-menu@56.0.16", "", { "dependencies": { "expo-dev-menu-interface": "~56.0.0" }, "peerDependencies": { "expo": "*", "react-native": "*" } }, "sha512-aVgoe+YGhrQnpwiB5BRI7G+uQnGHMUij32bBnEVdc6eJrVZCStxQlV9NeFbbXxrDhLJt6OSqbCHbLR+XToWUUA=="],
 
