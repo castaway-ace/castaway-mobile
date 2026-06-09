@@ -1,6 +1,5 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
-import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { SearchItemElements } from "@/utils/search";
 import { Image } from "expo-image";
@@ -13,7 +12,6 @@ interface SearchItemProps {
 
 const SearchItem: FC<SearchItemProps> = ({ item }) => {
   const { colors } = useTheme();
-  const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { imageUrl, text, subText } = item;
@@ -24,9 +22,6 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
         <Image
           source={{
             uri: imageUrl,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
           }}
           style={styles.art}
         />

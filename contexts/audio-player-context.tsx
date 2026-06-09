@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/api/client";
+import { useAlbumCover } from "@/api/queries/albums";
 import { trackApi } from "@/api/tracks";
 import {
   setAudioModeAsync,
@@ -43,6 +44,8 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<Error | null>(null);
   const [seekTarget, setSeekTarget] = useState<number | null>(null);
 
+  const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
+
   const seekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const player = useAudioPlayer(null, {
@@ -50,14 +53,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const status = useAudioPlayerStatus(player);
-
-  useEffect(() => {
-    setAudioModeAsync({
-      playsInSilentMode: true,
-      shouldPlayInBackground: true,
-      interruptionMode: "doNotMix",
-    });
-  }, []);
 
   const loadTrack = async (trackId: string) => {
     setIsLoading(true);
@@ -81,6 +76,12 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       player.play();
+
+      player.setActiveForLockScreen(true, {
+        title: track.title,
+        artist: track.artistNames.join(""),
+        albumTitle: track.albumName,
+      });
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load track"));
       setCurrentTrack(null);
@@ -89,7 +90,9 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const play = () => player?.play();
+  const play = () => {
+    player?.play();
+  };
   const pause = () => player?.pause();
 
   const clearSeekTarget = () => {
@@ -126,6 +129,14 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       clearSeekTarget();
     }
   }, [status.currentTime, seekTarget]);
+
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: "doNotMix",
+    });
+  }, []);
 
   const effectiveTime = seekTarget ?? status.currentTime;
 

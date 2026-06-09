@@ -5,11 +5,18 @@ import { usePlayerModal } from "@/contexts/player-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
 import { useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
-  const { isPlaying, pause, play, currentTrack } = useAudioPlayerContext();
+  const { isPlaying, isLoading, pause, play, currentTrack } =
+    useAudioPlayerContext();
   const { open } = usePlayerModal();
   const { colors } = useTheme();
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
@@ -46,12 +53,20 @@ const MusicPlayer = () => {
             </Text>
           </View>
         </Pressable>
-        <Pressable onPress={handlePlayTrack}>
-          <IconSymbol
-            size={28}
-            name={isPlaying ? "pause.fill" : "play.fill"}
-            color={colors.primary}
-          />
+        <Pressable onPress={handlePlayTrack} disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.primary}
+              style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+            />
+          ) : (
+            <IconSymbol
+              size={28}
+              name={isPlaying ? "pause.fill" : "play.fill"}
+              color={colors.primary}
+            />
+          )}
         </Pressable>
       </View>
     </View>
