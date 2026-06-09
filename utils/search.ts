@@ -1,6 +1,7 @@
-import { useAlbumCover } from "@/api/queries/albums";
-import { useArtistImage } from "@/api/queries/artists";
+import { albumCoverQueryOptions } from "@/api/queries/albums";
+import { artistImageQueryOptions } from "@/api/queries/artists";
 import { Search } from "@/types/search";
+import { useQueries } from "@tanstack/react-query";
 
 export interface SearchItemElements {
     imageUrl: string | undefined;
@@ -8,46 +9,36 @@ export interface SearchItemElements {
     subText?: string;
 }
 
-export const organizeSearch = (search: Search | undefined): SearchItemElements[] => {
-
-    if (!search) {
-        return []
-    }
-
-    const result: SearchItemElements[] = []
-
-    search.albums.forEach((album) => {
-        const { data: albumArtUrl } = useAlbumCover(album?.id);
-        result.push(
-            {
-                imageUrl: albumArtUrl,
-                text: album.title,
-                subText: `Album • ${album.artists.map((artist) => artist).join(", ")}`,
-            }
-        )
-    })
-
-    search.artists.forEach((artist) => {
-        const { data: artistImageUrl } = useArtistImage(artist.id);
-        result.push(
-            {
-                imageUrl: artistImageUrl,
-                text: artist.name,
-                subText: "Artist"
-            }
-        )
-    })
-
-    search.tracks.forEach((track) => {
-        const { data: albumArtUrl } = useAlbumCover(track.albumId);
-        result.push(
-            {
-                imageUrl: albumArtUrl,
-                text: track.title,
-                subText: `Track • ${track.artistNames.map((artist) => artist).join(", ")}`,
-            }
-        )
-    })
-
-    return result;
-}
+export const useOrganizedSearch = (search: Search | undefined): SearchItemElements[] => {
+    const albums = search?.albums ?? [];
+    const artists = search?.artists ?? [];
+    const tracks = search?.tracks ?? [];
+  
+    const albumCovers = useQueries({
+      queries: albums.map((album) => albumCoverQueryOptions(album.id)),
+    });
+    const artistImages = useQueries({
+      queries: artists.map((artist) => artistImageQueryOptions(artist.id)),
+    });
+    const trackCovers = useQueries({
+      queries: tracks.map((track) => albumCoverQueryOptions(track.albumId)),
+    });
+  
+    return [
+      ...albums.map((album, i) => ({
+        imageUrl: albumCovers[i]?.data,
+        text: album.title,
+        subText: `Album • ${album.artists.join(", ")}`,
+      })),
+      ...artists.map((artist, i) => ({
+        imageUrl: artistImages[i]?.data,
+        text: artist.name,
+        subText: "Artist",
+      })),
+      ...tracks.map((track, i) => ({
+        imageUrl: trackCovers[i]?.data,
+        text: track.title,
+        subText: `Track • ${track.artistNames.join(", ")}`,
+      })),
+    ];
+  };

@@ -41,14 +41,15 @@ export const useAlbum = (id: string) => {
     });
 };
 
-export const useAlbumCover = (id: string | undefined) => {
-    return useQuery({
-        queryKey: ['albumCover', id],
-        queryFn: () => {
-            if (!id) return;
-            return albumApi.getCover(id);
-        },
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-    });
-};
+export const albumCoverQueryOptions = (id: string | undefined) => ({
+    queryKey: ["albumCover", id],
+    queryFn: () => {
+        if (!id) return undefined;
+        return albumApi.getCover(id);
+    },
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+});
+
+export const useAlbumCover = (id: string | undefined) =>
+    useQuery(albumCoverQueryOptions(id));

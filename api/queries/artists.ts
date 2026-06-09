@@ -42,14 +42,15 @@ export const useArtist = (id: string) => {
     });
 };
 
-export const useArtistImage = (id: string | undefined) => {
-    return useQuery({
-        queryKey: ['albumImage', id],
-        queryFn: () => {
-            if (!id) return;
-            return artistApi.getImage(id);
-        },
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-    });
-};
+export const artistImageQueryOptions = (id: string | undefined) => ({
+    queryKey: ["albumImage", id],
+    queryFn: () => {
+        if (!id) return undefined;
+        return artistApi.getImage(id);
+    },
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+});
+
+export const useArtistImage = (id: string | undefined) =>
+    useQuery(artistImageQueryOptions(id));

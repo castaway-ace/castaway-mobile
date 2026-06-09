@@ -2,7 +2,7 @@ import { useSearch } from "@/api/queries/search";
 import SearchItem from "@/components/(tabs)/search/item";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
-import { organizeSearch } from "@/utils/search";
+import { useOrganizedSearch } from "@/utils/search";
 import { useMemo, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,7 +15,7 @@ const Search = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const search = organizeSearch(searchData);
+  const search = useOrganizedSearch(searchData);
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
