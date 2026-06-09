@@ -1,7 +1,6 @@
-import { BASE_URL } from "@/api/client";
+import { useAlbumCover } from "@/api/queries/albums";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
-import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Track } from "@/types/tracks";
 import { formatDuration } from "@/utils/converter";
@@ -16,10 +15,11 @@ interface LibraryTrackProps {
 
 const LibraryTrack: FC<LibraryTrackProps> = ({ track, onPress }) => {
   const { colors } = useTheme();
-  const { accessToken } = useAuth();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { artistNames, title, duration, albumId } = track;
+
+  const { data: albumArtUrl } = useAlbumCover(albumId);
 
   const formattedDuration = formatDuration(duration ?? 0);
 
@@ -28,10 +28,7 @@ const LibraryTrack: FC<LibraryTrackProps> = ({ track, onPress }) => {
       <View style={styles.containerContent}>
         <Image
           source={{
-            uri: `${BASE_URL}/albums/${albumId}/stream`,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+            uri: albumArtUrl,
           }}
           style={styles.albumArt}
         />

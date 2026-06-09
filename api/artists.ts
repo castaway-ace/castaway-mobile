@@ -26,4 +26,9 @@ export const artistApi = {
     const { data } = await apiClient.get(`/artists/${id}`);
     return data;
   },
+
+  getImage: async (id: string): Promise<string> => {
+    const { data } = await apiClient.get(`/albums/${id}/image`);
+    return data;
+  },
 };

@@ -30,6 +30,11 @@ export const albumApi = {
 
   getById: async (id: string): Promise<Album> => {
     const { data } = await apiClient.get(`/albums/${id}`);
-    return data.data;
+    return data;
+  },
+
+  getCover: async (id: string): Promise<string> => {
+    const { data } = await apiClient.get(`/albums/${id}/cover`);
+    return data;
   },
 };

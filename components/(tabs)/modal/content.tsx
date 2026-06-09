@@ -1,7 +1,6 @@
-import { BASE_URL } from "@/api/client";
+import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useAuth } from "@/contexts/auth-context";
 import { usePlayerModal } from "@/contexts/player-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
@@ -16,7 +15,7 @@ const ModalContent: FC = () => {
   const { isPlaying, pause, play, skipForward, skipBackward, currentTrack } =
     useAudioPlayerContext();
   const { close } = usePlayerModal();
-  const { accessToken } = useAuth();
+  const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   if (!currentTrack) {
@@ -43,10 +42,7 @@ const ModalContent: FC = () => {
       <View style={styles.albumArtContainer}>
         <Image
           source={{
-            uri: `${BASE_URL}/albums/${currentTrack.albumId}/stream`,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+            uri: albumArtUrl,
           }}
           style={styles.albumArt}
         />

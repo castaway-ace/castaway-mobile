@@ -41,3 +41,15 @@ export const useArtist = (id: string) => {
         staleTime: 10 * 60 * 1000,
     });
 };
+
+export const useArtistImage = (id: string | undefined) => {
+    return useQuery({
+        queryKey: ['albumImage', id],
+        queryFn: () => {
+            if (!id) return;
+            return artistApi.getImage(id);
+        },
+        enabled: !!id,
+        staleTime: 10 * 60 * 1000,
+    });
+};

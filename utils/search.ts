@@ -1,8 +1,9 @@
-import { BASE_URL } from "@/api/client";
+import { useAlbumCover } from "@/api/queries/albums";
+import { useArtistImage } from "@/api/queries/artists";
 import { Search } from "@/types/search";
 
 export interface SearchItemElements {
-    imageUrl: string;
+    imageUrl: string | undefined;
     text: string;
     subText?: string;
 }
@@ -16,9 +17,10 @@ export const organizeSearch = (search: Search | undefined): SearchItemElements[]
     const result: SearchItemElements[] = []
 
     search.albums.forEach((album) => {
+        const { data: albumArtUrl } = useAlbumCover(album?.id);
         result.push(
             {
-                imageUrl: `${BASE_URL}/albums/${album.id}/stream`,
+                imageUrl: albumArtUrl,
                 text: album.title,
                 subText: `Album • ${album.artists.map((artist) => artist).join(", ")}`,
             }
@@ -26,9 +28,10 @@ export const organizeSearch = (search: Search | undefined): SearchItemElements[]
     })
 
     search.artists.forEach((artist) => {
+        const { data: artistImageUrl } = useArtistImage(artist.id);
         result.push(
             {
-                imageUrl: `${BASE_URL}/artists/${artist.id}/stream`,
+                imageUrl: artistImageUrl,
                 text: artist.name,
                 subText: "Artist"
             }
@@ -36,9 +39,10 @@ export const organizeSearch = (search: Search | undefined): SearchItemElements[]
     })
 
     search.tracks.forEach((track) => {
+        const { data: albumArtUrl } = useAlbumCover(track.albumId);
         result.push(
             {
-                imageUrl: `${BASE_URL}/albums/${track.albumId}/stream`,
+                imageUrl: albumArtUrl,
                 text: track.title,
                 subText: `Track • ${track.artistNames.map((artist) => artist).join(", ")}`,
             }

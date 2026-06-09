@@ -1,6 +1,5 @@
-import { BASE_URL } from "@/api/client";
+import { useArtistImage } from "@/api/queries/artists";
 import { ThemeColors } from "@/constants/theme";
-import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
@@ -13,17 +12,14 @@ interface ArtistItemProps {
 
 const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const { colors } = useTheme();
-  const { accessToken } = useAuth();
+  const { data: artistImageUrl } = useArtistImage(artist.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <View key={artist.id} style={styles.artistItem}>
       <Image
         source={{
-          uri: `${BASE_URL}/artists/${artist.id}/stream`,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          uri: artistImageUrl,
         }}
         style={styles.artistArt}
       />

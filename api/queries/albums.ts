@@ -40,3 +40,15 @@ export const useAlbum = (id: string) => {
         staleTime: 10 * 60 * 1000,
     });
 };
+
+export const useAlbumCover = (id: string | undefined) => {
+    return useQuery({
+        queryKey: ['albumCover', id],
+        queryFn: () => {
+            if (!id) return;
+            return albumApi.getCover(id);
+        },
+        enabled: !!id,
+        staleTime: 10 * 60 * 1000,
+    });
+};

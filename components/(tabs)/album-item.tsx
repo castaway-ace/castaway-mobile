@@ -1,6 +1,5 @@
-import { BASE_URL } from "@/api/client";
+import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
-import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { AlbumSummary } from "@/types/albums";
 import { Image } from "expo-image";
@@ -13,17 +12,14 @@ interface AlbumProps {
 
 const AlbumItem: FC<AlbumProps> = ({ album }) => {
   const { colors } = useTheme();
-  const { accessToken } = useAuth();
+  const { data: albumArtUrl } = useAlbumCover(album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <View style={styles.albumContainer}>
       <Image
         source={{
-          uri: `${BASE_URL}/albums/${album.id}/stream`,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          uri: albumArtUrl,
         }}
         style={styles.albumArt}
       />
