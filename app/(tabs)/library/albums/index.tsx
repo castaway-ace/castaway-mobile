@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Tracks = () => {
+const Albums = () => {
   const { data: albumData } = useAlbums();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -56,4 +56,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default Tracks;
+export default Albums;

@@ -3,13 +3,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Library = () => {
@@ -24,36 +18,36 @@ const Library = () => {
       <ScrollView>
         <View style={styles.grid}>
           <View style={styles.row}>
-            <TouchableOpacity
+            <Pressable
               style={styles.libraryItem}
               onPress={() => router.navigate("/library/tracks")}
             >
               <IconSymbol name="music.note" size={24} color="black" />
               <Text>Tracks</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               style={styles.libraryItem}
               onPress={() => router.navigate("/library/albums")}
             >
               <IconSymbol name="square.stack.fill" size={24} color="black" />
               <Text>Albums</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           <View style={styles.row}>
-            <TouchableOpacity
+            <Pressable
               style={styles.libraryItem}
               onPress={() => router.navigate("/library/artists")}
             >
               <IconSymbol name="person.fill" size={24} color="black" />
               <Text>Artists</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               style={styles.libraryItem}
               onPress={() => router.navigate("/library/playlists")}
             >
               <IconSymbol name="music.note.list" size={24} color="black" />
               <Text>Playlists</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

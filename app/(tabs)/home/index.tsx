@@ -1,10 +1,8 @@
 import { AlbumOrder } from "@/api/albums";
 import { useAlbums } from "@/api/queries/albums";
 import { useArtists } from "@/api/queries/artists";
-import { useTracks } from "@/api/queries/tracks";
 import AlbumItem from "@/components/(tabs)/album-item";
 import ArtistItem from "@/components/(tabs)/artist-item";
-import TrackItem from "@/components/(tabs)/track-item";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -16,7 +14,6 @@ const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: favoriteTracksData } = useTracks({ starred: true });
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
   const { data: recentlyAddedAlbumsData } = useAlbums({
     order: AlbumOrder.ADDED,
@@ -31,15 +28,12 @@ const HomeScreen = () => {
     recentlyAddedAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteAlbums =
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
-  const favoriteTracks =
-    favoriteTracksData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
   const albumsAvailable = albums.length > 0;
   const recentlyAddedAlbumsAvailable = recentlyAddedAlbums.length > 0;
   const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
-  const favoriteTracksAvailable = favoriteTracks.length > 0;
   const favoriteArtistsAvailable = favoriteArtists.length > 0;
 
   const onTrackPress = (trackId: string) => {
@@ -66,20 +60,6 @@ const HomeScreen = () => {
                   ))}
                 </ScrollView>
               </>
-            </View>
-          )}
-          {favoriteTracksAvailable && (
-            <View style={styles.itemsContainer}>
-              <Text style={[styles.itemsContainerTitle]}>Favorite Tracks</Text>
-              <View style={styles.trackListContainer}>
-                {favoriteTracks.slice(0, 6).map((track) => (
-                  <TrackItem
-                    key={track.id}
-                    track={track}
-                    onPress={() => onTrackPress(track.id)}
-                  />
-                ))}
-              </View>
             </View>
           )}
           <View style={styles.itemsContainer}>
