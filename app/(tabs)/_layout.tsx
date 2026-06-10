@@ -36,6 +36,12 @@ const TabLayout = () => {
         <Tabs.Screen
           name="index"
           options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="home"
+          options={{
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <IconSymbol
@@ -50,6 +56,7 @@ const TabLayout = () => {
           name="library"
           options={{
             title: "Library",
+
             tabBarIcon: ({ color, focused }) => (
               <IconSymbol
                 size={28}

@@ -12,8 +12,18 @@ import ProgressBar from "./progressBar";
 
 const ModalContent: FC = () => {
   const { colors } = useTheme();
-  const { isPlaying, pause, play, skipForward, skipBackward, currentTrack } =
-    useAudioPlayerContext();
+  const {
+    isPlaying,
+    pause,
+    play,
+    next,
+    previous,
+    currentTrack,
+    toggleShuffle,
+    isShuffled,
+    cycleRepeat,
+    repeatMode,
+  } = useAudioPlayerContext();
   const { close } = usePlayerModal();
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -62,10 +72,15 @@ const ModalContent: FC = () => {
       </View>
       <ProgressBar />
       <View style={styles.musicPlayerButtonContainer}>
-        <Pressable>
-          <IconSymbol size={40} name={"shuffle"} color={colors.primary} />
+        <Pressable onPress={toggleShuffle}>
+          <IconSymbol
+            size={40}
+            name={"shuffle"}
+            style={{ opacity: isShuffled ? 1 : 0.4 }}
+            color={colors.primary}
+          />
         </Pressable>
-        <Pressable onPress={skipBackward}>
+        <Pressable onPress={previous}>
           <IconSymbol size={40} name={"backward.end"} color={colors.primary} />
         </Pressable>
         <Pressable onPress={handlePlayTrack}>
@@ -75,11 +90,20 @@ const ModalContent: FC = () => {
             color={colors.primary}
           />
         </Pressable>
-        <Pressable onPress={skipForward}>
+        <Pressable onPress={next}>
           <IconSymbol size={40} name={"forward.end"} color={colors.primary} />
         </Pressable>
-        <Pressable>
-          <IconSymbol size={40} name={"repeat"} color={colors.primary} />
+        <Pressable onPress={cycleRepeat}>
+          <IconSymbol
+            size={40}
+            style={{ opacity: repeatMode === "off" ? 0.4 : 1 }}
+            name={
+              repeatMode === "off" || repeatMode == "all"
+                ? "repeat"
+                : "repeat.1"
+            }
+            color={colors.primary}
+          />
         </Pressable>
       </View>
     </SafeAreaView>

@@ -1,4 +1,3 @@
-import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { usePlayerModal } from "@/contexts/player-modal-context";
@@ -15,11 +14,10 @@ import {
 import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
-  const { isPlaying, isLoading, pause, play, currentTrack } =
+  const { isPlaying, isLoading, pause, play, currentTrack, coverArtUrl } =
     useAudioPlayerContext();
   const { open } = usePlayerModal();
   const { colors } = useTheme();
-  const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   if (!currentTrack) {
@@ -40,7 +38,7 @@ const MusicPlayer = () => {
         <Pressable style={styles.leftContainer} onPress={open}>
           <Image
             source={{
-              uri: albumArtUrl,
+              uri: coverArtUrl,
             }}
             style={styles.albumArt}
           />

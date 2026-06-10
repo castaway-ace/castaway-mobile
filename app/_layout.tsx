@@ -25,7 +25,7 @@ const RootNavigator = () => {
     if (!hasAccess && !inAuthGroup) {
       router.replace("/(auth)/login");
     } else if (hasAccess && inAuthGroup) {
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/home");
     }
   }, [isAuthenticated, isLoading, router, segments]);
 
