@@ -21,6 +21,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
         source={{
           uri: artistImageUrl,
         }}
+        placeholder={require("../../assets/placeholders/artist-placeholder.png")}
         style={styles.artistArt}
       />
       <Text style={styles.artistName}>{artist.name}</Text>

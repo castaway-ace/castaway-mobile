@@ -4,7 +4,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { useOrganizedSearch } from "@/utils/search";
 import { useMemo, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Search = () => {
@@ -19,21 +19,26 @@ const Search = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <Text style={styles.title}>Search</Text>
-      <View style={styles.searchRow}>
-        <TextInput
-          style={styles.search}
-          placeholder="Search"
-          placeholderTextColor={colors.primary}
-          value={searchInput}
-          onChangeText={setSearchInput}
-        />
+      <View style={styles.header}>
+        <Text style={styles.title}>Search</Text>
+        <View style={styles.searchRow}>
+          <TextInput
+            style={styles.search}
+            placeholder="Search"
+            placeholderTextColor={colors.primary}
+            value={searchInput}
+            onChangeText={setSearchInput}
+          />
+        </View>
       </View>
-      <View style={styles.searchItemContainer}>
-        {search.map((data) => {
-          return <SearchItem key={data.text} item={data} />;
-        })}
-      </View>
+      <ScrollView style={styles.scrollViewContainer}>
+        <View style={styles.searchItemContainer}>
+          {search.map((data) => {
+            return <SearchItem key={data.text} item={data} />;
+          })}
+        </View>
+        <View style={styles.bottomSpacing}></View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -43,7 +48,9 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      padding: 16,
+    },
+    header: {
+      paddingHorizontal: 16,
     },
     title: {
       fontSize: 24,
@@ -64,11 +71,18 @@ const makeStyles = (colors: ThemeColors) =>
     },
     search: {
       flex: 1,
+      paddingVertical: 8,
       color: colors.primary,
+    },
+    scrollViewContainer: {
+      padding: 16,
     },
     searchItemContainer: {
       display: "flex",
       gap: 16,
+    },
+    bottomSpacing: {
+      height: 180,
     },
   });
 

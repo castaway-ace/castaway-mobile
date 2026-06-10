@@ -40,6 +40,7 @@ const MusicPlayer = () => {
             source={{
               uri: coverArtUrl,
             }}
+            placeholder={require("../../assets/placeholders/album-placeholder.png")}
             style={styles.albumArt}
           />
           <View style={styles.info}>

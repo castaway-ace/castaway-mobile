@@ -43,6 +43,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id }) => {
             source={{
               uri: artistImageUrl,
             }}
+            placeholder={require("../../assets/placeholders/artist-placeholder.png")}
             style={styles.artistImage}
           />
         </View>
