@@ -3,8 +3,9 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 interface ArtistItemProps {
   artist: ArtistSummary;
@@ -16,7 +17,11 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
-    <View key={artist.id} style={styles.artistItem}>
+    <Pressable
+      key={artist.id}
+      style={styles.artistItem}
+      onPress={() => router.navigate(`/(tabs)/home/artists/${artist.id}`)}
+    >
       <Image
         source={{
           uri: artistImageUrl,
@@ -24,7 +29,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
         style={styles.artistArt}
       />
       <Text style={styles.artistName}>{artist.name}</Text>
-    </View>
+    </Pressable>
   );
 };
 
@@ -32,19 +37,13 @@ const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     artistItem: {
       display: "flex",
-      backgroundColor: colors.secondary,
-      flexDirection: "row",
       alignItems: "center",
-      padding: 12,
       gap: 8,
-      width: 240,
-      height: 72,
-      borderRadius: 12,
     },
     artistArt: {
-      width: 48,
-      height: 48,
-      borderRadius: 32,
+      width: 120,
+      height: 120,
+      borderRadius: 60,
     },
     artistName: {
       fontSize: 16,
