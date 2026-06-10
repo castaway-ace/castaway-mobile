@@ -50,6 +50,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
           <Text style={styles.releaseDate}>{releaseDate}</Text>
         </View>
         <View style={styles.trackContainer}>
+          <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
             return (
               <Pressable
@@ -57,8 +58,11 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
                 style={styles.trackItem}
                 onPress={() => onTrackPress(index)}
               >
-                <Text style={styles.trackTitle}>{track.title}</Text>
-                <Text style={styles.trackArtists}>{album?.artists}</Text>
+                <Text style={styles.trackNumber}>{track.trackNumber}</Text>
+                <View style={styles.trackInfo}>
+                  <Text style={styles.trackTitle}>{track.title}</Text>
+                  <Text style={styles.trackArtists}>{album?.artists}</Text>
+                </View>
               </Pressable>
             );
           })}
@@ -113,9 +117,23 @@ const makeStyles = (colors: ThemeColors) =>
       display: "flex",
       gap: 16,
     },
+    trackHeader: {
+      color: colors.primary,
+      fontSize: 18,
+    },
     trackItem: {
       display: "flex",
-      gap: 8,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+    },
+    trackNumber: {
+      color: colors.primary,
+      fontSize: 18,
+    },
+    trackInfo: {
+      display: "flex",
+      gap: 4,
     },
     trackTitle: {
       color: colors.primary,
