@@ -1,4 +1,5 @@
 import { ThemeColors } from "@/constants/theme";
+import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
 import { useMemo } from "react";
@@ -7,15 +8,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Settings = () => {
   const { logOut } = useAuth();
+  const { clearQueue } = useAudioPlayerContext();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const onLogoutPress = () => {
+    clearQueue();
+    logOut();
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Settings</Text>
       <View style={styles.buttonContainer}>
-        <Pressable onPress={logOut} style={styles.button}>
+        <Pressable onPress={onLogoutPress} style={styles.button}>
           <Text style={styles.buttonText}>Log Out</Text>
         </Pressable>
       </View>
