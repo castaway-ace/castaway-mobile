@@ -1,44 +1,35 @@
-import { AlbumOrder } from "@/api/albums";
 import { useAlbums } from "@/api/queries/albums";
 import { useArtists } from "@/api/queries/artists";
-import AlbumItem from "@/components/(tabs)/album-item";
-import ArtistItem from "@/components/(tabs)/artist-item";
+import { usePlaylists } from "@/api/queries/playlist";
+import AlbumItem from "@/components/reusable/albumItem";
+import ArtistItem from "@/components/reusable/artistItem";
+import PlaylistItem from "@/components/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
+import { router } from "expo-router";
 import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
+  const { data: playlists } = usePlaylists();
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
-  const { data: recentlyAddedAlbumsData } = useAlbums({
-    order: AlbumOrder.ADDED,
-  });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
   const { data: albumsData } = useAlbums();
 
-  const { loadTrack } = useAudioPlayerContext();
-
   const albums = albumsData?.pages.flatMap((page) => page) ?? [];
-  const recentlyAddedAlbums =
-    recentlyAddedAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteAlbums =
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
+  const playlistsAvailable = playlists?.length;
   const albumsAvailable = albums.length > 0;
-  const recentlyAddedAlbumsAvailable = recentlyAddedAlbums.length > 0;
   const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
   const favoriteArtistsAvailable = favoriteArtists.length > 0;
-
-  const onTrackPress = (trackId: string) => {
-    loadTrack(trackId);
-  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -56,12 +47,44 @@ const HomeScreen = () => {
                   contentContainerStyle={styles.albumScrollContent}
                 >
                   {favoriteAlbums.map((album) => (
-                    <AlbumItem album={album} key={album.id} />
+                    <Pressable
+                      key={album.id}
+                      onPress={() =>
+                        router.navigate(`/(tabs)/home/albums/${album.id}`)
+                      }
+                    >
+                      <AlbumItem album={album} />
+                    </Pressable>
                   ))}
                 </ScrollView>
               </>
             </View>
           )}
+          <View style={styles.itemsContainer}>
+            <Text style={[styles.itemsContainerTitle]}>Playlists</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.albumScrollContent}
+            >
+              {playlistsAvailable ? (
+                playlists.map((playlist) => (
+                  <Pressable
+                    key={playlist.id}
+                    onPress={() =>
+                      router.navigate(
+                        `/(tabs)/library/playlists/${playlist.id}`,
+                      )
+                    }
+                  >
+                    <PlaylistItem playlist={playlist} />
+                  </Pressable>
+                ))
+              ) : (
+                <Text style={styles.unavailableText}>No playlists found</Text>
+              )}
+            </ScrollView>
+          </View>
           <View style={styles.itemsContainer}>
             <Text style={[styles.itemsContainerTitle]}>Last Played Albums</Text>
             <ScrollView
@@ -71,7 +94,14 @@ const HomeScreen = () => {
             >
               {albumsAvailable ? (
                 albums.map((album) => (
-                  <AlbumItem album={album} key={album.id} />
+                  <Pressable
+                    key={album.id}
+                    onPress={() =>
+                      router.navigate(`/(tabs)/home/albums/${album.id}`)
+                    }
+                  >
+                    <AlbumItem album={album} />
+                  </Pressable>
                 ))
               ) : (
                 <Text style={styles.unavailableText}>No albums found</Text>
@@ -91,27 +121,16 @@ const HomeScreen = () => {
                 contentContainerStyle={styles.artistScrollContent}
               >
                 {favoriteArtists.map((artist) => (
-                  <ArtistItem key={artist.id} artist={artist} />
+                  <Pressable
+                    key={artist.id}
+                    onPress={() =>
+                      router.navigate(`/(tabs)/home/artists/${artist.id}`)
+                    }
+                  >
+                    <ArtistItem artist={artist} />
+                  </Pressable>
                 ))}
               </ScrollView>
-            </View>
-          )}
-          {recentlyAddedAlbumsAvailable && (
-            <View style={styles.itemsContainer}>
-              <>
-                <Text style={[styles.itemsContainerTitle]}>
-                  Recently Added Albums
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.albumScrollContent}
-                >
-                  {recentlyAddedAlbums.map((album) => (
-                    <AlbumItem album={album} key={album.id} />
-                  ))}
-                </ScrollView>
-              </>
             </View>
           )}
         </View>

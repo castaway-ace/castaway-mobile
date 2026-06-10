@@ -3,9 +3,8 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { AlbumSummary } from "@/types/albums";
 import { Image } from "expo-image";
-import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface AlbumProps {
   album: AlbumSummary;
@@ -17,10 +16,7 @@ const AlbumItem: FC<AlbumProps> = ({ album }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
-    <Pressable
-      style={styles.albumContainer}
-      onPress={() => router.navigate(`/(tabs)/home/albums/${album.id}`)}
-    >
+    <View style={styles.albumContainer}>
       <Image
         source={{
           uri: albumArtUrl,
@@ -31,7 +27,7 @@ const AlbumItem: FC<AlbumProps> = ({ album }) => {
       <Text style={styles.albumArtist}>
         {album.artists.map((artist) => artist).join(", ")}
       </Text>
-    </Pressable>
+    </View>
   );
 };
 

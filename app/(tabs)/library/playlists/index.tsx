@@ -1,5 +1,5 @@
 import { usePlaylists } from "@/api/queries/playlist";
-import ArtistItem from "@/components/(tabs)/artist-item";
+import PlaylistItem from "@/components/reusable/playlistItem";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -25,7 +25,14 @@ const Playlists = () => {
       </View>
       <View style={styles.contentContainer}>
         {playlists?.map((playlist) => (
-          <ArtistItem key={playlist.id} artist={playlist} />
+          <Pressable
+            key={playlist.id}
+            onPress={() =>
+              router.navigate(`/(tabs)/library/playlists/${playlist.id}`)
+            }
+          >
+            <PlaylistItem key={playlist.id} playlist={playlist} />
+          </Pressable>
         ))}
       </View>
     </SafeAreaView>

@@ -1,5 +1,5 @@
 import { useAlbums } from "@/api/queries/albums";
-import AlbumItem from "@/components/(tabs)/album-item";
+import AlbumItem from "@/components/reusable/albumItem";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -27,7 +27,14 @@ const Albums = () => {
       </View>
       <View>
         {albums.map((album) => (
-          <AlbumItem key={album.id} album={album} />
+          <Pressable
+            key={album.id}
+            onPress={() =>
+              router.navigate(`/(tabs)/library/albums/${album.id}`)
+            }
+          >
+            <AlbumItem album={album} />
+          </Pressable>
         ))}
       </View>
     </SafeAreaView>

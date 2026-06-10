@@ -3,9 +3,8 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
-import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface ArtistItemProps {
   artist: ArtistSummary;
@@ -17,11 +16,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
-    <Pressable
-      key={artist.id}
-      style={styles.artistItem}
-      onPress={() => router.navigate(`/(tabs)/home/artists/${artist.id}`)}
-    >
+    <View key={artist.id} style={styles.artistItem}>
       <Image
         source={{
           uri: artistImageUrl,
@@ -29,7 +24,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
         style={styles.artistArt}
       />
       <Text style={styles.artistName}>{artist.name}</Text>
-    </Pressable>
+    </View>
   );
 };
 

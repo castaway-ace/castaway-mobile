@@ -1,5 +1,5 @@
 import { useArtists } from "@/api/queries/artists";
-import ArtistItem from "@/components/(tabs)/artist-item";
+import ArtistItem from "@/components/reusable/artistItem";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -27,7 +27,14 @@ const Artists = () => {
       </View>
       <View style={styles.contentContainer}>
         {artists.map((artist) => (
-          <ArtistItem key={artist.id} artist={artist} />
+          <Pressable
+            key={artist.id}
+            onPress={() =>
+              router.navigate(`/(tabs)/library/artists/${artist.id}`)
+            }
+          >
+            <ArtistItem artist={artist} />
+          </Pressable>
         ))}
       </View>
     </SafeAreaView>
