@@ -1,7 +1,7 @@
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
-import { formatTime } from "@/utils/converter";
+import { formatTime } from "@/utils/formatters";
 import { FC, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
