@@ -12,3 +12,17 @@ export const formatTime = (seconds: number) => {
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
+
+export const formatDate = (date: string | undefined): string => {
+  if (!date) {
+    return ""
+  }
+
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  return formatter.format(new Date(date));
+}
