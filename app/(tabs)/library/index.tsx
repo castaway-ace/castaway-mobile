@@ -3,7 +3,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Library = () => {
@@ -15,7 +15,7 @@ const Library = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Library</Text>
-      <ScrollView>
+      <View>
         <View style={styles.grid}>
           <View style={styles.row}>
             <Pressable
@@ -50,7 +50,7 @@ const Library = () => {
             </Pressable>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

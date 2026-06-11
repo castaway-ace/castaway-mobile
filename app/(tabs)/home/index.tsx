@@ -7,6 +7,7 @@ import PlaylistItem from "@/components/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { router } from "expo-router";
+import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,9 +32,11 @@ const HomeScreen = () => {
   const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
   const favoriteArtistsAvailable = favoriteArtists.length > 0;
 
+  const tabBarHeight = useBottomTabBarHeight();
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.containerContent}>
+      <ScrollView contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}>
         <View style={styles.itemContainerWrapper}>
           {favoriteAlbumsAvailable && (
             <View style={styles.itemsContainer}>

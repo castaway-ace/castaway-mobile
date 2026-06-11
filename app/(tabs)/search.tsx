@@ -3,6 +3,7 @@ import SearchItem from "@/components/(tabs)/search/item";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { useOrganizedSearch } from "@/utils/search";
+import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +17,8 @@ const Search = () => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const search = useOrganizedSearch(searchData);
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -31,13 +34,17 @@ const Search = () => {
           />
         </View>
       </View>
-      <ScrollView style={styles.scrollViewContainer}>
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: tabBarHeight,
+        }}
+      >
         <View style={styles.searchItemContainer}>
           {search.map((data) => {
             return <SearchItem key={data.text} item={data} />;
           })}
         </View>
-        <View style={styles.bottomSpacing}></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -74,15 +81,9 @@ const makeStyles = (colors: ThemeColors) =>
       paddingVertical: 8,
       color: colors.primary,
     },
-    scrollViewContainer: {
-      padding: 16,
-    },
     searchItemContainer: {
       display: "flex",
       gap: 16,
-    },
-    bottomSpacing: {
-      height: 180,
     },
   });
 

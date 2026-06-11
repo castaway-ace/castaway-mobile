@@ -5,6 +5,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,16 +26,23 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
 
   const { playQueue } = useAudioPlayerContext();
 
+  const tabBarHeight = useBottomTabBarHeight();
+
   const onTrackPress = (index: number) => {
     if (!album?.tracks) return;
     playQueue(album.tracks, index);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: tabBarHeight + 84,
+        }}
+      >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol size={20} name={"chevron.left"} color={colors.primary} />
+          <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
         <View style={styles.albumArtContainer}>
           <Image
@@ -67,7 +75,6 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
             );
           })}
         </View>
-        <View style={styles.bottomSpacing}></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -78,12 +85,14 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      paddingTop: 16,
     },
     scrollContainer: {
       paddingHorizontal: 16,
     },
     backButton: {
       position: "absolute",
+      left: 4,
     },
     albumArtContainer: {
       display: "flex",
@@ -142,9 +151,6 @@ const makeStyles = (colors: ThemeColors) =>
     trackArtists: {
       color: colors.secondary,
       fontSize: 16,
-    },
-    bottomSpacing: {
-      height: 140,
     },
   });
 

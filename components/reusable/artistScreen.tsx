@@ -5,6 +5,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { useQueries } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,9 +13,10 @@ import { IconSymbol } from "../ui/icon-symbol";
 
 interface ArtistScreenProps {
   id: string;
+  onAlbumPress: (albumId: string) => void;
 }
 
-const ArtistScreen: FC<ArtistScreenProps> = ({ id }) => {
+const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist } = useArtist(id);
 
   const { colors } = useTheme();
@@ -22,9 +24,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id }) => {
 
   const { data: artistImageUrl } = useArtistImage(id);
 
-  const onTrackPress = (albumId: string) => {
-    router.navigate(`/(tabs)/home/albums/${albumId}`);
-  };
+  const tabBarHeight = useBottomTabBarHeight();
 
   const albums = artist?.albums ?? [];
 
@@ -33,10 +33,15 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id }) => {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: tabBarHeight + 84,
+        }}
+      >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol size={20} name={"chevron.left"} color={colors.primary} />
+          <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
         <View style={styles.artistImageContainer}>
           <Image
@@ -58,7 +63,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id }) => {
               <Pressable
                 key={album.id}
                 style={styles.albumItem}
-                onPress={() => onTrackPress(album.id)}
+                onPress={() => onAlbumPress(album.id)}
               >
                 <Image source={{ uri: coverUrl }} style={styles.albumArt} />
                 <Text style={styles.albumTitle}>{album.title}</Text>
@@ -77,12 +82,11 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    scrollContainer: {
-      paddingHorizontal: 16,
+      paddingTop: 16,
     },
     backButton: {
       position: "absolute",
+      left: 4,
     },
     artistImageContainer: {
       display: "flex",
