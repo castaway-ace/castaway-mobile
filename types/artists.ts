@@ -6,6 +6,7 @@ export interface Artist {
   imageKey: string;
   bio: string;
   albums: Album[];
+  starred: boolean;
 }
 
 export interface ArtistSummary {

@@ -9,6 +9,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useArtistStar } from "../../api/mutations/artists";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface ArtistScreenProps {
@@ -18,6 +19,7 @@ interface ArtistScreenProps {
 
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist } = useArtist(id);
+  const { mutate } = useArtistStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -31,6 +33,11 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const albumCovers = useQueries({
     queries: albums?.map((album) => albumCoverQueryOptions(album.id)),
   });
+
+  const onLikeButtonPress = () => {
+    if (!artist) return;
+    mutate({ id: artist.id, starred: !artist?.starred });
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -54,6 +61,13 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
         </View>
         <View style={styles.artistInfoContainer}>
           <Text style={styles.artistTitle}>{artist?.name}</Text>
+          <Pressable onPress={onLikeButtonPress}>
+            <IconSymbol
+              name={artist?.starred ? "heart.fill" : "heart"}
+              size={24}
+              color={colors.primary}
+            />
+          </Pressable>
         </View>
         <View style={styles.albumContainer}>
           <Text style={styles.albumHeader}>Albums</Text>
@@ -100,6 +114,8 @@ const makeStyles = (colors: ThemeColors) =>
     },
     artistInfoContainer: {
       display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
       marginBottom: 24,
     },

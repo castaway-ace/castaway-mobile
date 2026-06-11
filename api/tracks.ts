@@ -29,4 +29,12 @@ export const trackApi = {
     const { data } = await apiClient.get(`/tracks/${id}`);
     return data;
   },
+
+  star: async (id: string): Promise<void> => {
+    await apiClient.post(`/tracks/${id}/star`);
+  },
+
+  deleteStar: async (id: string): Promise<void> => {
+    await apiClient.delete(`/tracks/${id}/star`);
+  },
 };

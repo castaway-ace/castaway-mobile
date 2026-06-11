@@ -31,4 +31,12 @@ export const artistApi = {
     const { data } = await apiClient.get(`/artists/${id}/image`);
     return data;
   },
+
+  star: async (id: string): Promise<void> => {
+    await apiClient.post(`/artists/${id}/star`);
+  },
+
+  unStar: async (id: string): Promise<void> => {
+    await apiClient.delete(`/artists/${id}/star`);
+  },
 };
