@@ -64,7 +64,7 @@ const HomeScreen = () => {
             </View>
           )}
           <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Playlists</Text>
+            <Text style={[styles.itemsContainerTitle]}>Your Playlists</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -145,6 +145,7 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      paddingTop: 16,
     },
     containerContent: {
       paddingBottom: 48,

@@ -55,6 +55,7 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      paddingTop: 16,
     },
     header: {
       paddingHorizontal: 16,
