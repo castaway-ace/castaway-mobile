@@ -37,4 +37,12 @@ export const albumApi = {
     const { data } = await apiClient.get(`/albums/${id}/cover`);
     return data;
   },
+
+  star: async (id: string): Promise<void> => {
+    await apiClient.post(`/albums/${id}/star`);
+  },
+
+  unStar: async (id: string): Promise<void> => {
+    await apiClient.delete(`/albums/${id}/star`);
+  },
 };

@@ -8,6 +8,7 @@ export interface Album {
     imageUrl: string,
     compilation: boolean,
     artists: string[],
+    starred: boolean,
     tracks: Track[],
 }
 

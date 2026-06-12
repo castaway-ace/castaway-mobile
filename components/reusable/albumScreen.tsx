@@ -9,6 +9,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAlbumStar } from "../../api/mutations/albums";
 import { useTrackStar } from "../../api/mutations/tracks";
 import { useStarredTracks } from "../../api/queries/tracks";
 import { IconSymbol } from "../ui/icon-symbol";
@@ -20,7 +21,8 @@ interface AlbumScreenProps {
 const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
   const { data: album } = useAlbum(id);
   const { data: starredTracks } = useStarredTracks();
-  const { mutate } = useTrackStar();
+  const { mutate: trackStar } = useTrackStar();
+  const { mutate: albumStar } = useAlbumStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -37,8 +39,13 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
     playQueue(album.tracks, index);
   };
 
-  const onLikeButtonPress = (trackId: string, starred: boolean) => {
-    mutate({ id: trackId, starred: !!starred });
+  const onLikeAlbumButtonPress = () => {
+    if (!album) return;
+    albumStar({ id: album.id, starred: !!album.starred });
+  };
+
+  const onLikeTrackButtonPress = (trackId: string, starred: boolean) => {
+    trackStar({ id: trackId, starred: !!starred });
   };
 
   return (
@@ -63,7 +70,16 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
         <View style={styles.albumInfoContainer}>
           <Text style={styles.albumTitle}>{album?.title}</Text>
           <Text style={styles.artistName}>{album?.artists}</Text>
-          <Text style={styles.releaseDate}>{releaseDate}</Text>
+          <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
+        </View>
+        <View style={styles.albumLikeContainer}>
+          <Pressable onPress={onLikeAlbumButtonPress}>
+            <IconSymbol
+              name={album?.starred ? "heart.fill" : "heart"}
+              size={32}
+              color={colors.primary}
+            />
+          </Pressable>
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
@@ -84,7 +100,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
                     </Text>
                   </View>
                   <Pressable
-                    onPress={() => onLikeButtonPress(track.id, starred)}
+                    onPress={() => onLikeTrackButtonPress(track.id, starred)}
                   >
                     <IconSymbol
                       name={starred ? "heart.fill" : "heart"}
@@ -129,6 +145,9 @@ const makeStyles = (colors: ThemeColors) =>
     albumInfoContainer: {
       display: "flex",
       gap: 8,
+      marginBottom: 24,
+    },
+    albumLikeContainer: {
       marginBottom: 24,
     },
     albumTitle: {
