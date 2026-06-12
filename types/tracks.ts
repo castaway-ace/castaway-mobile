@@ -14,7 +14,6 @@ export interface Track {
   albumName: string;
   artistNames: string[];
   albumId: string;
-  starred: boolean;
 }
 
 export interface TrackSummary {
@@ -26,4 +25,5 @@ export interface TrackSummary {
   albumName: string;
   artistNames: string[];
   albumId: string;
+  trackNumber: number;
 }

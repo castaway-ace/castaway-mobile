@@ -41,3 +41,11 @@ export const useTrack = (id: string) => {
         staleTime: 10 * 60 * 1000,
     });
 };
+
+export const useStarredTracks = () => {
+    return useQuery({
+        queryKey: ['starred-tracks'],
+        queryFn: () => trackApi.getStarred(),
+        staleTime: 10 * 60 * 1000,
+    });
+};

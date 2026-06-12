@@ -36,7 +36,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
 
   const onLikeButtonPress = () => {
     if (!artist) return;
-    mutate({ id: artist.id, starred: !artist?.starred });
+    mutate({ id: artist.id, starred: !!artist?.starred });
   };
 
   return (

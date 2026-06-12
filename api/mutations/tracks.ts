@@ -9,19 +9,34 @@ interface TrackStarMutation {
 export const useTrackStar = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({id, starred}: TrackStarMutation) => {
+        mutationFn: async ({ id, starred }: TrackStarMutation) => {
             if (starred) {
-                console.log(starred);
                 await trackApi.unStar(id);
             }
             else {
-                console.log(starred);
                 await trackApi.star(id);
             }
         },
-        onSuccess: (_data, { id }) => {
-            queryClient.invalidateQueries({ queryKey: ['track', id] });
-            queryClient.invalidateQueries({ queryKey: ['tracks'] });
+        onMutate: async ({ id, starred }) => {
+            await queryClient.cancelQueries({ queryKey: ['starred-tracks'] });
+            const previous = queryClient.getQueryData<string[]>(['starred-tracks']);
+
+            queryClient.setQueryData<string[]>(['starred-tracks'], (old = []) => {
+                if (starred) {
+                    return old.filter((trackId) => trackId !== id);
+                }
+                return old.includes(id) ? old : [...old, id];
+            });
+
+            return { previous };
+        },
+        onError: (_err, _vars, context) => {
+            if (context?.previous) {
+              queryClient.setQueryData(['starred-tracks'], context.previous);
+            }
+          },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['starred-tracks'] });
         },
     });
 };

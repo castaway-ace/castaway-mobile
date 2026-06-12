@@ -30,6 +30,11 @@ export const trackApi = {
     return data;
   },
 
+  getStarred: async (): Promise<string[]> => {
+    const { data } = await apiClient.get(`/tracks/starred`);
+    return data;
+  },
+
   star: async (id: string): Promise<void> => {
     await apiClient.post(`/tracks/${id}/star`);
   },

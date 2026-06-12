@@ -10,6 +10,7 @@ import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTrackStar } from "../../api/mutations/tracks";
+import { useStarredTracks } from "../../api/queries/tracks";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface AlbumScreenProps {
@@ -18,6 +19,7 @@ interface AlbumScreenProps {
 
 const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
   const { data: album } = useAlbum(id);
+  const { data: starredTracks } = useStarredTracks();
   const { mutate } = useTrackStar();
 
   const { colors } = useTheme();
@@ -66,6 +68,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
+            const starred = !!starredTracks?.includes(track.id);
             return (
               <Pressable
                 key={track.id}
@@ -76,13 +79,15 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
                     <Text style={styles.trackTitle}>{track.title}</Text>
-                    <Text style={styles.trackArtists}>{album?.artists}</Text>
+                    <Text style={styles.trackArtists}>
+                      {track.artistNames?.join(", ")}
+                    </Text>
                   </View>
                   <Pressable
-                    onPress={() => onLikeButtonPress(track.id, track.starred)}
+                    onPress={() => onLikeButtonPress(track.id, starred)}
                   >
                     <IconSymbol
-                      name={track?.starred ? "heart.fill" : "heart"}
+                      name={starred ? "heart.fill" : "heart"}
                       size={32}
                       color={colors.primary}
                     />
