@@ -1,7 +1,7 @@
 import ArtistScreen from "@/components/reusable/artistScreen";
 import { router, useLocalSearchParams } from "expo-router";
 
-const HomeAlbumPage = () => {
+const LibraryArtistPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const onAlbumPress = (albumId: string) => {
@@ -11,4 +11,4 @@ const HomeAlbumPage = () => {
   return <ArtistScreen id={id} onAlbumPress={onAlbumPress} />;
 };
 
-export default HomeAlbumPage;
+export default LibraryArtistPage;

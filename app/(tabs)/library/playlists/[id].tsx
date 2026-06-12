@@ -1,10 +1,10 @@
-import ArtistScreen from "@/components/reusable/artistScreen";
 import { useLocalSearchParams } from "expo-router";
+import PlaylistScreen from "../../../../components/reusable/playlistScreen";
 
-const HomeAlbumPage = () => {
+const LibraryPlaylistPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  return <ArtistScreen id={id} />;
+  return <PlaylistScreen id={id} />;
 };
 
-export default HomeAlbumPage;
+export default LibraryPlaylistPage;

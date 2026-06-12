@@ -75,9 +75,7 @@ const HomeScreen = () => {
                   <Pressable
                     key={playlist.id}
                     onPress={() =>
-                      router.navigate(
-                        `/(tabs)/library/playlists/${playlist.id}`,
-                      )
+                      router.navigate(`/(tabs)/home/playlists/${playlist.id}`)
                     }
                   >
                     <PlaylistItem playlist={playlist} />
