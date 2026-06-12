@@ -4,10 +4,19 @@ import { Search } from "@/types/search";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+export enum SearchItemType {
+  TRACK = 'track',
+  ALBUM = 'album',
+  ARTIST = 'artist',
+}
+
 export interface SearchItemElements {
+  id: string
   imageUrl: string | undefined;
   text: string;
   subText?: string;
+  type: SearchItemType;
+  albumId?: string;
 }
 
 export const useOrganizedSearch = (search: Search | undefined): SearchItemElements[] => {
@@ -37,20 +46,27 @@ export const useOrganizedSearch = (search: Search | undefined): SearchItemElemen
   });
 
   return [
-    ...albums.map((album, i) => ({
+    ...albums.map((album) => ({
+      id: album.id,
       imageUrl: coverById.get(album.id),
       text: album.title,
       subText: `Album • ${album.artists.join(", ")}`,
+      type: SearchItemType.ALBUM,
     })),
     ...artists.map((artist, i) => ({
+      id: artist.id,
       imageUrl: artistImages[i]?.data,
       text: artist.name,
       subText: "Artist",
+      type: SearchItemType.ARTIST,
     })),
-    ...tracks.map((track, i) => ({
+    ...tracks.map((track) => ({
+      id: track.id,
       imageUrl: coverById.get(track.albumId),
       text: track.title,
       subText: `Track • ${track.artistNames.join(", ")}`,
+      albumId: track.albumId,
+      type: SearchItemType.TRACK,
     })),
   ];
 };

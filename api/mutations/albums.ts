@@ -19,6 +19,7 @@ export const useAlbumStar = () => {
         },
         onSuccess: (_data, { id }) => {
             queryClient.invalidateQueries({ queryKey: ['album', id] });
+            queryClient.invalidateQueries({ queryKey: ['albums'] });
         },
     });
 };

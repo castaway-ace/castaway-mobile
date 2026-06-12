@@ -19,6 +19,7 @@ export const useArtistStar = () => {
         },
         onSuccess: (_data, { id }) => {
             queryClient.invalidateQueries({ queryKey: ['artist', id] });
+            queryClient.invalidateQueries({ queryKey: ['artists'] });
         },
     });
 };

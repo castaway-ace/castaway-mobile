@@ -1,10 +1,18 @@
+import { albumApi } from "@/api/albums";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+} from "@/api/mutations/interactions";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
+import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
-import { SearchItemElements } from "@/utils/search";
+import { SearchItemElements, SearchItemType } from "@/utils/search";
+import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
-import { FC, useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { FC, useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { blurHash } from "../../../constants/blur";
 
 interface SearchItemProps {
@@ -13,12 +21,68 @@ interface SearchItemProps {
 
 const SearchItem: FC<SearchItemProps> = ({ item }) => {
   const { colors } = useTheme();
+  const queryClient = useQueryClient();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [isStarting, setIsStarting] = useState(false);
 
   const { imageUrl, text, subText } = item;
 
+  const { mutate: albumInteraction } = useUpdateAlbumInteraction();
+  const { mutate: artistInteraction } = useUpdateArtistInteraction();
+
+  const { playQueue } = useAudioPlayerContext();
+
+  const onPress = async () => {
+    if (item.type === SearchItemType.ALBUM) {
+      albumInteraction(item.id);
+      router.navigate(`/(tabs)/search/albums/${item.id}`);
+      return;
+    }
+
+    if (item.type === SearchItemType.ARTIST) {
+      artistInteraction(item.id);
+      router.navigate(`/(tabs)/search/artists/${item.id}`);
+      return;
+    }
+
+    const albumId = item?.albumId;
+    if (!albumId || isStarting) {
+      return;
+    }
+
+    setIsStarting(true);
+
+    if (!albumId) {
+      return;
+    }
+
+    try {
+      const album = await queryClient.fetchQuery({
+        queryKey: ["album", albumId],
+        queryFn: () => albumApi.getOne(albumId),
+      });
+
+      const startIndex = album.tracks.findIndex(
+        (track) => track.id === item.id,
+      );
+
+      if (startIndex === -1) {
+        throw new Error(
+          `Track ${item.id} not present in album ${item.albumId} track list`,
+        );
+      }
+
+      playQueue(album.tracks, startIndex);
+    } catch (error) {
+      console.error("Failed to start album queue from search", error);
+    } finally {
+      albumInteraction(albumId);
+      setIsStarting(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.leftContainer}>
         <Image
           source={{
@@ -37,7 +101,7 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
         </View>
       </View>
       <IconSymbol size={28} name={"ellipsis"} color={colors.primary} />
-    </View>
+    </Pressable>
   );
 };
 

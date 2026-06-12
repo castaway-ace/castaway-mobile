@@ -19,9 +19,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   return (
     <View key={artist.id} style={styles.artistItem}>
       <Image
-        source={{
-          uri: artistImageUrl,
-        }}
+        source={require("../../assets/placeholders/artist-placeholder.png")}
         placeholder={blurHash}
         style={styles.artistArt}
       />

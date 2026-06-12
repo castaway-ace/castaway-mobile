@@ -88,45 +88,41 @@ const HomeScreen = () => {
               </>
             </View>
           )}
-          <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Your Playlists</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.albumScrollContent}
-            >
-              {playlistsAvailable ? (
-                playlists.map((playlist) => (
+          {playlistsAvailable && (
+            <View style={styles.itemsContainer}>
+              <Text style={[styles.itemsContainerTitle]}>Your Playlists</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.albumScrollContent}
+              >
+                {playlists.map((playlist) => (
                   <Pressable
                     key={playlist.id}
                     onPress={() => onPlaylistPress(playlist.id)}
                   >
                     <PlaylistItem playlist={playlist} />
                   </Pressable>
-                ))
-              ) : (
-                <Text style={styles.unavailableText}>No playlists found</Text>
-              )}
-            </ScrollView>
-          </View>
-          <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Recently Played</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.albumScrollContent}
-            >
-              {interactionsAvailable ? (
-                interactions.map((interaction) => (
+                ))}
+              </ScrollView>
+            </View>
+          )}
+          {interactionsAvailable && (
+            <View style={styles.itemsContainer}>
+              <Text style={[styles.itemsContainerTitle]}>Recently Played</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.albumScrollContent}
+              >
+                {interactions.map((interaction) => (
                   <Pressable key={interaction.id} onPress={() => {}}>
                     <Text style={styles.unavailableText}>{interaction.id}</Text>
                   </Pressable>
-                ))
-              ) : (
-                <Text style={styles.unavailableText}>No playlists found</Text>
-              )}
-            </ScrollView>
-          </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
           {favoriteArtistsAvailable && (
             <View style={styles.itemsContainer}>
               <Text
@@ -142,7 +138,7 @@ const HomeScreen = () => {
                 {favoriteArtists.map((artist) => (
                   <Pressable
                     key={artist.id}
-                    onPress={() => onAlbumPress(artist.id)}
+                    onPress={() => onArtistPress(artist.id)}
                   >
                     <ArtistItem artist={artist} />
                   </Pressable>
