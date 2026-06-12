@@ -5,6 +5,7 @@ import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../constants/blur";
 
 interface ArtistItemProps {
   artist: ArtistSummary;
@@ -21,7 +22,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
         source={{
           uri: artistImageUrl,
         }}
-        placeholder={require("../../assets/placeholders/artist-placeholder.png")}
+        placeholder={blurHash}
         style={styles.artistArt}
       />
       <Text style={styles.artistName}>{artist.name}</Text>

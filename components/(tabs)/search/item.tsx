@@ -5,6 +5,7 @@ import { SearchItemElements } from "@/utils/search";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../../constants/blur";
 
 interface SearchItemProps {
   item: SearchItemElements;
@@ -23,6 +24,7 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
           source={{
             uri: imageUrl,
           }}
+          placeholder={blurHash}
           style={styles.art}
         />
         <View style={styles.textContainer}>

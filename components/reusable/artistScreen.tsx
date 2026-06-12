@@ -10,6 +10,7 @@ import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useArtistStar } from "../../api/mutations/artists";
+import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface ArtistScreenProps {
@@ -55,7 +56,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
             source={{
               uri: artistImageUrl,
             }}
-            placeholder={require("../../assets/placeholders/artist-placeholder.png")}
+            placeholder={blurHash}
             style={styles.artistImage}
           />
         </View>
@@ -79,7 +80,11 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
                 style={styles.albumItem}
                 onPress={() => onAlbumPress(album.id)}
               >
-                <Image source={{ uri: coverUrl }} style={styles.albumArt} />
+                <Image
+                  source={{ uri: coverUrl }}
+                  placeholder={blurHash}
+                  style={styles.albumArt}
+                />
                 <Text style={styles.albumTitle}>{album.title}</Text>
               </Pressable>
             );

@@ -6,6 +6,7 @@ import { formatDuration } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface TrackItemProps {
@@ -18,7 +19,7 @@ const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
   const { data: albumArtUrl } = useAlbumCover(track.albumId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { artistNames, title, duration, albumId } = track;
+  const { artistNames, title, duration } = track;
 
   const formattedDuration = formatDuration(duration ?? 0);
 
@@ -29,6 +30,7 @@ const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
           source={{
             uri: albumArtUrl,
           }}
+          placeholder={blurHash}
           style={styles.albumArt}
         />
         <View style={styles.info}>

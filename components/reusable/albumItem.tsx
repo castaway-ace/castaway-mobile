@@ -5,6 +5,7 @@ import { AlbumSummary } from "@/types/albums";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../constants/blur";
 
 interface AlbumProps {
   album: AlbumSummary;
@@ -21,6 +22,7 @@ const AlbumItem: FC<AlbumProps> = ({ album }) => {
         source={{
           uri: albumArtUrl,
         }}
+        placeholder={blurHash}
         style={styles.albumArt}
       />
       <Text style={styles.albumName}>{album.title}</Text>

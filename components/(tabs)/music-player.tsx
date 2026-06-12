@@ -11,6 +11,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
@@ -40,7 +41,7 @@ const MusicPlayer = () => {
             source={{
               uri: coverArtUrl,
             }}
-            placeholder={require("../../assets/placeholders/album-placeholder.png")}
+            placeholder={blurHash}
             style={styles.albumArt}
           />
           <View style={styles.info}>

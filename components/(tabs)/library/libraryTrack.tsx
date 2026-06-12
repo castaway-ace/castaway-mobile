@@ -7,6 +7,7 @@ import { formatDuration } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../../constants/blur";
 
 interface LibraryTrackProps {
   track: Track;
@@ -30,6 +31,7 @@ const LibraryTrack: FC<LibraryTrackProps> = ({ track, onPress }) => {
           source={{
             uri: albumArtUrl,
           }}
+          placeholder={blurHash}
           style={styles.albumArt}
         />
         <View style={styles.info}>

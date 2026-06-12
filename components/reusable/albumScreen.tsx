@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbumStar } from "../../api/mutations/albums";
 import { useTrackStar } from "../../api/mutations/tracks";
 import { useStarredTracks } from "../../api/queries/tracks";
+import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface AlbumScreenProps {
@@ -64,6 +65,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
             source={{
               uri: albumCoverUrl,
             }}
+            placeholder={blurHash}
             style={styles.albumArt}
           />
         </View>
