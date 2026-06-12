@@ -22,7 +22,7 @@ export const artistApi = {
     return data;
   },
 
-  getById: async (id: string): Promise<Artist> => {
+  getOne: async (id: string): Promise<Artist> => {
     const { data } = await apiClient.get(`/artists/${id}`);
     return data;
   },

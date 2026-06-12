@@ -283,7 +283,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const track = await trackApi.getById(trackId);
+      const track = await trackApi.getOne(trackId);
       dispatch({ type: "SET_QUEUE", tracks: [track], startIndex: 0 });
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load track"));

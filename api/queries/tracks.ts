@@ -36,7 +36,7 @@ export const useTracks = (options: Partial<TrackOptions> = {}) => {
 export const useTrack = (id: string) => {
     return useQuery({
         queryKey: ['track', id],
-        queryFn: () => trackApi.getById(id),
+        queryFn: () => trackApi.getOne(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });

@@ -25,7 +25,7 @@ export const trackApi = {
     return data;
   },
 
-  getById: async (id: string): Promise<Track> => {
+  getOne: async (id: string): Promise<Track> => {
     const { data } = await apiClient.get(`/tracks/${id}`);
     return data;
   },

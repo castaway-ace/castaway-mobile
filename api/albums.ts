@@ -28,7 +28,7 @@ export const albumApi = {
     return data;
   },
 
-  getById: async (id: string): Promise<Album> => {
+  getOne: async (id: string): Promise<Album> => {
     const { data } = await apiClient.get(`/albums/${id}`);
     return data;
   },

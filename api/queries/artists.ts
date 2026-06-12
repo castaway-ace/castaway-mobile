@@ -36,7 +36,7 @@ export const useArtists = (options: Partial<ArtistOptions> = {}) => {
 export const useArtist = (id: string) => {
     return useQuery({
         queryKey: ['artist', id],
-        queryFn: () => artistApi.getById(id),
+        queryFn: () => artistApi.getOne(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });

@@ -35,7 +35,7 @@ export const useAlbums = (options: Partial<AlbumOptions> = {}) => {
 export const useAlbum = (id: string) => {
     return useQuery({
         queryKey: ['album', id],
-        queryFn: () => albumApi.getById(id),
+        queryFn: () => albumApi.getOne(id),
         enabled: !!id,
         staleTime: 10 * 60 * 1000,
     });
