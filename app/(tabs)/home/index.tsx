@@ -11,6 +11,12 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+  useUpdatePlaylistInteraction,
+} from "../../../api/mutations/interactions";
+import { useInteractions } from "../../../api/queries/interactions";
 
 const HomeScreen = () => {
   const { colors } = useTheme();
@@ -20,6 +26,11 @@ const HomeScreen = () => {
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
   const { data: albumsData } = useAlbums();
+  const { data: interactions } = useInteractions();
+
+  const { mutate: albumInteraction } = useUpdateAlbumInteraction();
+  const { mutate: artistInteraction } = useUpdateArtistInteraction();
+  const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
   const albums = albumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteAlbums =
@@ -28,11 +39,27 @@ const HomeScreen = () => {
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
   const playlistsAvailable = playlists?.length;
+  const interactionsAvailable = interactions?.length;
   const albumsAvailable = albums.length > 0;
   const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
   const favoriteArtistsAvailable = favoriteArtists.length > 0;
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  const onAlbumPress = (albumId: string) => {
+    albumInteraction(albumId);
+    router.navigate(`/(tabs)/home/albums/${albumId}`);
+  };
+
+  const onArtistPress = (artistId: string) => {
+    artistInteraction(artistId);
+    router.navigate(`/(tabs)/home/artists/${artistId}`);
+  };
+
+  const onPlaylistPress = (playlistId: string) => {
+    playlistInteraction(playlistId);
+    router.navigate(`/(tabs)/home/playlists/${playlistId}`);
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -52,9 +79,7 @@ const HomeScreen = () => {
                   {favoriteAlbums.map((album) => (
                     <Pressable
                       key={album.id}
-                      onPress={() =>
-                        router.navigate(`/(tabs)/home/albums/${album.id}`)
-                      }
+                      onPress={() => onAlbumPress(album.id)}
                     >
                       <AlbumItem album={album} />
                     </Pressable>
@@ -74,9 +99,7 @@ const HomeScreen = () => {
                 playlists.map((playlist) => (
                   <Pressable
                     key={playlist.id}
-                    onPress={() =>
-                      router.navigate(`/(tabs)/home/playlists/${playlist.id}`)
-                    }
+                    onPress={() => onPlaylistPress(playlist.id)}
                   >
                     <PlaylistItem playlist={playlist} />
                   </Pressable>
@@ -87,25 +110,20 @@ const HomeScreen = () => {
             </ScrollView>
           </View>
           <View style={styles.itemsContainer}>
-            <Text style={[styles.itemsContainerTitle]}>Last Played Albums</Text>
+            <Text style={[styles.itemsContainerTitle]}>Recently Played</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.albumScrollContent}
             >
-              {albumsAvailable ? (
-                albums.map((album) => (
-                  <Pressable
-                    key={album.id}
-                    onPress={() =>
-                      router.navigate(`/(tabs)/home/albums/${album.id}`)
-                    }
-                  >
-                    <AlbumItem album={album} />
+              {interactionsAvailable ? (
+                interactions.map((interaction) => (
+                  <Pressable key={interaction.id} onPress={() => {}}>
+                    <Text style={styles.unavailableText}>{interaction.id}</Text>
                   </Pressable>
                 ))
               ) : (
-                <Text style={styles.unavailableText}>No albums found</Text>
+                <Text style={styles.unavailableText}>No playlists found</Text>
               )}
             </ScrollView>
           </View>
@@ -124,9 +142,7 @@ const HomeScreen = () => {
                 {favoriteArtists.map((artist) => (
                   <Pressable
                     key={artist.id}
-                    onPress={() =>
-                      router.navigate(`/(tabs)/home/artists/${artist.id}`)
-                    }
+                    onPress={() => onAlbumPress(artist.id)}
                   >
                     <ArtistItem artist={artist} />
                   </Pressable>
