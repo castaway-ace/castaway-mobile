@@ -11,16 +11,15 @@ export const useArtistStar = () => {
     return useMutation({
         mutationFn: async ({id, starred}: ArtistStarMutation) => {
             if (starred) {
-                console.log(starred, id);
                 await artistApi.unStar(id);
             }
             else {
-                console.log(starred, id);
                 await artistApi.star(id);
             }
         },
         onSuccess: (_data, { id }) => {
             queryClient.invalidateQueries({ queryKey: ['artist', id] });
+            queryClient.invalidateQueries({ queryKey: ['artists'] });
         },
     });
 };

@@ -9,6 +9,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTrackStar } from "../../api/mutations/tracks";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface AlbumScreenProps {
@@ -17,6 +18,7 @@ interface AlbumScreenProps {
 
 const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
   const { data: album } = useAlbum(id);
+  const { mutate } = useTrackStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -31,6 +33,10 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
   const onTrackPress = (index: number) => {
     if (!album?.tracks) return;
     playQueue(album.tracks, index);
+  };
+
+  const onLikeButtonPress = (trackId: string, starred: boolean) => {
+    mutate({ id: trackId, starred: !!starred });
   };
 
   return (
@@ -68,8 +74,19 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
               >
                 <Text style={styles.trackNumber}>{track.trackNumber}</Text>
                 <View style={styles.trackInfo}>
-                  <Text style={styles.trackTitle}>{track.title}</Text>
-                  <Text style={styles.trackArtists}>{album?.artists}</Text>
+                  <View style={styles.trackLeftInfo}>
+                    <Text style={styles.trackTitle}>{track.title}</Text>
+                    <Text style={styles.trackArtists}>{album?.artists}</Text>
+                  </View>
+                  <Pressable
+                    onPress={() => onLikeButtonPress(track.id, track.starred)}
+                  >
+                    <IconSymbol
+                      name={track?.starred ? "heart.fill" : "heart"}
+                      size={32}
+                      color={colors.primary}
+                    />
+                  </Pressable>
                 </View>
               </Pressable>
             );
@@ -141,6 +158,12 @@ const makeStyles = (colors: ThemeColors) =>
       fontSize: 18,
     },
     trackInfo: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    trackLeftInfo: {
       display: "flex",
       gap: 4,
     },

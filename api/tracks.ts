@@ -34,7 +34,7 @@ export const trackApi = {
     await apiClient.post(`/tracks/${id}/star`);
   },
 
-  deleteStar: async (id: string): Promise<void> => {
+  unStar: async (id: string): Promise<void> => {
     await apiClient.delete(`/tracks/${id}/star`);
   },
 };
