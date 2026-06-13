@@ -43,7 +43,7 @@ export const useArtist = (id: string) => {
 };
 
 export const artistImageQueryOptions = (id: string | undefined) => ({
-    queryKey: ["albumImage", id],
+    queryKey: ["artistImage", id],
     queryFn: () => {
         if (!id) return undefined;
         return artistApi.getImage(id);

@@ -3,6 +3,7 @@ import { useArtists } from "@/api/queries/artists";
 import { usePlaylists } from "@/api/queries/playlist";
 import AlbumItem from "@/components/reusable/albumItem";
 import ArtistItem from "@/components/reusable/artistItem";
+import InteractionItem from "@/components/reusable/interactionItem";
 import PlaylistItem from "@/components/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -67,25 +68,21 @@ const HomeScreen = () => {
         <View style={styles.itemContainerWrapper}>
           {favoriteAlbumsAvailable && (
             <View style={styles.itemsContainer}>
-              <>
-                <Text style={[styles.itemsContainerTitle]}>
-                  Favorite Albums
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.albumScrollContent}
-                >
-                  {favoriteAlbums.map((album) => (
-                    <Pressable
-                      key={album.id}
-                      onPress={() => onAlbumPress(album.id)}
-                    >
-                      <AlbumItem album={album} />
-                    </Pressable>
-                  ))}
-                </ScrollView>
-              </>
+              <Text style={[styles.itemsContainerTitle]}>Favorite Albums</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.albumScrollContent}
+              >
+                {favoriteAlbums.map((album) => (
+                  <Pressable
+                    key={album.id}
+                    onPress={() => onAlbumPress(album.id)}
+                  >
+                    <AlbumItem album={album} />
+                  </Pressable>
+                ))}
+              </ScrollView>
             </View>
           )}
           {playlistsAvailable && (
@@ -117,7 +114,7 @@ const HomeScreen = () => {
               >
                 {interactions.map((interaction) => (
                   <Pressable key={interaction.id} onPress={() => {}}>
-                    <Text style={styles.unavailableText}>{interaction.id}</Text>
+                    <InteractionItem interaction={interaction} />
                   </Pressable>
                 ))}
               </ScrollView>
