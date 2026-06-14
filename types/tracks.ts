@@ -1,3 +1,13 @@
+interface TrackArtist {
+  id: string;
+  name: string;
+}
+
+interface TrackAlbum {
+  id: string;
+  title: string;
+}
+
 export interface Track {
   id: string;
   title: string;
@@ -11,8 +21,8 @@ export interface Track {
   bitRate: number;
   sampleRate: number;
   bitDepth: number | null;
-  albumTitle: string;
-  artistNames: string[];
+  album: TrackAlbum;
+  artists: TrackArtist[];
   albumId: string;
 }
 
@@ -22,8 +32,7 @@ export interface TrackSummary {
   releaseDate: Date;
   genres: string[];
   duration: number;
-  albumTitle: string;
-  artistNames: string[];
-  albumId: string;
+  album: TrackAlbum;
+  artists: TrackArtist[];
   trackNumber: number;
 }

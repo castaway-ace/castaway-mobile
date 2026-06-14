@@ -99,7 +99,6 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
           <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
             const starred = !!starredTracks?.includes(track.id);
-            console.log(album.tracks);
             return (
               <Pressable
                 key={track.id}
