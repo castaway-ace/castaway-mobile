@@ -23,9 +23,12 @@ const MusicPlayerModal: FC = () => {
   const { height } = useWindowDimensions();
   const translateY = useSharedValue(height);
 
+  if (isOpen && !rendered) {
+    setRendered(true);
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setRendered(true);
       translateY.value = withTiming(0, { duration: 280 });
     } else {
       translateY.value = withTiming(height, { duration: 220 }, (finished) => {
