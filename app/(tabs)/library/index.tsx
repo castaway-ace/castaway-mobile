@@ -4,7 +4,6 @@ import {
   useUpdatePlaylistInteraction,
 } from "@/api/mutations/interactions";
 import { useInteractions } from "@/api/queries/interactions";
-import InteractionItem from "@/components/reusable/interactionItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
@@ -12,6 +11,7 @@ import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LibraryInteractionItem from "../../../components/(tabs)/library/interactionItem";
 
 const Library = () => {
   const { colors } = useTheme();
@@ -29,17 +29,17 @@ const Library = () => {
 
   const onAlbumPress = (albumId: string) => {
     albumInteraction(albumId);
-    router.navigate(`/(tabs)/home/albums/${albumId}`);
+    router.navigate(`/(tabs)/library/albums/${albumId}`);
   };
 
   const onArtistPress = (artistId: string) => {
     artistInteraction(artistId);
-    router.navigate(`/(tabs)/home/artists/${artistId}`);
+    router.navigate(`/(tabs)/library/artists/${artistId}`);
   };
 
   const onPlaylistPress = (playlistId: string) => {
     playlistInteraction(playlistId);
-    router.navigate(`/(tabs)/home/playlists/${playlistId}`);
+    router.navigate(`/(tabs)/library/playlists/${playlistId}`);
   };
 
   const onInteractionPress = (interaction: Interaction) => {
@@ -55,22 +55,20 @@ const Library = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Library</Text>
-      <View>
-        {interactionsAvailable && (
-          <View>
-            {interactions.map((interaction) => {
-              return (
-                <Pressable
-                  key={interaction.id}
-                  onPress={() => onInteractionPress(interaction)}
-                >
-                  <InteractionItem interaction={interaction} />
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
-      </View>
+      {interactionsAvailable && (
+        <View style={styles.itemContainer}>
+          {interactions.map((interaction) => {
+            return (
+              <Pressable
+                key={interaction.id}
+                onPress={() => onInteractionPress(interaction)}
+              >
+                <LibraryInteractionItem interaction={interaction} />
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -81,6 +79,9 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
       padding: 16,
+    },
+    itemContainer: {
+      gap: 12,
     },
     title: {
       fontSize: 24,

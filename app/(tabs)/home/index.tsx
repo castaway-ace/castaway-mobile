@@ -1,9 +1,9 @@
 import { useAlbums } from "@/api/queries/albums";
 import { useArtists } from "@/api/queries/artists";
 import { usePlaylists } from "@/api/queries/playlist";
+import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
 import AlbumItem from "@/components/reusable/albumItem";
 import ArtistItem from "@/components/reusable/artistItem";
-import InteractionItem from "@/components/reusable/interactionItem";
 import PlaylistItem from "@/components/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -125,7 +125,7 @@ const HomeScreen = () => {
                     key={interaction.id}
                     onPress={() => onInteractionPress(interaction)}
                   >
-                    <InteractionItem interaction={interaction} />
+                    <HomeInteractionItem interaction={interaction} />
                   </Pressable>
                 ))}
               </ScrollView>

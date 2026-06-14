@@ -7,15 +7,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { blurHash } from "../../constants/blur";
+import { blurHash } from "../../../constants/blur";
 
 interface InteractionItemProps {
   interaction: Interaction;
 }
 
-const IMAGE_PLACEHOLDER = require("../../assets/placeholders/artist-placeholder.png");
+const IMAGE_PLACEHOLDER = require("../../../assets/placeholders/artist-placeholder.png");
 
-const InteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
+const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const isAlbum = interaction.type === InteractionType.ALBUM;
@@ -99,4 +99,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default InteractionItem;
+export default HomeInteractionItem;
