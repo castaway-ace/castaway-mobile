@@ -1,4 +1,4 @@
-import { useAlbum, useAlbumCover } from "@/api/queries/albums";
+import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -13,14 +13,15 @@ import { useAlbumStar } from "../../api/mutations/albums";
 import { useTrackStar } from "../../api/mutations/tracks";
 import { useStarredTracks } from "../../api/queries/tracks";
 import { blurHash } from "../../constants/blur";
+import { Album } from "../../types/albums";
 import { IconSymbol } from "../ui/icon-symbol";
 
 interface AlbumScreenProps {
-  id: string;
+  album: Album;
+  onArtistPress: (artistId: string) => void;
 }
 
-const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
-  const { data: album } = useAlbum(id);
+const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { data: starredTracks } = useStarredTracks();
   const { mutate: trackStar } = useTrackStar();
   const { mutate: albumStar } = useAlbumStar();
@@ -28,7 +29,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: albumCoverUrl } = useAlbumCover(id);
+  const { data: albumCoverUrl } = useAlbumCover(album.id);
   const releaseDate = formatDate(album?.releaseDate);
 
   const { playQueue } = useAudioPlayerContext();
@@ -71,7 +72,18 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
         </View>
         <View style={styles.albumInfoContainer}>
           <Text style={styles.albumTitle}>{album?.title}</Text>
-          <Text style={styles.artistName}>{album?.artists}</Text>
+          <View>
+            {album?.artists.map((artist) => {
+              return (
+                <Pressable
+                  key={artist.id}
+                  onPress={() => onArtistPress(artist.id)}
+                >
+                  <Text style={styles.artistName}>{artist.name}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
           <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
         </View>
         <View style={styles.albumLikeContainer}>
@@ -87,6 +99,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
           <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
             const starred = !!starredTracks?.includes(track.id);
+            console.log(album.tracks);
             return (
               <Pressable
                 key={track.id}
@@ -98,7 +111,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
                   <View style={styles.trackLeftInfo}>
                     <Text style={styles.trackTitle}>{track.title}</Text>
                     <Text style={styles.trackArtists}>
-                      {track.artistNames?.join(", ")}
+                      {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
                   <Pressable onPress={() => {}}>

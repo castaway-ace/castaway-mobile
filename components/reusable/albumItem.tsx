@@ -29,7 +29,7 @@ const AlbumItem: FC<AlbumProps> = ({ id }) => {
         {album?.title}
       </Text>
       <Text style={styles.albumArtist} numberOfLines={1}>
-        {album?.artists.map((artist) => artist).join(", ")}
+        {album?.artists?.map((artist) => artist.name)?.join(", ")}
       </Text>
     </View>
   );

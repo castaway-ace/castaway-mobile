@@ -11,7 +11,7 @@ export interface Track {
   bitRate: number;
   sampleRate: number;
   bitDepth: number | null;
-  albumName: string;
+  albumTitle: string;
   artistNames: string[];
   albumId: string;
 }
@@ -22,7 +22,7 @@ export interface TrackSummary {
   releaseDate: Date;
   genres: string[];
   duration: number;
-  albumName: string;
+  albumTitle: string;
   artistNames: string[];
   albumId: string;
   trackNumber: number;

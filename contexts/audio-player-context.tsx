@@ -232,7 +232,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
         player.setActiveForLockScreen(true, {
           title: track.title,
           artist: track.artistNames.join(", "),
-          albumTitle: track.albumName,
+          albumTitle: track.albumTitle,
         });
       } catch (err) {
         setError(
@@ -259,7 +259,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     player.updateLockScreenMetadata({
       title: currentTrack.title,
       artist: currentTrack.artistNames.join(", "),
-      albumTitle: currentTrack.albumName,
+      albumTitle: currentTrack.albumTitle,
       artworkUrl: albumArtUrl,
     });
   }, [albumArtUrl, currentTrack, player]);

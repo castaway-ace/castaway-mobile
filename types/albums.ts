@@ -1,5 +1,10 @@
 import { Track } from "./tracks";
 
+export interface AlbumArtist {
+    id: string;
+    name: string;
+}
+
 export interface Album {
     id: string,
     title: string,
@@ -7,7 +12,7 @@ export interface Album {
     genre: string,
     imageUrl: string,
     compilation: boolean,
-    artists: string[],
+    artists: AlbumArtist[],
     starred: boolean,
     tracks: Track[],
 }
@@ -18,5 +23,5 @@ export interface AlbumSummary {
     releaseDate: string,
     genre: string,
     imageUrl: string,
-    artists: string[],
+    artists: AlbumArtist[],
 }
