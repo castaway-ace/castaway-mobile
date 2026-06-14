@@ -76,19 +76,19 @@ const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     interactionItem: {
       flexDirection: "row",
-      width: 120,
-      gap: 24,
+      gap: 16,
     },
     interactionArt: {
-      width: "100%",
+      width: 120,
       aspectRatio: 1,
       borderRadius: 12,
     },
     textContainer: {
       gap: 4,
+      justifyContent: "center",
     },
     text: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: "bold",
       maxWidth: "100%",
       color: colors.primary,
