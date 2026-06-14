@@ -13,13 +13,16 @@ interface InteractionItemProps {
   interaction: Interaction;
 }
 
-const IMAGE_PLACEHOLDER = require("../../../assets/placeholders/artist-placeholder.png");
+const ARTIST_PLACEHOLDER = require("../../../assets/placeholders/artist-placeholder.png");
+const ALBUM_PLACEHOLDER = require("../../../assets/placeholders/album-placeholder.png");
 
 const LibraryInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const isAlbum = interaction.type === InteractionType.ALBUM;
   const isArtist = interaction.type === InteractionType.ARTIST;
+
+  const placeholder = isArtist ? ARTIST_PLACEHOLDER : ALBUM_PLACEHOLDER;
 
   const { data: source } = useQuery({
     queryKey: isAlbum
@@ -56,7 +59,7 @@ const LibraryInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   return (
     <View key={interaction.id} style={styles.interactionItem}>
       <Image
-        source={source ?? IMAGE_PLACEHOLDER}
+        source={source ?? placeholder}
         placeholder={blurHash}
         style={styles.interactionArt}
       />
