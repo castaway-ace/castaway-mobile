@@ -251,7 +251,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       player.clearLockScreenControls();
       return;
     }
-    void playTrack(currentTrack);
+    playTrack(currentTrack);
   }, [currentTrack, player, playTrack]);
 
   useEffect(() => {
@@ -269,7 +269,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       finishHandledRef.current = true;
       const onlyOneTrack = order.length <= 1;
       if (repeatMode === "one" || (repeatMode === "all" && onlyOneTrack)) {
-        void player.seekTo(0);
+        player.seekTo(0);
         player.play();
       } else {
         dispatch({ type: "NEXT", naturalEnd: true });
@@ -318,7 +318,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const previous = useCallback((): void => {
     const atStart = position <= 0 && repeatMode === "off";
     if (status.currentTime > RESTART_THRESHOLD_SECONDS || atStart) {
-      void player.seekTo(0);
+      player.seekTo(0);
       return;
     }
     dispatch({ type: "PREVIOUS" });
@@ -346,7 +346,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const moveTarget = useCallback(
     (target: number): void => {
-      void player.seekTo(target);
+      player.seekTo(target);
       setSeekTarget(target);
       if (seekTimer.current) clearTimeout(seekTimer.current);
       seekTimer.current = setTimeout(clearSeekTarget, 1500);
@@ -359,7 +359,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     if (Math.abs(status.currentTime - seekTarget) < 1.25) {
       clearSeekTarget();
     }
-  }, [status.currentTime, seekTarget]);
+  }, [status.currentTime, seekTarget, clearSeekTarget]);
 
   const effectiveTime = seekTarget ?? status.currentTime;
 
