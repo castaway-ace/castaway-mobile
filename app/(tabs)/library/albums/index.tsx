@@ -33,7 +33,7 @@ const Albums = () => {
               router.navigate(`/(tabs)/library/albums/${album.id}`)
             }
           >
-            <AlbumItem album={album} />
+            <AlbumItem id={album.id} />
           </Pressable>
         ))}
       </View>

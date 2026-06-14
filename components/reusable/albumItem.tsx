@@ -7,13 +7,13 @@ import { StyleSheet, Text, View } from "react-native";
 import { blurHash } from "../../constants/blur";
 
 interface AlbumProps {
-  albumId: string;
+  id: string;
 }
 
-const AlbumItem: FC<AlbumProps> = ({ albumId }) => {
+const AlbumItem: FC<AlbumProps> = ({ id }) => {
   const { colors } = useTheme();
-  const { data: album } = useAlbum(albumId);
-  const { data: albumArtUrl } = useAlbumCover(albumId);
+  const { data: album } = useAlbum(id);
+  const { data: albumArtUrl } = useAlbumCover(id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (

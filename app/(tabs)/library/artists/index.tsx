@@ -33,7 +33,7 @@ const Artists = () => {
               router.navigate(`/(tabs)/library/artists/${artist.id}`)
             }
           >
-            <ArtistItem artist={artist} />
+            <ArtistItem id={artist.id} />
           </Pressable>
         ))}
       </View>

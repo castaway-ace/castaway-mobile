@@ -87,7 +87,7 @@ const HomeScreen = () => {
                     key={album.id}
                     onPress={() => onAlbumPress(album.id)}
                   >
-                    <AlbumItem albumId={album.id} />
+                    <AlbumItem id={album.id} />
                   </Pressable>
                 ))}
               </ScrollView>
@@ -148,7 +148,7 @@ const HomeScreen = () => {
                     key={artist.id}
                     onPress={() => onArtistPress(artist.id)}
                   >
-                    <ArtistItem artist={artist} />
+                    <ArtistItem id={artist.id} />
                   </Pressable>
                 ))}
               </ScrollView>

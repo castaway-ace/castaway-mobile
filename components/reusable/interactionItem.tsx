@@ -18,8 +18,8 @@ const IMAGE_PLACEHOLDER = require("../../assets/placeholders/artist-placeholder.
 const InteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const isAlbum = interaction.type == InteractionType.ALBUM;
-  const isArtist = interaction.type == InteractionType.ARTIST;
+  const isAlbum = interaction.type === InteractionType.ALBUM;
+  const isArtist = interaction.type === InteractionType.ARTIST;
 
   const { data: source } = useQuery({
     queryKey: isAlbum

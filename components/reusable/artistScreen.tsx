@@ -75,7 +75,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
                 style={styles.albumItem}
                 onPress={() => onAlbumPress(album.id)}
               >
-                <AlbumItem albumId={album.id} />
+                <AlbumItem id={album.id} />
               </Pressable>
             );
           })}

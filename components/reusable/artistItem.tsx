@@ -1,19 +1,19 @@
-import { useArtistImage } from "@/api/queries/artists";
+import { useArtist, useArtistImage } from "@/api/queries/artists";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
-import { ArtistSummary } from "@/types/artists";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { blurHash } from "../../constants/blur";
 
 interface ArtistItemProps {
-  artist: ArtistSummary;
+  id: string;
 }
 
-const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
+const ArtistItem: FC<ArtistItemProps> = ({ id }) => {
   const { colors } = useTheme();
-  const { data: artistImageUrl } = useArtistImage(artist.id);
+  const { data: artist } = useArtist(id);
+  const { data: artistImageUrl } = useArtistImage(id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const imageSource = artistImageUrl
@@ -23,13 +23,13 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
     : require("../../assets/placeholders/artist-placeholder.png");
 
   return (
-    <View key={artist.id} style={styles.artistItem}>
+    <View style={styles.artistItem}>
       <Image
         source={imageSource}
         placeholder={blurHash}
         style={styles.artistArt}
       />
-      <Text style={styles.artistName}>{artist.name}</Text>
+      <Text style={styles.artistName}>{artist?.name}</Text>
     </View>
   );
 };
