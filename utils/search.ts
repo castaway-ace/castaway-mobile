@@ -40,7 +40,7 @@ export const useOrganizedSearch = (search: Search | undefined): SearchItemElemen
   const albumIds = useMemo(() => {
     const ids = new Set<string>();
     albums.forEach((a) => a.id && ids.add(a.id));
-    tracks.forEach((t) => t.albumId && ids.add(t.albumId));
+    tracks.forEach((t) => t.album.id && ids.add(t.album.id));
     return [...ids];
   }, [albums, tracks]);
 
@@ -75,10 +75,10 @@ export const useOrganizedSearch = (search: Search | undefined): SearchItemElemen
     })),
     ...tracks.map((track): TrackSearchItem => ({
       id: track.id,
-      imageUrl: coverById.get(track.albumId),
+      imageUrl: coverById.get(track.album.id),
       text: track.title,
-      subText: `Track • ${track.artistNames.join(", ")}`,
-      albumId: track.albumId,
+      subText: `Track • ${track.artists?.map((artist) => artist.name)?.join(", ")}`,
+      albumId: track.album.id,
       type: SearchItemType.TRACK,
     })),
   ];

@@ -207,7 +207,7 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     return order.slice(position + 1).map((i) => queue[i]);
   }, [queue, order, position]);
 
-  const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
+  const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
 
   useEffect(() => {
     setAudioModeAsync({
@@ -231,8 +231,8 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
         player.play();
         player.setActiveForLockScreen(true, {
           title: track.title,
-          artist: track.artistNames.join(", "),
-          albumTitle: track.albumTitle,
+          artist: track.artists?.map((artist) => artist.name)?.join(", "),
+          albumTitle: track.album.title,
         });
       } catch (err) {
         setError(
@@ -256,10 +256,11 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!currentTrack || !albumArtUrl) return;
+    console.log(currentTrack);
     player.updateLockScreenMetadata({
       title: currentTrack.title,
-      artist: currentTrack.artistNames.join(", "),
-      albumTitle: currentTrack.albumTitle,
+      artist: currentTrack.artists?.map((artist) => artist.name)?.join(", "),
+      albumTitle: currentTrack.album.title,
       artworkUrl: albumArtUrl,
     });
   }, [albumArtUrl, currentTrack, player]);

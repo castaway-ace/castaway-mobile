@@ -26,7 +26,7 @@ const ModalContent: FC = () => {
     repeatMode,
   } = useAudioPlayerContext();
   const { close } = usePlayerModal();
-  const { data: albumArtUrl } = useAlbumCover(currentTrack?.albumId);
+  const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   if (!currentTrack) {
@@ -66,7 +66,7 @@ const ModalContent: FC = () => {
               {currentTrack.title}
             </Text>
             <Text style={styles.artistText} numberOfLines={1}>
-              {currentTrack.artistNames}
+              {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
             </Text>
           </View>
           <Pressable>

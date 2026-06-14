@@ -46,9 +46,9 @@ const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
       : interaction.playlist.name;
 
   const subText = isAlbum
-    ? interaction.album.albumArtists
-        .map((albumArtist) => albumArtist.artist?.name)
-        .filter((name): name is string => name !== undefined)
+    ? interaction.album.albumArtists.map(
+        (albumArtist) => albumArtist.artist?.name,
+      )
     : isArtist
       ? "Artist"
       : "Playlist";

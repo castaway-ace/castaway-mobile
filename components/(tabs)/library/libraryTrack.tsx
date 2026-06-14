@@ -18,9 +18,9 @@ const LibraryTrack: FC<LibraryTrackProps> = ({ track, onPress }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { artistNames, title, duration, albumId } = track;
+  const { artists, title, duration, album } = track;
 
-  const { data: albumArtUrl } = useAlbumCover(albumId);
+  const { data: albumArtUrl } = useAlbumCover(album.id);
 
   const formattedDuration = formatDuration(duration ?? 0);
 
@@ -39,7 +39,7 @@ const LibraryTrack: FC<LibraryTrackProps> = ({ track, onPress }) => {
             {title}
           </Text>
           <Text style={styles.trackArtist} numberOfLines={1}>
-            {artistNames.map((artist) => artist).join(", ")}
+            {artists.map((artist) => artist.name).join(", ")}
           </Text>
         </View>
       </View>

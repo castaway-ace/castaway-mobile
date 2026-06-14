@@ -16,10 +16,10 @@ interface TrackItemProps {
 
 const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
   const { colors } = useTheme();
-  const { data: albumArtUrl } = useAlbumCover(track.albumId);
+  const { data: albumArtUrl } = useAlbumCover(track.album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { artistNames, title, duration } = track;
+  const { artists, title, duration } = track;
 
   const formattedDuration = formatDuration(duration ?? 0);
 
@@ -38,7 +38,7 @@ const TrackItem: FC<TrackItemProps> = ({ track, onPress }) => {
             {title}
           </Text>
           <Text style={styles.trackArtist} numberOfLines={1}>
-            {artistNames.map((artist) => artist).join(", ")}
+            {artists.map((artist) => artist.name).join(", ")}
           </Text>
         </View>
       </View>

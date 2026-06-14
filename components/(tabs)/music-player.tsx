@@ -49,7 +49,7 @@ const MusicPlayer = () => {
               {currentTrack.title}
             </Text>
             <Text style={styles.artist} numberOfLines={1}>
-              {currentTrack.artistNames}
+              {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
             </Text>
           </View>
         </Pressable>
