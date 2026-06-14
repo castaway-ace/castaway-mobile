@@ -72,7 +72,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
                   <View style={styles.trackLeftInfo}>
                     <Text style={styles.trackTitle}>{track.title}</Text>
                     <Text style={styles.trackArtists}>
-                      {track.artistNames?.join(", ")}
+                      {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
                   <Pressable
