@@ -11,7 +11,7 @@ import { blurHash } from "../../../constants/blur";
 import { IconSymbol } from "../../ui/icon-symbol";
 import ProgressBar from "./progressBar";
 
-const ModalContent: FC = () => {
+const MusicPlayerModalContent: FC = () => {
   const { colors } = useTheme();
   const {
     isPlaying,
@@ -189,4 +189,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default ModalContent;
+export default MusicPlayerModalContent;

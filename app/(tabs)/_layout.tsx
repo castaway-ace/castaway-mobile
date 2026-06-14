@@ -3,16 +3,13 @@ import React from "react";
 
 import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
 import { HapticTab } from "@/components/(tabs)/haptic-tab";
-import Modal from "@/components/(tabs)/modal";
-import ModalContent from "@/components/(tabs)/modal/content";
+import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { usePlayerModal } from "@/contexts/player-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 
 const TabLayout = () => {
   const { colors } = useTheme();
-  const { isOpen, close } = usePlayerModal();
   const { currentTrack } = useAudioPlayerContext();
 
   return (
@@ -91,11 +88,7 @@ const TabLayout = () => {
           }}
         />
       </Tabs>
-      {currentTrack && (
-        <Modal visible={isOpen} onClose={close}>
-          <ModalContent />
-        </Modal>
-      )}
+      {currentTrack && <MusicPlayerModal />}
     </>
   );
 };
