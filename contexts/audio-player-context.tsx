@@ -256,7 +256,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!currentTrack || !albumArtUrl) return;
-    console.log(currentTrack);
     player.updateLockScreenMetadata({
       title: currentTrack.title,
       artist: currentTrack.artists?.map((artist) => artist.name)?.join(", "),
