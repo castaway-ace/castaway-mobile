@@ -63,7 +63,7 @@ export const useOrganizedSearch = (search: Search | undefined): SearchItemElemen
       id: album.id,
       imageUrl: coverById.get(album.id),
       text: album.title,
-      subText: `Album • ${album.artists.join(", ")}`,
+      subText: `Album • ${album.artists.map((artist) => artist.name)}`,
       type: SearchItemType.ALBUM,
     })),
     ...artists.map((artist, i): ArtistSearchItem => ({

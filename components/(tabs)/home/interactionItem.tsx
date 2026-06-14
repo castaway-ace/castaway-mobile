@@ -40,15 +40,13 @@ const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   });
 
   const text = isAlbum
-    ? interaction.album.title
+    ? interaction.title
     : isArtist
-      ? interaction.artist.name
-      : interaction.playlist.name;
+      ? interaction.name
+      : interaction.name;
 
   const subText = isAlbum
-    ? interaction.album.albumArtists.map(
-        (albumArtist) => albumArtist.artist?.name,
-      )
+    ? interaction.artists.map((artist) => artist.name)
     : isArtist
       ? "Artist"
       : "Playlist";
