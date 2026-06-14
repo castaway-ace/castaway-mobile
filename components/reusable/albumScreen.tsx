@@ -101,11 +101,9 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ id }) => {
                       {track.artistNames?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable
-                    onPress={() => onLikeTrackButtonPress(track.id, starred)}
-                  >
+                  <Pressable onPress={() => {}}>
                     <IconSymbol
-                      name={starred ? "heart.fill" : "heart"}
+                      name={"ellipsis"}
                       size={32}
                       color={colors.primary}
                     />
@@ -182,6 +180,7 @@ const makeStyles = (colors: ThemeColors) =>
     trackNumber: {
       color: colors.primary,
       fontSize: 18,
+      width: 24,
     },
     trackInfo: {
       flex: 1,
