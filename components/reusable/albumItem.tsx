@@ -1,19 +1,19 @@
-import { useAlbumCover } from "@/api/queries/albums";
+import { useAlbum, useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
-import { AlbumSummary } from "@/types/albums";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { blurHash } from "../../constants/blur";
 
 interface AlbumProps {
-  album: AlbumSummary;
+  albumId: string;
 }
 
-const AlbumItem: FC<AlbumProps> = ({ album }) => {
+const AlbumItem: FC<AlbumProps> = ({ albumId }) => {
   const { colors } = useTheme();
-  const { data: albumArtUrl } = useAlbumCover(album.id);
+  const { data: album } = useAlbum(albumId);
+  const { data: albumArtUrl } = useAlbumCover(albumId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
@@ -25,9 +25,11 @@ const AlbumItem: FC<AlbumProps> = ({ album }) => {
         placeholder={blurHash}
         style={styles.albumArt}
       />
-      <Text style={styles.albumName}>{album.title}</Text>
-      <Text style={styles.albumArtist}>
-        {album.artists.map((artist) => artist).join(", ")}
+      <Text style={styles.albumName} numberOfLines={1}>
+        {album?.title}
+      </Text>
+      <Text style={styles.albumArtist} numberOfLines={1}>
+        {album?.artists.map((artist) => artist).join(", ")}
       </Text>
     </View>
   );
@@ -36,23 +38,24 @@ const AlbumItem: FC<AlbumProps> = ({ album }) => {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     albumContainer: {
-      display: "flex",
-      flexDirection: "column",
+      width: 160,
       gap: 8,
     },
     albumArt: {
-      width: 160,
-      height: 160,
-      borderRadius: 8,
+      width: "100%",
+      aspectRatio: 1,
+      borderRadius: 12,
     },
     albumName: {
       fontSize: 16,
       fontWeight: "bold",
+      maxWidth: "100%",
       color: colors.primary,
     },
     albumArtist: {
       fontSize: 14,
       fontWeight: "500",
+      maxWidth: "100%",
       color: colors.secondary,
     },
   });

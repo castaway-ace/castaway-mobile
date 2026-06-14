@@ -1,6 +1,13 @@
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+  useUpdatePlaylistInteraction,
+} from "@/api/mutations/interactions";
+import { useInteractions } from "@/api/queries/interactions";
+import InteractionItem from "@/components/reusable/interactionItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
+import { Interaction, InteractionType } from "@/types/interactions";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,44 +19,57 @@ const Library = () => {
 
   const router = useRouter();
 
+  const { data: interactions } = useInteractions();
+
+  const { mutate: albumInteraction } = useUpdateAlbumInteraction();
+  const { mutate: artistInteraction } = useUpdateArtistInteraction();
+  const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
+
+  const interactionsAvailable = !!interactions?.length;
+
+  const onAlbumPress = (albumId: string) => {
+    albumInteraction(albumId);
+    router.navigate(`/(tabs)/home/albums/${albumId}`);
+  };
+
+  const onArtistPress = (artistId: string) => {
+    artistInteraction(artistId);
+    router.navigate(`/(tabs)/home/artists/${artistId}`);
+  };
+
+  const onPlaylistPress = (playlistId: string) => {
+    playlistInteraction(playlistId);
+    router.navigate(`/(tabs)/home/playlists/${playlistId}`);
+  };
+
+  const onInteractionPress = (interaction: Interaction) => {
+    if (interaction.type === InteractionType.ALBUM) {
+      onAlbumPress(interaction.albumId);
+    } else if (interaction.type === InteractionType.ARTIST) {
+      onArtistPress(interaction.artistId);
+    } else {
+      onPlaylistPress(interaction.playlistId);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Library</Text>
       <View>
-        <View style={styles.grid}>
-          <View style={styles.row}>
-            <Pressable
-              style={styles.libraryItem}
-              onPress={() => router.navigate("/library/tracks")}
-            >
-              <IconSymbol name="music.note" size={24} color="black" />
-              <Text>Tracks</Text>
-            </Pressable>
-            <Pressable
-              style={styles.libraryItem}
-              onPress={() => router.navigate("/library/albums")}
-            >
-              <IconSymbol name="square.stack.fill" size={24} color="black" />
-              <Text>Albums</Text>
-            </Pressable>
+        {interactionsAvailable && (
+          <View>
+            {interactions.map((interaction) => {
+              return (
+                <Pressable
+                  key={interaction.id}
+                  onPress={() => onInteractionPress(interaction)}
+                >
+                  <InteractionItem interaction={interaction} />
+                </Pressable>
+              );
+            })}
           </View>
-          <View style={styles.row}>
-            <Pressable
-              style={styles.libraryItem}
-              onPress={() => router.navigate("/library/artists")}
-            >
-              <IconSymbol name="person.fill" size={24} color="black" />
-              <Text>Artists</Text>
-            </Pressable>
-            <Pressable
-              style={styles.libraryItem}
-              onPress={() => router.navigate("/library/playlists")}
-            >
-              <IconSymbol name="music.note.list" size={24} color="black" />
-              <Text>Playlists</Text>
-            </Pressable>
-          </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -67,25 +87,6 @@ const makeStyles = (colors: ThemeColors) =>
       fontWeight: "bold",
       marginBottom: 16,
       color: colors.primary,
-    },
-    libraryItem: {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-      padding: 16,
-      flex: 1,
-      backgroundColor: colors.primary,
-      borderRadius: 8,
-      color: colors.secondary,
-    },
-    row: {
-      display: "flex",
-      flexDirection: "row",
-      gap: 16,
-    },
-    grid: {
-      gap: 16,
     },
   });
 

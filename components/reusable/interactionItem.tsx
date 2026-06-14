@@ -39,13 +39,19 @@ const InteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
     enabled: Boolean(isAlbum || isArtist),
   });
 
-  console.log(interaction);
-
   const text = isAlbum
     ? interaction.album.title
     : isArtist
       ? interaction.artist.name
       : interaction.playlist.name;
+
+  const subText = isAlbum
+    ? interaction.album.albumArtists
+        .map((albumArtist) => albumArtist.artist?.name)
+        .filter((name): name is string => name !== undefined)
+    : isArtist
+      ? "Artist"
+      : "Playlist";
 
   return (
     <View key={interaction.id} style={styles.interactionItem}>
@@ -54,7 +60,14 @@ const InteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
         placeholder={blurHash}
         style={styles.interactionArt}
       />
-      <Text style={styles.text}>{text}</Text>
+      <View style={styles.textContainer}>
+        <Text style={styles.text} numberOfLines={1}>
+          {text}
+        </Text>
+        <Text style={styles.subText} numberOfLines={1}>
+          {subText}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -62,19 +75,27 @@ const InteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     interactionItem: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
+      width: 160,
+      gap: 12,
     },
     interactionArt: {
-      width: 120,
-      height: 120,
+      width: "100%",
+      aspectRatio: 1,
       borderRadius: 12,
+    },
+    textContainer: {
+      gap: 4,
     },
     text: {
       fontSize: 16,
       fontWeight: "bold",
+      maxWidth: "100%",
       color: colors.primary,
+    },
+    subText: {
+      fontSize: 16,
+      maxWidth: "100%",
+      color: colors.secondary,
     },
   });
 

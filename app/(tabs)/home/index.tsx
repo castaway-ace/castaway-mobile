@@ -7,6 +7,7 @@ import InteractionItem from "@/components/reusable/interactionItem";
 import PlaylistItem from "@/components/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
+import { Interaction, InteractionType } from "@/types/interactions";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
@@ -26,24 +27,21 @@ const HomeScreen = () => {
   const { data: playlists } = usePlaylists();
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
-  const { data: albumsData } = useAlbums();
   const { data: interactions } = useInteractions();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
-  const albums = albumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteAlbums =
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
 
-  const playlistsAvailable = playlists?.length;
-  const interactionsAvailable = interactions?.length;
-  const albumsAvailable = albums.length > 0;
-  const favoriteAlbumsAvailable = favoriteAlbums.length > 0;
-  const favoriteArtistsAvailable = favoriteArtists.length > 0;
+  const playlistsAvailable = !!playlists?.length;
+  const interactionsAvailable = !!interactions?.length;
+  const favoriteAlbumsAvailable = !!favoriteAlbums.length;
+  const favoriteArtistsAvailable = !!favoriteArtists.length;
 
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -60,6 +58,16 @@ const HomeScreen = () => {
   const onPlaylistPress = (playlistId: string) => {
     playlistInteraction(playlistId);
     router.navigate(`/(tabs)/home/playlists/${playlistId}`);
+  };
+
+  const onInteractionPress = (interaction: Interaction) => {
+    if (interaction.type === InteractionType.ALBUM) {
+      onAlbumPress(interaction.albumId);
+    } else if (interaction.type === InteractionType.ARTIST) {
+      onArtistPress(interaction.artistId);
+    } else {
+      onPlaylistPress(interaction.playlistId);
+    }
   };
 
   return (
@@ -79,7 +87,7 @@ const HomeScreen = () => {
                     key={album.id}
                     onPress={() => onAlbumPress(album.id)}
                   >
-                    <AlbumItem album={album} />
+                    <AlbumItem albumId={album.id} />
                   </Pressable>
                 ))}
               </ScrollView>
@@ -113,7 +121,10 @@ const HomeScreen = () => {
                 contentContainerStyle={styles.albumScrollContent}
               >
                 {interactions.map((interaction) => (
-                  <Pressable key={interaction.id} onPress={() => {}}>
+                  <Pressable
+                    key={interaction.id}
+                    onPress={() => onInteractionPress(interaction)}
+                  >
                     <InteractionItem interaction={interaction} />
                   </Pressable>
                 ))}

@@ -7,7 +7,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
-import { SearchItemElements, SearchItemType } from "@/utils/search";
+import { SearchItemElement, SearchItemType } from "@/utils/search";
 import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -16,16 +16,17 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { blurHash } from "../../../constants/blur";
 
 interface SearchItemProps {
-  item: SearchItemElements;
+  item: SearchItemElement;
 }
+
+const albumPlaceholder = require("../../../assets/placeholders/album-placeholder.png");
+const artistPlaceholder = require("../../../assets/placeholders/artist-placeholder.png");
 
 const SearchItem: FC<SearchItemProps> = ({ item }) => {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const [isStarting, setIsStarting] = useState(false);
-
-  const { imageUrl, text, subText } = item;
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
@@ -36,67 +37,63 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
     if (item.type === SearchItemType.ALBUM) {
       albumInteraction(item.id);
       router.navigate(`/(tabs)/search/albums/${item.id}`);
-      return;
-    }
-
-    if (item.type === SearchItemType.ARTIST) {
+    } else if (item.type === SearchItemType.ARTIST) {
       artistInteraction(item.id);
       router.navigate(`/(tabs)/search/artists/${item.id}`);
-      return;
-    }
-
-    const albumId = item?.albumId;
-    if (!albumId || isStarting) {
-      return;
-    }
-
-    setIsStarting(true);
-
-    if (!albumId) {
-      return;
-    }
-
-    try {
-      const album = await queryClient.fetchQuery({
-        queryKey: ["album", albumId],
-        queryFn: () => albumApi.getOne(albumId),
-      });
-
-      const startIndex = album.tracks.findIndex(
-        (track) => track.id === item.id,
-      );
-
-      if (startIndex === -1) {
-        throw new Error(
-          `Track ${item.id} not present in album ${item.albumId} track list`,
-        );
+    } else {
+      const albumId = item?.albumId;
+      if (!albumId || isStarting) {
+        return;
       }
 
-      playQueue(album.tracks, startIndex);
-    } catch (error) {
-      console.error("Failed to start album queue from search", error);
-    } finally {
-      albumInteraction(albumId);
-      setIsStarting(false);
+      setIsStarting(true);
+
+      if (!albumId) {
+        return;
+      }
+
+      try {
+        const album = await queryClient.fetchQuery({
+          queryKey: ["album", albumId],
+          queryFn: () => albumApi.getOne(albumId),
+        });
+
+        const startIndex = album.tracks.findIndex(
+          (track) => track.id === item.id,
+        );
+
+        if (startIndex === -1) {
+          throw new Error(
+            `Track ${item.id} not present in album ${item.albumId} track list`,
+          );
+        }
+
+        playQueue(album.tracks, startIndex);
+      } catch (error) {
+        console.error("Failed to start album queue from search", error);
+      } finally {
+        albumInteraction(albumId);
+        setIsStarting(false);
+      }
     }
   };
+
+  const imageSource = item.imageUrl
+    ? { uri: item.imageUrl }
+    : item.type === SearchItemType.ARTIST
+      ? artistPlaceholder
+      : albumPlaceholder;
 
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.leftContainer}>
-        <Image
-          source={{
-            uri: imageUrl,
-          }}
-          placeholder={blurHash}
-          style={styles.art}
-        />
+        <Image source={imageSource} placeholder={blurHash} style={styles.art} />
         <View style={styles.textContainer}>
           <Text style={styles.text} numberOfLines={1}>
-            {text}
+            {item.text}
           </Text>
           <Text style={styles.subText} numberOfLines={1}>
-            {subText}
+            {item.subText}
           </Text>
         </View>
       </View>

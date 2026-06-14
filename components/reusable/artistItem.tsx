@@ -16,10 +16,16 @@ const ArtistItem: FC<ArtistItemProps> = ({ artist }) => {
   const { data: artistImageUrl } = useArtistImage(artist.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
+  const imageSource = artistImageUrl
+    ? {
+        uri: artistImageUrl,
+      }
+    : require("../../assets/placeholders/artist-placeholder.png");
+
   return (
     <View key={artist.id} style={styles.artistItem}>
       <Image
-        source={require("../../assets/placeholders/artist-placeholder.png")}
+        source={imageSource}
         placeholder={blurHash}
         style={styles.artistArt}
       />

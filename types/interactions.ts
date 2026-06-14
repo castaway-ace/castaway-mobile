@@ -4,6 +4,12 @@ export enum InteractionType {
   PLAYLIST = 'playlist',
 }
 
+interface AlbumArtistInteraction {
+  artist: {
+    name: string;
+  }
+}
+
 interface AlbumInteraction {
   id: string;
   userId: string;
@@ -12,7 +18,7 @@ interface AlbumInteraction {
   albumId: string;
   album: {
     title: string;
-    albumArtists: string;
+    albumArtists: AlbumArtistInteraction[];
   };
 };
 

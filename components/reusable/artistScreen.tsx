@@ -1,8 +1,6 @@
-import { albumCoverQueryOptions } from "@/api/queries/albums";
 import { useArtist, useArtistImage } from "@/api/queries/artists";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
-import { useQueries } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -12,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useArtistStar } from "../../api/mutations/artists";
 import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
+import AlbumItem from "./albumItem";
 
 interface ArtistScreenProps {
   id: string;
@@ -20,25 +19,24 @@ interface ArtistScreenProps {
 
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist } = useArtist(id);
+  const { data: artistImageUrl } = useArtistImage(id);
   const { mutate } = useArtistStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: artistImageUrl } = useArtistImage(id);
-
   const tabBarHeight = useBottomTabBarHeight();
-
-  const albums = artist?.albums ?? [];
-
-  const albumCovers = useQueries({
-    queries: albums?.map((album) => albumCoverQueryOptions(album.id)),
-  });
 
   const onLikeButtonPress = () => {
     if (!artist) return;
     mutate({ id: artist.id, starred: !!artist?.starred });
   };
+
+  const imageSource = artistImageUrl
+    ? {
+        uri: artistImageUrl,
+      }
+    : require("../../assets/placeholders/artist-placeholder.png");
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -53,9 +51,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
         </Pressable>
         <View style={styles.artistImageContainer}>
           <Image
-            source={{
-              uri: artistImageUrl,
-            }}
+            source={imageSource}
             placeholder={blurHash}
             style={styles.artistImage}
           />
@@ -72,20 +68,14 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
         </View>
         <View style={styles.albumContainer}>
           <Text style={styles.albumHeader}>Albums</Text>
-          {artist?.albums?.map((album, index) => {
-            const coverUrl = albumCovers[index]?.data;
+          {artist?.albums?.map((album) => {
             return (
               <Pressable
                 key={album.id}
                 style={styles.albumItem}
                 onPress={() => onAlbumPress(album.id)}
               >
-                <Image
-                  source={{ uri: coverUrl }}
-                  placeholder={blurHash}
-                  style={styles.albumArt}
-                />
-                <Text style={styles.albumTitle}>{album.title}</Text>
+                <AlbumItem albumId={album.id} />
               </Pressable>
             );
           })}
