@@ -59,54 +59,60 @@ const ModalContent: FC = () => {
           style={styles.albumArt}
         />
       </View>
-      <View style={styles.middle}>
-        <View style={styles.trackInfoContainer}>
-          <Text style={styles.titleText} numberOfLines={1}>
-            {currentTrack.title}
-          </Text>
-          <Text style={styles.artistText} numberOfLines={1}>
-            {currentTrack.artistNames}
-          </Text>
+      <View style={styles.bottomContainer}>
+        <View style={styles.middle}>
+          <View style={styles.trackInfoContainer}>
+            <Text style={styles.titleText} numberOfLines={1}>
+              {currentTrack.title}
+            </Text>
+            <Text style={styles.artistText} numberOfLines={1}>
+              {currentTrack.artistNames}
+            </Text>
+          </View>
+          <Pressable>
+            <IconSymbol size={40} name={"heart"} color={colors.primary} />
+          </Pressable>
         </View>
-        <Pressable>
-          <IconSymbol size={40} name={"heart"} color={colors.primary} />
-        </Pressable>
-      </View>
-      <ProgressBar />
-      <View style={styles.musicPlayerButtonContainer}>
-        <Pressable onPress={toggleShuffle}>
-          <IconSymbol
-            size={40}
-            name={"shuffle"}
-            style={{ opacity: isShuffled ? 1 : 0.4 }}
-            color={colors.primary}
-          />
-        </Pressable>
-        <Pressable onPress={previous}>
-          <IconSymbol size={40} name={"backward.end"} color={colors.primary} />
-        </Pressable>
-        <Pressable onPress={handlePlayTrack}>
-          <IconSymbol
-            size={80}
-            name={isPlaying ? "pause.circle.fill" : "play.circle.fill"}
-            color={colors.primary}
-          />
-        </Pressable>
-        <Pressable onPress={next}>
-          <IconSymbol size={40} name={"forward.end"} color={colors.primary} />
-        </Pressable>
-        <Pressable onPress={cycleRepeat}>
-          <IconSymbol
-            size={40}
-            style={{ opacity: repeatMode === "off" ? 0.4 : 1 }}
-            name={
-              repeatMode === "off" || repeatMode == "all"
-                ? "repeat"
-                : "repeat.1"
-            }
-            color={colors.primary}
-          />
-        </Pressable>
+        <ProgressBar />
+        <View style={styles.musicPlayerButtonContainer}>
+          <Pressable onPress={toggleShuffle}>
+            <IconSymbol
+              size={40}
+              name={"shuffle"}
+              style={{ opacity: isShuffled ? 1 : 0.4 }}
+              color={colors.primary}
+            />
+          </Pressable>
+          <Pressable onPress={previous}>
+            <IconSymbol
+              size={40}
+              name={"backward.end"}
+              color={colors.primary}
+            />
+          </Pressable>
+          <Pressable onPress={handlePlayTrack}>
+            <IconSymbol
+              size={80}
+              name={isPlaying ? "pause.circle.fill" : "play.circle.fill"}
+              color={colors.primary}
+            />
+          </Pressable>
+          <Pressable onPress={next}>
+            <IconSymbol size={40} name={"forward.end"} color={colors.primary} />
+          </Pressable>
+          <Pressable onPress={cycleRepeat}>
+            <IconSymbol
+              size={40}
+              style={{ opacity: repeatMode === "off" ? 0.4 : 1 }}
+              name={
+                repeatMode === "off" || repeatMode == "all"
+                  ? "repeat"
+                  : "repeat.1"
+              }
+              color={colors.primary}
+            />
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -115,15 +121,14 @@ const ModalContent: FC = () => {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
-      display: "flex",
-      padding: 16,
+      flex: 1,
+      paddingHorizontal: 24,
+      paddingTop: 16,
     },
     header: {
-      display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 32,
     },
     headerText: {
       color: colors.primary,
@@ -131,7 +136,7 @@ const makeStyles = (colors: ThemeColors) =>
       fontSize: 20,
     },
     albumArtContainer: {
-      display: "flex",
+      flex: 1,
       justifyContent: "center",
       alignItems: "center",
       marginBottom: 20,
@@ -140,6 +145,9 @@ const makeStyles = (colors: ThemeColors) =>
       width: "100%",
       aspectRatio: 800 / 800,
       borderRadius: 16,
+    },
+    bottomContainer: {
+      paddingBottom: 48,
     },
     middle: {
       display: "flex",
