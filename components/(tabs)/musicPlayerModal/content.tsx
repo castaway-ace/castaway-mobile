@@ -7,6 +7,8 @@ import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTrackStar } from "../../../api/mutations/tracks";
+import { useStarredTracks } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { IconSymbol } from "../../ui/icon-symbol";
 import ProgressBar from "./progressBar";
@@ -29,9 +31,18 @@ const MusicPlayerModalContent: FC = () => {
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
+  const { mutate: trackStar } = useTrackStar();
+  const { data: starredTracks } = useStarredTracks();
+
   if (!currentTrack) {
     return null;
   }
+
+  const starred = !!starredTracks?.includes(currentTrack.id);
+
+  const onLikeTrackButtonPress = () => {
+    trackStar({ id: currentTrack.id, starred: !!starred });
+  };
 
   const handlePlayTrack = () => {
     if (isPlaying) {
@@ -69,8 +80,12 @@ const MusicPlayerModalContent: FC = () => {
               {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
             </Text>
           </View>
-          <Pressable>
-            <IconSymbol size={40} name={"heart"} color={colors.primary} />
+          <Pressable onPress={onLikeTrackButtonPress}>
+            <IconSymbol
+              name={starred ? "heart.fill" : "heart"}
+              size={40}
+              color={colors.primary}
+            />
           </Pressable>
         </View>
         <ProgressBar />

@@ -11,6 +11,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { useTrackStar } from "../../api/mutations/tracks";
+import { useStarredTracks } from "../../api/queries/tracks";
 import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
@@ -27,6 +29,8 @@ const MusicPlayer = () => {
   } = useAudioPlayerContext();
   const { open } = usePlayerModal();
   const { colors } = useTheme();
+  const { mutate: trackStar } = useTrackStar();
+  const { data: starredTracks } = useStarredTracks();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const progress =
@@ -35,6 +39,12 @@ const MusicPlayer = () => {
   if (!currentTrack) {
     return null;
   }
+
+  const starred = !!starredTracks?.includes(currentTrack.id);
+
+  const onLikeTrackButtonPress = () => {
+    trackStar({ id: currentTrack.id, starred: !!starred });
+  };
 
   const handlePlayTrack = () => {
     if (isPlaying) {
@@ -65,21 +75,32 @@ const MusicPlayer = () => {
               </Text>
             </View>
           </Pressable>
-          <Pressable onPress={handlePlayTrack} disabled={isLoading}>
-            {isLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.primary}
-                style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-              />
-            ) : (
-              <IconSymbol
-                size={28}
-                name={isPlaying ? "pause.fill" : "play.fill"}
-                color={colors.primary}
-              />
-            )}
-          </Pressable>
+          <View style={styles.buttonContainer}>
+            <Pressable>
+              <Pressable onPress={onLikeTrackButtonPress}>
+                <IconSymbol
+                  name={starred ? "heart.fill" : "heart"}
+                  size={32}
+                  color={colors.primary}
+                />
+              </Pressable>
+            </Pressable>
+            <Pressable onPress={handlePlayTrack} disabled={isLoading}>
+              {isLoading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.primary}
+                  style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                />
+              ) : (
+                <IconSymbol
+                  size={28}
+                  name={isPlaying ? "pause.fill" : "play.fill"}
+                  color={colors.primary}
+                />
+              )}
+            </Pressable>
+          </View>
         </View>
         <View style={styles.barArea}>
           <View style={styles.bar}>
@@ -132,6 +153,11 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       flexDirection: "column",
       gap: 4,
+    },
+    buttonContainer: {
+      flexDirection: "row",
+      gap: 16,
+      alignItems: "center",
     },
     barArea: {
       paddingHorizontal: 8,
