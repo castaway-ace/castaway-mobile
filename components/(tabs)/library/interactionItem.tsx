@@ -80,7 +80,7 @@ const makeStyles = (colors: ThemeColors) =>
       gap: 16,
     },
     interactionArt: {
-      width: 120,
+      width: 100,
       aspectRatio: 1,
       borderRadius: 12,
     },

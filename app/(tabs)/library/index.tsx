@@ -81,7 +81,7 @@ const makeStyles = (colors: ThemeColors) =>
       padding: 16,
     },
     itemContainer: {
-      gap: 12,
+      gap: 16,
     },
     title: {
       fontSize: 24,
