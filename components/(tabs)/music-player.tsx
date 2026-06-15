@@ -15,11 +15,22 @@ import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
 const MusicPlayer = () => {
-  const { isPlaying, isLoading, pause, play, currentTrack, coverArtUrl } =
-    useAudioPlayerContext();
+  const {
+    isPlaying,
+    isLoading,
+    pause,
+    play,
+    currentTrack,
+    coverArtUrl,
+    currentTime,
+    duration,
+  } = useAudioPlayerContext();
   const { open } = usePlayerModal();
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const progress =
+    duration > 0 ? Math.min(Math.max(currentTime / duration, 0), 1) : 0;
 
   if (!currentTrack) {
     return null;
@@ -35,39 +46,46 @@ const MusicPlayer = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Pressable style={styles.leftContainer} onPress={open}>
-          <Image
-            source={{
-              uri: coverArtUrl,
-            }}
-            placeholder={blurHash}
-            style={styles.albumArt}
-          />
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>
-              {currentTrack.title}
-            </Text>
-            <Text style={styles.artist} numberOfLines={1}>
-              {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
-            </Text>
+      <View style={styles.secondaryContainer}>
+        <View style={styles.contentContainer}>
+          <Pressable style={styles.leftContainer} onPress={open}>
+            <Image
+              source={{
+                uri: coverArtUrl,
+              }}
+              placeholder={blurHash}
+              style={styles.albumArt}
+            />
+            <View style={styles.info}>
+              <Text style={styles.title} numberOfLines={1}>
+                {currentTrack.title}
+              </Text>
+              <Text style={styles.artist} numberOfLines={1}>
+                {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
+              </Text>
+            </View>
+          </Pressable>
+          <Pressable onPress={handlePlayTrack} disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.primary}
+                style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+              />
+            ) : (
+              <IconSymbol
+                size={28}
+                name={isPlaying ? "pause.fill" : "play.fill"}
+                color={colors.primary}
+              />
+            )}
+          </Pressable>
+        </View>
+        <View style={styles.barArea}>
+          <View style={styles.bar}>
+            <View style={[styles.fill, { width: `${progress * 100}%` }]} />
           </View>
-        </Pressable>
-        <Pressable onPress={handlePlayTrack} disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.primary}
-              style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-            />
-          ) : (
-            <IconSymbol
-              size={28}
-              name={isPlaying ? "pause.fill" : "play.fill"}
-              color={colors.primary}
-            />
-          )}
-        </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -78,8 +96,11 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       padding: 8,
     },
-    contentContainer: {
+    secondaryContainer: {
       backgroundColor: colors.accent,
+      borderRadius: 12,
+    },
+    contentContainer: {
       borderRadius: 12,
       flexDirection: "row",
       justifyContent: "space-between",
@@ -111,6 +132,20 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       flexDirection: "column",
       gap: 4,
+    },
+    barArea: {
+      paddingHorizontal: 8,
+    },
+    bar: {
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.secondary,
+      justifyContent: "center",
+    },
+    fill: {
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.primary,
     },
   });
 

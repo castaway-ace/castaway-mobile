@@ -70,7 +70,7 @@ const ProgressBar: FC = () => {
       <GestureDetector gesture={composed}>
         <View style={styles.barTouchArea}>
           <View
-            style={styles.track}
+            style={styles.bar}
             onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
           >
             <View style={[styles.fill, { width: `${progress * 100}%` }]} />
@@ -92,7 +92,7 @@ const makeStyles = (colors: ThemeColors) =>
       paddingTop: 16,
       paddingBottom: 8,
     },
-    track: {
+    bar: {
       height: 4,
       borderRadius: 2,
       backgroundColor: colors.secondary,
