@@ -27,6 +27,7 @@ const MAPPING = {
   "chevron.left": "chevron-back",
   "chevron.down": "chevron-down",
   ellipsis: "ellipsis-vertical",
+  "plus.circle": "add-circle-outline",
   "pause.fill": "pause",
   "play.fill": "play",
   "play.circle.fill": "play-circle",
@@ -43,6 +44,7 @@ const MAPPING = {
   "music.note.list": "musical-notes",
   "gearshape.fill": "settings",
   gearshape: "settings-outline",
+  "opticaldisc.fill": "disc-sharp",
 } as IconMapping;
 
 /**

@@ -7,6 +7,7 @@ import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
+import Modal from "../../components/(tabs)/modal";
 
 const TabLayout = () => {
   const { colors } = useTheme();
@@ -89,6 +90,7 @@ const TabLayout = () => {
         />
       </Tabs>
       {currentTrack && <MusicPlayerModal />}
+      <Modal />
     </>
   );
 };

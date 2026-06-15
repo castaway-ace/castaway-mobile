@@ -13,6 +13,7 @@ import { useAlbumStar } from "../../api/mutations/albums";
 import { useTrackStar } from "../../api/mutations/tracks";
 import { useStarredTracks } from "../../api/queries/tracks";
 import { blurHash } from "../../constants/blur";
+import { useModal } from "../../contexts/modal-context";
 import { Album } from "../../types/albums";
 import { IconSymbol } from "../ui/icon-symbol";
 
@@ -30,6 +31,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { data: albumCoverUrl } = useAlbumCover(album.id);
+  const { open } = useModal();
   const releaseDate = formatDate(album?.releaseDate);
 
   const { playQueue } = useAudioPlayerContext();
@@ -47,7 +49,8 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   };
 
   const onLikeTrackButtonPress = (trackId: string, starred: boolean) => {
-    trackStar({ id: trackId, starred: !!starred });
+    // trackStar({ id: trackId, starred: !!starred });
+    open(trackId, starred);
   };
 
   return (
@@ -113,7 +116,9 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable onPress={() => {}}>
+                  <Pressable
+                    onPress={() => onLikeTrackButtonPress(track.id, starred)}
+                  >
                     <IconSymbol
                       name={"ellipsis"}
                       size={32}

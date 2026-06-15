@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+import { ModalProvider } from "../contexts/modal-context";
 import ThemeProvider from "../contexts/theme-context";
 
 const queryClient = new QueryClient();
@@ -60,7 +61,9 @@ const RootLayout = () => {
           <AudioPlayerProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <PlayerModalProvider>
-                <RootNavigator />
+                <ModalProvider>
+                  <RootNavigator />
+                </ModalProvider>
               </PlayerModalProvider>
             </GestureHandlerRootView>
           </AudioPlayerProvider>
