@@ -50,7 +50,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         </Pressable>
         <View style={styles.playlistArtContainer}>
           <Image
-            source={require("../../assets/placeholders/album-placeholder.png")}
+            source={require("../../../assets/placeholders/album-placeholder.png")}
             style={styles.playlistArt}
           />
         </View>

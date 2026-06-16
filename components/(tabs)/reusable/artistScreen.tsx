@@ -36,7 +36,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
     ? {
         uri: artistImageUrl,
       }
-    : require("../../assets/placeholders/artist-placeholder.png");
+    : require("../../../assets/placeholders/artist-placeholder.png");
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
