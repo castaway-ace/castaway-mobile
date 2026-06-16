@@ -1,5 +1,5 @@
 import { useTrackStar } from "@/api/mutations/tracks";
-import { usePlaylistModal } from "@/contexts/playlist-modal-context";
+import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
@@ -12,7 +12,6 @@ import { useAlbumCover } from "../../../api/queries/albums";
 import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
-import { useModal } from "../../../contexts/modal-context";
 import { useTheme } from "../../../contexts/theme-context";
 import { IconSymbol } from "../../ui/icon-symbol";
 
@@ -31,8 +30,7 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: trackStar } = useTrackStar();
 
-  const { close } = useModal();
-  const { open } = usePlaylistModal();
+  const { open, close } = useSheetModal();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -47,8 +45,7 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
   const starred = !!starredTracks?.includes(track.id);
 
   const onPlaylistPress = () => {
-    close();
-    open();
+    open({ kind: "playlist" });
   };
 
   const onLikedSongPress = () => {

@@ -1,6 +1,8 @@
 import { useAlbumCover } from "@/api/queries/albums";
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
+import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
@@ -11,8 +13,6 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbumStar } from "../../../api/mutations/albums";
 import { useStarredTracks } from "../../../api/queries/tracks";
-import { blurHash } from "../../../constants/blur";
-import { useModal } from "../../../contexts/modal-context";
 import { Album } from "../../../types/albums";
 import { IconSymbol } from "../../ui/icon-symbol";
 
@@ -29,7 +29,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { data: albumCoverUrl } = useAlbumCover(album.id);
-  const { open } = useModal();
+  const { open } = useSheetModal();
   const releaseDate = formatDate(album?.releaseDate);
 
   const { playQueue } = useAudioPlayerContext();
@@ -47,7 +47,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   };
 
   const onOptionPress = (trackId: string, starred: boolean) => {
-    open(trackId, starred);
+    open({ kind: "track", id: trackId });
   };
 
   return (

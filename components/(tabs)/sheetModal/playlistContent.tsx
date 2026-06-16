@@ -1,5 +1,6 @@
+import { useAddTrackToPlaylist } from "@/api/mutations/playlists";
 import { usePlaylists } from "@/api/queries/playlist";
-import { usePlaylistModal } from "@/contexts/playlist-modal-context";
+import { useTrack } from "@/api/queries/tracks";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -7,18 +8,23 @@ import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
 
-const PlaylistContent: FC = () => {
-  const { data: playlists } = usePlaylists();
+interface PlaylistContent {
+  trackId: string;
+}
 
-  const { close } = usePlaylistModal();
+const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
+  const { data: playlists } = usePlaylists();
+  const { data: track } = useTrack(trackId);
+
+  const { mutate: addPlaylistTrack } = useAddTrackToPlaylist();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  if (!playlists) return;
+  if (!playlists || !track) return;
 
   const onPlaylistPress = (id: string) => {
-    console.log("press playlist button");
+    addPlaylistTrack({ playlistId: id, trackId: track.id });
   };
 
   return (
