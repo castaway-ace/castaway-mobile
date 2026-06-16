@@ -50,6 +50,7 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const onLikedSongPress = () => {
     trackStar({ id: track.id, starred: !!starred });
+    close();
   };
 
   const onAlbumPress = () => {

@@ -18,9 +18,6 @@ import TrackContent from "./trackContent";
 const SheetModal: FC = () => {
   const { colors } = useTheme();
   const { active, close, trackId } = useSheetModal();
-
-  if (!trackId) return;
-
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { height } = useWindowDimensions();

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import { trackApi } from "../tracks";
 
 interface TrackStarMutation {
@@ -17,26 +18,12 @@ export const useTrackStar = () => {
                 await trackApi.star(id);
             }
         },
-        onMutate: async ({ id, starred }) => {
-            await queryClient.cancelQueries({ queryKey: ['starred-tracks'] });
-            const previous = queryClient.getQueryData<string[]>(['starred-tracks']);
-
-            queryClient.setQueryData<string[]>(['starred-tracks'], (old = []) => {
-                if (starred) {
-                    return old.filter((trackId) => trackId !== id);
-                }
-                return old.includes(id) ? old : [...old, id];
-            });
-
-            return { previous };
-        },
-        onError: (_err, _vars, context) => {
-            if (context?.previous) {
-              queryClient.setQueryData(['starred-tracks'], context.previous);
-            }
+        onSuccess: (_data, { starred }) => {
+            Toast.show({
+                type: 'success',
+                text1: starred ? 'Removed from Liked Songs' : 'Added to Liked Songs',
+              });
+              queryClient.invalidateQueries({ queryKey: ['starred-tracks'] });
           },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['starred-tracks'] });
-        },
     });
 };
