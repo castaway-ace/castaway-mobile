@@ -46,7 +46,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
     albumStar({ id: album.id, starred: !!album.starred });
   };
 
-  const onOptionPress = (trackId: string, starred: boolean) => {
+  const onOptionPress = (trackId: string) => {
     open({ kind: "track", id: trackId });
   };
 
@@ -98,7 +98,6 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
-            const starred = !!starredTracks?.includes(track.id);
             return (
               <Pressable
                 key={track.id}
@@ -113,7 +112,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable onPress={() => onOptionPress(track.id, starred)}>
+                  <Pressable onPress={() => onOptionPress(track.id)}>
                     <IconSymbol
                       name={"ellipsis"}
                       size={32}

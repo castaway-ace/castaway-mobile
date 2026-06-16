@@ -1,5 +1,4 @@
-import { Playlist } from "@/types/playlist";
-import { Track } from "../types/tracks";
+import { Playlist, PlaylistTrack } from "@/types/playlist";
 import apiClient from "./client";
 
 export const playlistApi = {
@@ -21,12 +20,12 @@ export const playlistApi = {
     await apiClient.delete(`/playlists/${id}`);
   },
 
-  getAllTracks: async (id: string): Promise<Track[]> => {
+  getAllTracks: async (id: string): Promise<PlaylistTrack[]> => {
     const { data } = await apiClient.get(`/playlists/${id}/tracks`);
     return data
   },
 
-  getTrack: async (playlistId: string, trackId: string): Promise<Track> => {
+  getTrack: async (playlistId: string, trackId: string): Promise<PlaylistTrack> => {
     const { data } = await apiClient.get(`/playlists/${playlistId}/tracks/${trackId}`);
     return data
   },

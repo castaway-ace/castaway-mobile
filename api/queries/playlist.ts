@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Track } from "../../types/tracks";
 import { playlistApi } from "../playlist";
 
 export const usePlaylists = () => {
@@ -23,7 +22,7 @@ export const usePlaylist = (id: string) => {
 export const usePlaylistTracks = (id: string) => {
     return useQuery({
       queryKey: ['playlist-tracks', id],
-      queryFn: (): Promise<Track[]> => playlistApi.getAllTracks(id),
+      queryFn: () => playlistApi.getAllTracks(id),
       enabled: !!id,
     });
   }
@@ -31,7 +30,7 @@ export const usePlaylistTracks = (id: string) => {
   export const usePlaylistTrack = (playlistId: string, trackId: string) => {
     return useQuery({
       queryKey: ['playlist-tracks', playlistId, trackId],
-      queryFn: (): Promise<Track> => playlistApi.getTrack(playlistId, trackId),
+      queryFn: () => playlistApi.getTrack(playlistId, trackId),
       enabled: !!playlistId && !!trackId,
     });
   }

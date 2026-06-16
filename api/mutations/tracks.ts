@@ -24,6 +24,7 @@ export const useTrackStar = () => {
                 text1: starred ? 'Removed from Liked Songs' : 'Added to Liked Songs',
               });
               queryClient.invalidateQueries({ queryKey: ['starred-tracks'] });
+              queryClient.invalidateQueries({ queryKey: ['playlist'] });
           },
     });
 };

@@ -1,15 +1,15 @@
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
+import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
+import { Track } from "@/types/tracks";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTrackStar } from "../../../api/mutations/tracks";
-import { usePlaylist } from "../../../api/queries/playlist";
-import { useStarredTracks } from "../../../api/queries/tracks";
+import { usePlaylist, usePlaylistTracks } from "../../../api/queries/playlist";
 import { IconSymbol } from "../../ui/icon-symbol";
 
 interface PlaylistScreenProps {
@@ -18,11 +18,12 @@ interface PlaylistScreenProps {
 
 const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   const { data: playlist } = usePlaylist(id);
-  const { data: starredTracks } = useStarredTracks();
-  const { mutate: trackStar } = useTrackStar();
+  const { data: playlistTracks } = usePlaylistTracks(id);
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const { open } = useSheetModal();
 
   const { playQueue } = useAudioPlayerContext();
 
@@ -30,11 +31,11 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const onTrackPress = (index: number) => {
     if (!playlist?.tracks) return;
-    playQueue(playlist.tracks, index);
+    playQueue(playlist.tracks as Track[], index);
   };
 
-  const onLikeTrackButtonPress = (trackId: string, starred: boolean) => {
-    trackStar({ id: trackId, starred: !!starred });
+  const onOptionPress = (trackId: string) => {
+    open({ kind: "track", id: trackId });
   };
 
   return (
@@ -59,15 +60,13 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
-          {playlist?.tracks?.map((track, index) => {
-            const starred = !!starredTracks?.includes(track.id);
+          {playlistTracks?.map((track, index) => {
             return (
               <Pressable
                 key={track.id}
                 style={styles.trackItem}
                 onPress={() => onTrackPress(index)}
               >
-                <Text style={styles.trackNumber}>{track.trackNumber}</Text>
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
                     <Text style={styles.trackTitle}>{track.title}</Text>
@@ -75,11 +74,9 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable
-                    onPress={() => onLikeTrackButtonPress(track.id, starred)}
-                  >
+                  <Pressable onPress={() => onOptionPress(track.id)}>
                     <IconSymbol
-                      name={starred ? "heart.fill" : "heart"}
+                      name={"ellipsis"}
                       size={32}
                       color={colors.primary}
                     />
