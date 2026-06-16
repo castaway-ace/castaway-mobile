@@ -1,0 +1,96 @@
+import { usePlaylists } from "@/api/queries/playlist";
+import { usePlaylistModal } from "@/contexts/playlist-modal-context";
+import { Image } from "expo-image";
+import { FC, useMemo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { blurHash } from "../../../constants/blur";
+import { ThemeColors } from "../../../constants/theme";
+import { useTheme } from "../../../contexts/theme-context";
+
+const PlaylistContent: FC = () => {
+  const { data: playlists } = usePlaylists();
+
+  const { close } = usePlaylistModal();
+
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  if (!playlists) return;
+
+  const onPlaylistPress = (id: string) => {
+    console.log("press playlist button");
+  };
+
+  return (
+    <View style={styles.container}>
+      {playlists.map((playlist) => {
+        return (
+          <Pressable
+            style={styles.spacing}
+            onPress={() => onPlaylistPress(playlist.id)}
+          >
+            <Image
+              source={{
+                uri: "",
+              }}
+              placeholder={blurHash}
+              style={styles.albumArt}
+            />
+            <View style={styles.trackLeftInfo}>
+              <Text style={styles.trackTitle}>{playlist.name}</Text>
+            </View>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+};
+
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    trackInfo: {
+      borderBottomWidth: 1,
+      borderColor: colors.primary,
+    },
+    spacing: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+      padding: 16,
+    },
+    albumArt: {
+      width: 60,
+      height: 60,
+      borderRadius: 16,
+    },
+    trackLeftInfo: {
+      display: "flex",
+      gap: 4,
+    },
+    trackTitle: {
+      color: colors.primary,
+      fontSize: 18,
+    },
+    trackArtists: {
+      color: colors.secondary,
+      fontSize: 16,
+    },
+    bottomContainer: {
+      padding: 16,
+      gap: 24,
+    },
+    bottomButton: {
+      flexDirection: "row",
+      gap: 16,
+      alignItems: "center",
+    },
+    text: {
+      color: colors.primary,
+      fontSize: 16,
+    },
+  });
+
+export default PlaylistContent;

@@ -1,4 +1,5 @@
 import { ThemeColors } from "@/constants/theme";
+import { usePlaylistModal } from "@/contexts/playlist-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { FC, useEffect, useMemo, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
@@ -11,12 +12,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
-import { useModal } from "../../../contexts/modal-context";
-import TrackContent from "./trackContent";
+import PlaylistContent from "./playlistContent";
 
-const Modal: FC = () => {
+const PlaylistModal: FC = () => {
   const { colors } = useTheme();
-  const { isOpen, close, id } = useModal();
+  const { isOpen, close } = usePlaylistModal();
 
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
@@ -93,7 +93,7 @@ const Modal: FC = () => {
           style={[styles.sheet, { height: sheetHeight }, sheetStyle]}
         >
           <View style={styles.handle} />
-          <TrackContent id={id} />
+          <PlaylistContent />
         </Animated.View>
       </GestureDetector>
     </View>
@@ -133,4 +133,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default Modal;
+export default PlaylistModal;

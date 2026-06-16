@@ -1,6 +1,7 @@
 import { AudioPlayerProvider } from "@/contexts/audio-player-context";
 import { AuthProvider, useAuth } from "@/contexts/auth-context";
 import { PlayerModalProvider } from "@/contexts/player-modal-context";
+import { PlaylistModalProvider } from "@/contexts/playlist-modal-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
@@ -60,11 +61,13 @@ const RootLayout = () => {
         <ThemeProvider>
           <AudioPlayerProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
-              <PlayerModalProvider>
-                <ModalProvider>
-                  <RootNavigator />
-                </ModalProvider>
-              </PlayerModalProvider>
+              <PlaylistModalProvider>
+                <PlayerModalProvider>
+                  <ModalProvider>
+                    <RootNavigator />
+                  </ModalProvider>
+                </PlayerModalProvider>
+              </PlaylistModalProvider>
             </GestureHandlerRootView>
           </AudioPlayerProvider>
         </ThemeProvider>

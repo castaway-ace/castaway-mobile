@@ -4,7 +4,7 @@ import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { blurHash } from "../../constants/blur";
+import { blurHash } from "../../../constants/blur";
 
 interface ArtistItemProps {
   id: string;

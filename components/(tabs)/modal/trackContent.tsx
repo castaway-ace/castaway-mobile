@@ -1,3 +1,5 @@
+import { useTrackStar } from "@/api/mutations/tracks";
+import { usePlaylistModal } from "@/contexts/playlist-modal-context";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
@@ -27,8 +29,10 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
+  const { mutate: trackStar } = useTrackStar();
 
   const { close } = useModal();
+  const { open } = usePlaylistModal();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -38,12 +42,17 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const location = inHome ? "home" : inLibrary ? "library" : "search";
 
+  if (!track) return;
+
+  const starred = !!starredTracks?.includes(track.id);
+
   const onPlaylistPress = () => {
-    console.log("press playlist button");
+    close();
+    open();
   };
 
   const onLikedSongPress = () => {
-    console.log("press playlist button");
+    trackStar({ id: track.id, starred: !!starred });
   };
 
   const onAlbumPress = () => {
@@ -88,8 +97,14 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
           <Text style={styles.text}>Add to Playlist</Text>
         </Pressable>
         <Pressable style={styles.bottomButton} onPress={onLikedSongPress}>
-          <IconSymbol size={28} name={"heart"} color={colors.primary} />
-          <Text style={styles.text}>Add to Liked Songs</Text>
+          <IconSymbol
+            size={28}
+            name={starred ? "heart.fill" : "heart"}
+            color={colors.primary}
+          />
+          <Text style={styles.text}>
+            {starred ? "Remove from Liked Songs" : "Add to Liked Songs"}{" "}
+          </Text>
         </Pressable>
         <Pressable style={styles.bottomButton} onPress={onAlbumPress}>
           <IconSymbol

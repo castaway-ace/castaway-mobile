@@ -2,9 +2,9 @@ import { useAlbums } from "@/api/queries/albums";
 import { useArtists } from "@/api/queries/artists";
 import { usePlaylists } from "@/api/queries/playlist";
 import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
-import AlbumItem from "@/components/reusable/albumItem";
-import ArtistItem from "@/components/reusable/artistItem";
-import PlaylistItem from "@/components/reusable/playlistItem";
+import AlbumItem from "@/components/(tabs)/reusable/albumItem";
+import ArtistItem from "@/components/(tabs)/reusable/artistItem";
+import PlaylistItem from "@/components/(tabs)/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
@@ -14,9 +14,9 @@ import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
-  useUpdatePlaylistInteraction,
+    useUpdateAlbumInteraction,
+    useUpdateArtistInteraction,
+    useUpdatePlaylistInteraction,
 } from "../../../api/mutations/interactions";
 import { useInteractions } from "../../../api/queries/interactions";
 

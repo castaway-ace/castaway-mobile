@@ -1,4 +1,4 @@
-import ArtistScreen from "@/components/reusable/artistScreen";
+import ArtistScreen from "@/components/(tabs)/reusable/artistScreen";
 import { router, useLocalSearchParams } from "expo-router";
 
 const HomeArtistPage = () => {

@@ -1,4 +1,4 @@
-import AlbumScreen from "@/components/reusable/albumScreen";
+import AlbumScreen from "@/components/(tabs)/reusable/albumScreen";
 import { router, useLocalSearchParams } from "expo-router";
 import { useUpdateArtistInteraction } from "../../../../api/mutations/interactions";
 import { useAlbum } from "../../../../api/queries/albums";

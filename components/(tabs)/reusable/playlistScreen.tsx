@@ -1,56 +1,40 @@
-import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
-import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbumStar } from "../../api/mutations/albums";
-import { useTrackStar } from "../../api/mutations/tracks";
-import { useStarredTracks } from "../../api/queries/tracks";
-import { blurHash } from "../../constants/blur";
-import { useModal } from "../../contexts/modal-context";
-import { Album } from "../../types/albums";
-import { IconSymbol } from "../ui/icon-symbol";
+import { useTrackStar } from "../../../api/mutations/tracks";
+import { usePlaylist } from "../../../api/queries/playlist";
+import { useStarredTracks } from "../../../api/queries/tracks";
+import { IconSymbol } from "../../ui/icon-symbol";
 
-interface AlbumScreenProps {
-  album: Album;
-  onArtistPress: (artistId: string) => void;
+interface PlaylistScreenProps {
+  id: string;
 }
 
-const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
+const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
+  const { data: playlist } = usePlaylist(id);
   const { data: starredTracks } = useStarredTracks();
   const { mutate: trackStar } = useTrackStar();
-  const { mutate: albumStar } = useAlbumStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const { data: albumCoverUrl } = useAlbumCover(album.id);
-  const { open } = useModal();
-  const releaseDate = formatDate(album?.releaseDate);
 
   const { playQueue } = useAudioPlayerContext();
 
   const tabBarHeight = useBottomTabBarHeight();
 
   const onTrackPress = (index: number) => {
-    if (!album?.tracks) return;
-    playQueue(album.tracks, index);
-  };
-
-  const onLikeAlbumButtonPress = () => {
-    if (!album) return;
-    albumStar({ id: album.id, starred: !!album.starred });
+    if (!playlist?.tracks) return;
+    playQueue(playlist.tracks, index);
   };
 
   const onLikeTrackButtonPress = (trackId: string, starred: boolean) => {
-    // trackStar({ id: trackId, starred: !!starred });
-    open(trackId, starred);
+    trackStar({ id: trackId, starred: !!starred });
   };
 
   return (
@@ -64,43 +48,18 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
-        <View style={styles.albumArtContainer}>
+        <View style={styles.playlistArtContainer}>
           <Image
-            source={{
-              uri: albumCoverUrl,
-            }}
-            placeholder={blurHash}
-            style={styles.albumArt}
+            source={require("../../assets/placeholders/album-placeholder.png")}
+            style={styles.playlistArt}
           />
         </View>
-        <View style={styles.albumInfoContainer}>
-          <Text style={styles.albumTitle}>{album?.title}</Text>
-          <View>
-            {album?.artists.map((artist) => {
-              return (
-                <Pressable
-                  key={artist.id}
-                  onPress={() => onArtistPress(artist.id)}
-                >
-                  <Text style={styles.artistName}>{artist.name}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
-        </View>
-        <View style={styles.albumLikeContainer}>
-          <Pressable onPress={onLikeAlbumButtonPress}>
-            <IconSymbol
-              name={album?.starred ? "heart.fill" : "heart"}
-              size={32}
-              color={colors.primary}
-            />
-          </Pressable>
+        <View style={styles.playlistInfoContainer}>
+          <Text style={styles.playlistTitle}>{playlist?.name}</Text>
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
-          {album?.tracks?.map((track, index) => {
+          {playlist?.tracks?.map((track, index) => {
             const starred = !!starredTracks?.includes(track.id);
             return (
               <Pressable
@@ -120,7 +79,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
                     onPress={() => onLikeTrackButtonPress(track.id, starred)}
                   >
                     <IconSymbol
-                      name={"ellipsis"}
+                      name={starred ? "heart.fill" : "heart"}
                       size={32}
                       color={colors.primary}
                     />
@@ -149,25 +108,22 @@ const makeStyles = (colors: ThemeColors) =>
       position: "absolute",
       left: 4,
     },
-    albumArtContainer: {
+    playlistArtContainer: {
       display: "flex",
       alignItems: "center",
       marginBottom: 24,
     },
-    albumArt: {
+    playlistArt: {
       width: "60%",
       aspectRatio: 800 / 800,
       borderRadius: 8,
     },
-    albumInfoContainer: {
+    playlistInfoContainer: {
       display: "flex",
       gap: 8,
       marginBottom: 24,
     },
-    albumLikeContainer: {
-      marginBottom: 24,
-    },
-    albumTitle: {
+    playlistTitle: {
       color: colors.primary,
       fontSize: 22,
       fontWeight: 500,
@@ -197,7 +153,6 @@ const makeStyles = (colors: ThemeColors) =>
     trackNumber: {
       color: colors.primary,
       fontSize: 18,
-      width: 24,
     },
     trackInfo: {
       flex: 1,
@@ -219,4 +174,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default AlbumScreen;
+export default PlaylistScreen;

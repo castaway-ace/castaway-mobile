@@ -1,40 +1,53 @@
+import { useAlbumCover } from "@/api/queries/albums";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
+import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTrackStar } from "../../api/mutations/tracks";
-import { usePlaylist } from "../../api/queries/playlist";
-import { useStarredTracks } from "../../api/queries/tracks";
-import { IconSymbol } from "../ui/icon-symbol";
+import { useAlbumStar } from "../../../api/mutations/albums";
+import { useStarredTracks } from "../../../api/queries/tracks";
+import { blurHash } from "../../../constants/blur";
+import { useModal } from "../../../contexts/modal-context";
+import { Album } from "../../../types/albums";
+import { IconSymbol } from "../../ui/icon-symbol";
 
-interface PlaylistScreenProps {
-  id: string;
+interface AlbumScreenProps {
+  album: Album;
+  onArtistPress: (artistId: string) => void;
 }
 
-const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
-  const { data: playlist } = usePlaylist(id);
+const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { data: starredTracks } = useStarredTracks();
-  const { mutate: trackStar } = useTrackStar();
+  const { mutate: albumStar } = useAlbumStar();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const { data: albumCoverUrl } = useAlbumCover(album.id);
+  const { open } = useModal();
+  const releaseDate = formatDate(album?.releaseDate);
 
   const { playQueue } = useAudioPlayerContext();
 
   const tabBarHeight = useBottomTabBarHeight();
 
   const onTrackPress = (index: number) => {
-    if (!playlist?.tracks) return;
-    playQueue(playlist.tracks, index);
+    if (!album?.tracks) return;
+    playQueue(album.tracks, index);
   };
 
-  const onLikeTrackButtonPress = (trackId: string, starred: boolean) => {
-    trackStar({ id: trackId, starred: !!starred });
+  const onLikeAlbumButtonPress = () => {
+    if (!album) return;
+    albumStar({ id: album.id, starred: !!album.starred });
+  };
+
+  const onOptionPress = (trackId: string, starred: boolean) => {
+    open(trackId, starred);
   };
 
   return (
@@ -48,18 +61,43 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
-        <View style={styles.playlistArtContainer}>
+        <View style={styles.albumArtContainer}>
           <Image
-            source={require("../../assets/placeholders/album-placeholder.png")}
-            style={styles.playlistArt}
+            source={{
+              uri: albumCoverUrl,
+            }}
+            placeholder={blurHash}
+            style={styles.albumArt}
           />
         </View>
-        <View style={styles.playlistInfoContainer}>
-          <Text style={styles.playlistTitle}>{playlist?.name}</Text>
+        <View style={styles.albumInfoContainer}>
+          <Text style={styles.albumTitle}>{album?.title}</Text>
+          <View>
+            {album?.artists.map((artist) => {
+              return (
+                <Pressable
+                  key={artist.id}
+                  onPress={() => onArtistPress(artist.id)}
+                >
+                  <Text style={styles.artistName}>{artist.name}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
+        </View>
+        <View style={styles.albumLikeContainer}>
+          <Pressable onPress={onLikeAlbumButtonPress}>
+            <IconSymbol
+              name={album?.starred ? "heart.fill" : "heart"}
+              size={32}
+              color={colors.primary}
+            />
+          </Pressable>
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
-          {playlist?.tracks?.map((track, index) => {
+          {album?.tracks?.map((track, index) => {
             const starred = !!starredTracks?.includes(track.id);
             return (
               <Pressable
@@ -75,11 +113,9 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable
-                    onPress={() => onLikeTrackButtonPress(track.id, starred)}
-                  >
+                  <Pressable onPress={() => onOptionPress(track.id, starred)}>
                     <IconSymbol
-                      name={starred ? "heart.fill" : "heart"}
+                      name={"ellipsis"}
                       size={32}
                       color={colors.primary}
                     />
@@ -108,22 +144,25 @@ const makeStyles = (colors: ThemeColors) =>
       position: "absolute",
       left: 4,
     },
-    playlistArtContainer: {
+    albumArtContainer: {
       display: "flex",
       alignItems: "center",
       marginBottom: 24,
     },
-    playlistArt: {
+    albumArt: {
       width: "60%",
       aspectRatio: 800 / 800,
       borderRadius: 8,
     },
-    playlistInfoContainer: {
+    albumInfoContainer: {
       display: "flex",
       gap: 8,
       marginBottom: 24,
     },
-    playlistTitle: {
+    albumLikeContainer: {
+      marginBottom: 24,
+    },
+    albumTitle: {
       color: colors.primary,
       fontSize: 22,
       fontWeight: 500,
@@ -153,6 +192,7 @@ const makeStyles = (colors: ThemeColors) =>
     trackNumber: {
       color: colors.primary,
       fontSize: 18,
+      width: 24,
     },
     trackInfo: {
       flex: 1,
@@ -174,4 +214,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default PlaylistScreen;
+export default AlbumScreen;

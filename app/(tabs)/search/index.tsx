@@ -7,17 +7,17 @@ import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo, useState } from "react";
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUpdateAlbumInteraction } from "../../../api/mutations/interactions";
 import { useAlbums } from "../../../api/queries/albums";
-import AlbumItem from "../../../components/reusable/albumItem";
+import AlbumItem from "../../../components/(tabs)/reusable/albumItem";
 
 const Search = () => {
   const [searchInput, setSearchInput] = useState<string>("");

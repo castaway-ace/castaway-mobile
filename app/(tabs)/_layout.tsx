@@ -4,6 +4,7 @@ import React from "react";
 import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
 import { HapticTab } from "@/components/(tabs)/haptic-tab";
 import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
+import PlaylistModal from "@/components/(tabs)/playlistModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -92,6 +93,7 @@ const TabLayout = () => {
       </Tabs>
       {currentTrack && <MusicPlayerModal />}
       <Modal />
+      <PlaylistModal />
     </>
   );
 };
