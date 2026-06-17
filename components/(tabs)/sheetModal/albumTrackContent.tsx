@@ -1,36 +1,30 @@
-import { useTrackStar } from "@/api/mutations/tracks";
-import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
-} from "../../../api/mutations/interactions";
+import { useUpdateArtistInteraction } from "../../../api/mutations/interactions";
+import { useTrackStar } from "../../../api/mutations/tracks";
 import { useAlbumCover } from "../../../api/queries/albums";
 import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
+import {
+  SheetType,
+  useSheetModal,
+} from "../../../contexts/sheet-modal-context";
 import { useTheme } from "../../../contexts/theme-context";
 import { IconSymbol } from "../../ui/icon-symbol";
 
-interface TrackContentProps {
-  id: string;
-}
-
-const TrackContent: FC<TrackContentProps> = ({ id }) => {
-  const { data: track } = useTrack(id);
+const AlbumTrackContent: FC = () => {
+  const { active, open, close } = useSheetModal();
+  const { data: track } = useTrack(active?.trackId);
   const pathname = usePathname();
 
   const { data: starredTracks } = useStarredTracks();
   const { data: albumArtUrl } = useAlbumCover(track?.album.id);
 
-  const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: trackStar } = useTrackStar();
-
-  const { open, close } = useSheetModal();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -40,33 +34,25 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const location = inHome ? "home" : inLibrary ? "library" : "search";
 
-  if (!track) return;
+  if (!track) return null;
 
   const starred = !!starredTracks?.includes(track.id);
 
   const onPlaylistPress = () => {
-    open({ kind: "playlist" });
+    open({ type: SheetType.PLAYLIST_SELECT, trackId: track.id });
   };
 
   const onLikedSongPress = () => {
-    trackStar({ id: track.id, starred: !!starred });
+    trackStar({ id: track.id, starred });
     close();
-  };
-
-  const onAlbumPress = () => {
-    if (!track?.album) return;
-    const albumId = track.album.id;
-    close();
-    albumInteraction(albumId);
-    router.navigate(`/(tabs)/${location}/albums/${albumId}`);
   };
 
   const onArtistPress = () => {
-    if (!track?.artists) return;
-    const artistId = track.artists[0].id;
-    close();
+    const artistId = track.artists[0]?.id;
+    if (!artistId) return;
     artistInteraction(artistId);
     router.navigate(`/(tabs)/${location}/artists/${artistId}`);
+    close();
   };
 
   return (
@@ -81,10 +67,10 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
             style={styles.albumArt}
           />
           <View style={styles.trackLeftInfo}>
-            <Text style={styles.trackTitle}>{track?.title}</Text>
+            <Text style={styles.trackTitle}>{track.title}</Text>
             <Text style={styles.trackArtists}>
-              {track?.artists?.map((artist) => artist.name)?.join(", ")} •{" "}
-              {track?.album.title}
+              {track.artists.map((artist) => artist.name)?.join(", ")} •{" "}
+              {track.album.title}
             </Text>
           </View>
         </View>
@@ -101,16 +87,8 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
             color={colors.primary}
           />
           <Text style={styles.text}>
-            {starred ? "Remove from Liked Songs" : "Add to Liked Songs"}{" "}
+            {starred ? "Remove from Liked Songs" : "Add to Liked Songs"}
           </Text>
-        </Pressable>
-        <Pressable style={styles.bottomButton} onPress={onAlbumPress}>
-          <IconSymbol
-            size={28}
-            name={"opticaldisc.fill"}
-            color={colors.primary}
-          />
-          <Text style={styles.text}>Go to Album</Text>
         </Pressable>
         <Pressable style={styles.bottomButton} onPress={onArtistPress}>
           <IconSymbol size={28} name={"person"} color={colors.primary} />
@@ -168,4 +146,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default TrackContent;
+export default AlbumTrackContent;

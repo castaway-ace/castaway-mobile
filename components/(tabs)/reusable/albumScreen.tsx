@@ -2,7 +2,7 @@ import { useAlbumCover } from "@/api/queries/albums";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useSheetModal } from "@/contexts/sheet-modal-context";
+import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
@@ -47,7 +47,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   };
 
   const onOptionPress = (trackId: string) => {
-    open({ kind: "track", id: trackId });
+    open({ type: SheetType.ALBUM, id: album.id, trackId });
   };
 
   return (

@@ -1,5 +1,9 @@
 import { ThemeColors } from "@/constants/theme";
-import { SheetContent, useSheetModal } from "@/contexts/sheet-modal-context";
+import {
+  SheetContent,
+  SheetType,
+  useSheetModal,
+} from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
@@ -12,12 +16,13 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
+import AlbumTrackContent from "./albumTrackContent";
 import PlaylistContent from "./playlistContent";
-import TrackContent from "./trackContent";
+import PlaylistTrackContent from "./playlistTrackContent";
 
 const SheetModal: FC = () => {
   const { colors } = useTheme();
-  const { active, close, trackId } = useSheetModal();
+  const { active, close } = useSheetModal();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { height } = useWindowDimensions();
@@ -50,7 +55,7 @@ const SheetModal: FC = () => {
       return;
     }
 
-    const sameContent = displayed !== null && displayed.kind === active.kind;
+    const sameContent = displayed !== null && displayed.type === active.type;
 
     if (sameContent) {
       return;
@@ -119,9 +124,10 @@ const SheetModal: FC = () => {
           style={[styles.sheet, { height: sheetHeight }, sheetStyle]}
         >
           <View style={styles.handle} />
-          {displayed.kind === "track" && <TrackContent id={trackId} />}
-          {displayed.kind === "playlist" && (
-            <PlaylistContent trackId={trackId} />
+          {displayed.type === SheetType.ALBUM && <AlbumTrackContent />}
+          {displayed.type === SheetType.PLAYLIST && <PlaylistTrackContent />}
+          {displayed.type === SheetType.PLAYLIST_SELECT && (
+            <PlaylistContent trackId={displayed.trackId} />
           )}
         </Animated.View>
       </GestureDetector>

@@ -28,6 +28,7 @@ const MAPPING = {
   "chevron.down": "chevron-down",
   ellipsis: "ellipsis-vertical",
   "plus.circle": "add-circle-outline",
+  "minus.circle": "remove-circle-outline",
   "pause.fill": "pause",
   "play.fill": "play",
   "play.circle.fill": "play-circle",

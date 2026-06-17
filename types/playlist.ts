@@ -3,6 +3,11 @@ interface PlaylistTrackArtist {
   name: string;
 }
 
+export enum PlaylistType {
+  USER = 'USER',
+  LIKED = 'LIKED'
+}
+
 export interface PlaylistTrack {
   id: string;
   trackId: string;
@@ -14,6 +19,7 @@ export interface Playlist {
     id: string;
     name: string;
     description: string;
+    type: PlaylistType;
     tracks: PlaylistTrack[];
   }
   

@@ -1,6 +1,6 @@
 import { trackApi, TrackOrder } from "@/api/tracks";
 import { OrderBy } from "@/constants/api";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 interface TrackOptions {
     order: TrackOrder
@@ -33,11 +33,10 @@ export const useTracks = (options: Partial<TrackOptions> = {}) => {
     });
 }
 
-export const useTrack = (id: string) => {
+export const useTrack = (id: string | undefined) => {
     return useQuery({
         queryKey: ['track', id],
-        queryFn: () => trackApi.getOne(id),
-        enabled: !!id,
+        queryFn: id ? () => trackApi.getOne(id) : skipToken,
         staleTime: 10 * 60 * 1000,
     });
 };

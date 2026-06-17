@@ -1,5 +1,5 @@
 import { OrderBy } from "@/constants/api";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { playlistApi, PlaylistOrder } from "../playlist";
 
 export interface PlaylistOptions {
@@ -33,11 +33,10 @@ export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
   });
 }
 
-export const usePlaylist = (id: string) => {
+export const usePlaylist = (id: string | undefined) => {
   return useQuery({
     queryKey: ['playlist', id],
-    queryFn: () => playlistApi.getOne(id),
-    enabled: !!id,
+    queryFn: id ? () => playlistApi.getOne(id) : skipToken,
     staleTime: 10 * 60 * 1000,
   });
 };

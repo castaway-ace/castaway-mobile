@@ -1,6 +1,6 @@
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useSheetModal } from "@/contexts/sheet-modal-context";
+import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Track } from "@/types/tracks";
 import { Image } from "expo-image";
@@ -35,7 +35,8 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   };
 
   const onOptionPress = (trackId: string) => {
-    open({ kind: "track", id: trackId });
+    if (!playlist) return;
+    open({ type: SheetType.PLAYLIST, id: playlist?.id, trackId });
   };
 
   return (

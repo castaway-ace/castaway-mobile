@@ -7,11 +7,33 @@ import {
   useState,
 } from "react";
 
-export type SheetContent = { kind: "track"; id: string } | { kind: "playlist" };
+export enum SheetType {
+  PLAYLIST = "playlist",
+  PLAYLIST_SELECT = "playlist-select",
+  ALBUM = "album",
+}
+
+export type SheetAlbum = {
+  type: SheetType.ALBUM;
+  trackId: string;
+  id: string;
+};
+
+export type SheetPlaylist = {
+  type: SheetType.PLAYLIST;
+  trackId: string;
+  id: string;
+};
+
+export type SheetPlaylistSelect = {
+  type: SheetType.PLAYLIST_SELECT;
+  trackId: string;
+};
+
+export type SheetContent = SheetAlbum | SheetPlaylist | SheetPlaylistSelect;
 
 interface SheetModalContextValue {
   active: SheetContent | null;
-  trackId: string | null;
   open: (content: SheetContent) => void;
   close: () => void;
 }
@@ -20,12 +42,8 @@ const SheetModalContext = createContext<SheetModalContextValue | null>(null);
 
 export const SheetModalProvider = ({ children }: { children: ReactNode }) => {
   const [active, setActive] = useState<SheetContent | null>(null);
-  const [trackId, setTrackId] = useState<string | null>(null);
 
   const open = useCallback((content: SheetContent): void => {
-    if (content.kind === "track") {
-      setTrackId(content.id);
-    }
     setActive(content);
   }, []);
 
@@ -34,7 +52,7 @@ export const SheetModalProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const value = useMemo<SheetModalContextValue>(
-    () => ({ active, trackId, open, close }),
+    () => ({ active, open, close }),
     [active, open, close],
   );
 
