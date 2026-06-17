@@ -27,6 +27,7 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
 
   const onPlaylistPress = (id: string) => {
     addPlaylistTrack({ playlistId: id, trackId: track.id });
+    close();
   };
 
   return (
