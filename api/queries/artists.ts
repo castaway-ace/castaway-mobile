@@ -1,6 +1,6 @@
 import { artistApi, ArtistOrder } from "@/api/artists";
+import { OrderBy } from "@/constants/api";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { OrderBy } from "../albums";
 
 interface ArtistOptions {
     order: ArtistOrder,

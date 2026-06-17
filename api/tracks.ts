@@ -1,5 +1,5 @@
+import { OrderBy } from "@/constants/api";
 import { Track, TrackSummary } from "@/types/tracks";
-import { OrderBy } from "./albums";
 import apiClient from "./client";
 
 export enum TrackOrder {

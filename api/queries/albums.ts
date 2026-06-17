@@ -1,4 +1,5 @@
-import { albumApi, AlbumOrder, OrderBy } from "@/api/albums";
+import { albumApi, AlbumOrder } from "@/api/albums";
+import { OrderBy } from "@/constants/api";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 interface AlbumOptions {
