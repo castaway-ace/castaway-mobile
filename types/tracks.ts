@@ -23,7 +23,6 @@ export interface Track {
   bitDepth: number | null;
   album: TrackAlbum;
   artists: TrackArtist[];
-  albumId: string;
 }
 
 export interface TrackSummary {

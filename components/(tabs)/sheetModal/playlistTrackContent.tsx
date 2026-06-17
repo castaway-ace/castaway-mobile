@@ -76,8 +76,6 @@ const PlaylistTrackContent: FC = () => {
     router.navigate(`/(tabs)/${location}/artists/${artistId}`);
   };
 
-  console.log(playlist);
-
   return (
     <View style={styles.container}>
       <View style={styles.trackInfo}>
