@@ -32,6 +32,7 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
       {playlists.map((playlist) => {
         return (
           <Pressable
+            key={playlist.id}
             style={styles.spacing}
             onPress={() => onPlaylistPress(playlist.id)}
           >

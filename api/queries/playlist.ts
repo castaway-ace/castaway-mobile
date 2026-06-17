@@ -1,36 +1,59 @@
-import { useQuery } from "@tanstack/react-query";
-import { playlistApi } from "../playlist";
+import { OrderBy } from "@/constants/api";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { playlistApi, PlaylistOrder } from "../playlist";
 
-export const usePlaylists = () => {
-    return useQuery({
-        queryKey: ['playlists'],
-        queryFn: () => playlistApi.getAll(),
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-    });
+export interface PlaylistOptions {
+  order: PlaylistOrder
+  orderBy: OrderBy,
+  limit: number,
+  onlyUser: boolean;
+}
+
+const DEFAULT_PLAYLIST_OPTIONS: PlaylistOptions = {
+  limit: 100,
+  order: PlaylistOrder.NAME,
+  orderBy: OrderBy.ASC,
+  onlyUser: false,
+};
+
+export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
+  const { limit, orderBy, order, onlyUser } = { ...DEFAULT_PLAYLIST_OPTIONS, ...options };
+  return useInfiniteQuery({
+    queryKey: ['tracks', { limit, order, orderBy, onlyUser }],
+    queryFn: ({ pageParam }) => playlistApi.getAll({ limit, offset: pageParam, orderBy, order, onlyUser }),
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < limit) {
+        return undefined;
+      }
+      return allPages.length * limit;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    initialPageParam: 0,
+  });
 }
 
 export const usePlaylist = (id: string) => {
-    return useQuery({
-        queryKey: ['playlist', id],
-        queryFn: () => playlistApi.getOne(id),
-        enabled: !!id,
-        staleTime: 10 * 60 * 1000,
-    });
+  return useQuery({
+    queryKey: ['playlist', id],
+    queryFn: () => playlistApi.getOne(id),
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+  });
 };
 
 export const usePlaylistTracks = (id: string) => {
-    return useQuery({
-      queryKey: ['playlist-tracks', id],
-      queryFn: () => playlistApi.getAllTracks(id),
-      enabled: !!id,
-    });
-  }
+  return useQuery({
+    queryKey: ['playlist-tracks', id],
+    queryFn: () => playlistApi.getAllTracks(id),
+    enabled: !!id,
+  });
+}
 
-  export const usePlaylistTrack = (playlistId: string, trackId: string) => {
-    return useQuery({
-      queryKey: ['playlist-tracks', playlistId, trackId],
-      queryFn: () => playlistApi.getTrack(playlistId, trackId),
-      enabled: !!playlistId && !!trackId,
-    });
-  }
+export const usePlaylistTrack = (playlistId: string, trackId: string) => {
+  return useQuery({
+    queryKey: ['playlist-tracks', playlistId, trackId],
+    queryFn: () => playlistApi.getTrack(playlistId, trackId),
+    enabled: !!playlistId && !!trackId,
+  });
+}
