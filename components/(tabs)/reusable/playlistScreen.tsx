@@ -3,6 +3,7 @@ import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
 import { Track } from "@/types/tracks";
+import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -29,9 +30,13 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
+  const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
+
+  const areTilesPresent = tiles.length > 0;
+
   const onTrackPress = (index: number) => {
-    if (!playlist?.tracks) return;
-    playQueue(playlist.tracks as unknown as Track[], index);
+    if (!playlistTracks) return;
+    playQueue(playlistTracks as unknown as Track[], index);
   };
 
   const onOptionPress = (trackId: string) => {
@@ -51,10 +56,29 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
           <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
         <View style={styles.playlistArtContainer}>
-          <Image
-            source={require("../../../assets/placeholders/album-placeholder.png")}
-            style={styles.playlistArt}
-          />
+          {!areTilesPresent && (
+            <Image
+              source={require("../../../assets/placeholders/album-placeholder.png")}
+              style={styles.playlistArt}
+            />
+          )}
+          {areTilesPresent && (
+            <View style={styles.playlistArt}>
+              {tiles.map((url, index) => {
+                return (
+                  <Image
+                    key={`${url}-${index}`}
+                    source={{ uri: url }}
+                    style={
+                      tiles.length === 1
+                        ? styles.playlistFullArt
+                        : styles.playlistMiniArt
+                    }
+                  />
+                );
+              })}
+            </View>
+          )}
         </View>
         <View style={styles.playlistInfoContainer}>
           <Text style={styles.playlistTitle}>{playlist?.name}</Text>
@@ -118,7 +142,18 @@ const makeStyles = (colors: ThemeColors) =>
     playlistArt: {
       width: "60%",
       aspectRatio: 800 / 800,
-      borderRadius: 8,
+      borderRadius: 12,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      overflow: "hidden",
+    },
+    playlistFullArt: {
+      width: "100%",
+      height: "100%",
+    },
+    playlistMiniArt: {
+      width: "50%",
+      height: "50%",
     },
     playlistInfoContainer: {
       display: "flex",
