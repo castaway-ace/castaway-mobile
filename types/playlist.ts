@@ -5,6 +5,7 @@ interface PlaylistTrackArtist {
 
 export interface PlaylistTrack {
   id: string;
+  trackId: string;
   title: string;
   artists: PlaylistTrackArtist[];
 }

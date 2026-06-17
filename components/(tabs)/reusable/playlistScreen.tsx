@@ -31,7 +31,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const onTrackPress = (index: number) => {
     if (!playlist?.tracks) return;
-    playQueue(playlist.tracks as Track[], index);
+    playQueue(playlist.tracks as unknown as Track[], index);
   };
 
   const onOptionPress = (trackId: string) => {
@@ -60,21 +60,25 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
-          {playlistTracks?.map((track, index) => {
+          {playlistTracks?.map((playlistTrack, index) => {
             return (
               <Pressable
-                key={track.id}
+                key={playlistTrack.id}
                 style={styles.trackItem}
                 onPress={() => onTrackPress(index)}
               >
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
-                    <Text style={styles.trackTitle}>{track.title}</Text>
+                    <Text style={styles.trackTitle}>{playlistTrack.title}</Text>
                     <Text style={styles.trackArtists}>
-                      {track?.artists?.map((artist) => artist.name)?.join(", ")}
+                      {playlistTrack?.artists
+                        ?.map((artist) => artist.name)
+                        ?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable onPress={() => onOptionPress(track.id)}>
+                  <Pressable
+                    onPress={() => onOptionPress(playlistTrack.trackId)}
+                  >
                     <IconSymbol
                       name={"ellipsis"}
                       size={32}
