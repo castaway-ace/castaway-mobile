@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import { albumApi } from "../albums";
 
 interface AlbumStarMutation {
@@ -17,7 +18,11 @@ export const useAlbumStar = () => {
                 await albumApi.star(id);
             }
         },
-        onSuccess: (_data, { id }) => {
+        onSuccess: (_data, { id, starred }) => {
+            Toast.show({
+                type: 'success',
+                text1: starred ? 'Removed from Your Library' : 'Added to Your Library',
+              });
             queryClient.invalidateQueries({ queryKey: ['album', id] });
             queryClient.invalidateQueries({ queryKey: ['albums'] });
         },

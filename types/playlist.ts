@@ -1,11 +1,19 @@
-import { Track } from "./tracks";
+interface PlaylistTrackArtist {
+  id: string;
+  name: string;
+}
+
+export interface PlaylistTrack {
+  id: string;
+  trackId: string;
+  title: string;
+  artists: PlaylistTrackArtist[];
+}
 
 export interface Playlist {
     id: string;
     name: string;
     description: string;
-    public: boolean
-    position: number;
-    tracks: Track[];
+    tracks: PlaylistTrack[];
   }
   

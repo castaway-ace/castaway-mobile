@@ -1,17 +1,37 @@
 import { Tabs } from "expo-router";
 import React from "react";
+import Toast, { BaseToast } from "react-native-toast-message";
 
 import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
 import { HapticTab } from "@/components/(tabs)/haptic-tab";
 import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
+import SheetModal from "@/components/(tabs)/sheetModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
-import Modal from "../../components/(tabs)/modal";
 
 const TabLayout = () => {
-  const { colors } = useTheme();
   const { currentTrack } = useAudioPlayerContext();
+
+  const { colors } = useTheme();
+
+  const toastConfig = {
+    success: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          borderLeftColor: colors.accent,
+          backgroundColor: colors.primary,
+        }}
+        contentContainerStyle={{ paddingHorizontal: 12 }}
+        text1Style={{
+          fontSize: 16,
+          fontWeight: "400",
+          color: colors.background,
+        }}
+      />
+    ),
+  };
 
   return (
     <>
@@ -91,7 +111,8 @@ const TabLayout = () => {
         />
       </Tabs>
       {currentTrack && <MusicPlayerModal />}
-      <Modal />
+      <SheetModal />
+      <Toast config={toastConfig} />
     </>
   );
 };

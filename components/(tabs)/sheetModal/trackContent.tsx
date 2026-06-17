@@ -1,3 +1,5 @@
+import { useTrackStar } from "@/api/mutations/tracks";
+import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
@@ -10,7 +12,6 @@ import { useAlbumCover } from "../../../api/queries/albums";
 import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
-import { useModal } from "../../../contexts/modal-context";
 import { useTheme } from "../../../contexts/theme-context";
 import { IconSymbol } from "../../ui/icon-symbol";
 
@@ -27,8 +28,9 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
+  const { mutate: trackStar } = useTrackStar();
 
-  const { close } = useModal();
+  const { open, close } = useSheetModal();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -38,12 +40,17 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
 
   const location = inHome ? "home" : inLibrary ? "library" : "search";
 
+  if (!track) return;
+
+  const starred = !!starredTracks?.includes(track.id);
+
   const onPlaylistPress = () => {
-    console.log("press playlist button");
+    open({ kind: "playlist" });
   };
 
   const onLikedSongPress = () => {
-    console.log("press playlist button");
+    trackStar({ id: track.id, starred: !!starred });
+    close();
   };
 
   const onAlbumPress = () => {
@@ -88,8 +95,14 @@ const TrackContent: FC<TrackContentProps> = ({ id }) => {
           <Text style={styles.text}>Add to Playlist</Text>
         </Pressable>
         <Pressable style={styles.bottomButton} onPress={onLikedSongPress}>
-          <IconSymbol size={28} name={"heart"} color={colors.primary} />
-          <Text style={styles.text}>Add to Liked Songs</Text>
+          <IconSymbol
+            size={28}
+            name={starred ? "heart.fill" : "heart"}
+            color={colors.primary}
+          />
+          <Text style={styles.text}>
+            {starred ? "Remove from Liked Songs" : "Add to Liked Songs"}{" "}
+          </Text>
         </Pressable>
         <Pressable style={styles.bottomButton} onPress={onAlbumPress}>
           <IconSymbol

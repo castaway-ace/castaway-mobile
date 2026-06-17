@@ -1,10 +1,6 @@
+import { OrderBy } from "@/constants/api";
 import { Album, AlbumSummary } from "@/types/albums";
 import apiClient from "./client";
-
-export enum OrderBy {
-  ASC = 'asc',
-  DESC = 'desc'
-}
 
 export enum AlbumOrder {
   TITLE = 'title',

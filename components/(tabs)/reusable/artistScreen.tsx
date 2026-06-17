@@ -7,9 +7,9 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useArtistStar } from "../../api/mutations/artists";
-import { blurHash } from "../../constants/blur";
-import { IconSymbol } from "../ui/icon-symbol";
+import { useArtistStar } from "../../../api/mutations/artists";
+import { blurHash } from "../../../constants/blur";
+import { IconSymbol } from "../../ui/icon-symbol";
 import AlbumItem from "./albumItem";
 
 interface ArtistScreenProps {
@@ -36,7 +36,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
     ? {
         uri: artistImageUrl,
       }
-    : require("../../assets/placeholders/artist-placeholder.png");
+    : require("../../../assets/placeholders/artist-placeholder.png");
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

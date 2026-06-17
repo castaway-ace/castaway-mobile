@@ -1,7 +1,8 @@
 import { ThemeColors } from "@/constants/theme";
+import { SheetContent, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
-import { FC, useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
@@ -11,40 +12,65 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
-import { useModal } from "../../../contexts/modal-context";
+import PlaylistContent from "./playlistContent";
 import TrackContent from "./trackContent";
 
-const Modal: FC = () => {
+const SheetModal: FC = () => {
   const { colors } = useTheme();
-  const { isOpen, close, id } = useModal();
-
+  const { active, close, trackId } = useSheetModal();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const [rendered, setRendered] = useState(false);
 
   const { height } = useWindowDimensions();
   const sheetHeight = height * 0.45;
-  const translateY = useSharedValue(height);
+  const translateY = useSharedValue(sheetHeight);
 
-  if (isOpen && !rendered) {
-    setRendered(true);
-  }
+  const [displayed, setDisplayed] = useState<SheetContent | null>(null);
+
+  const swapAndOpen = useCallback(
+    (next: SheetContent): void => {
+      setDisplayed(next);
+      translateY.value = withTiming(0, { duration: 280 });
+    },
+    [translateY],
+  );
 
   useEffect(() => {
-    if (isOpen) {
-      translateY.value = withTiming(0, { duration: 280 });
+    if (active === null) {
+      if (displayed !== null) {
+        translateY.value = withTiming(
+          sheetHeight,
+          { duration: 220 },
+          (finished) => {
+            if (finished) {
+              runOnJS(setDisplayed)(null);
+            }
+          },
+        );
+      }
+      return;
+    }
+
+    const sameContent = displayed !== null && displayed.kind === active.kind;
+
+    if (sameContent) {
+      return;
+    }
+
+    if (displayed === null) {
+      swapAndOpen(active);
     } else {
+      const next = active;
       translateY.value = withTiming(
         sheetHeight,
         { duration: 220 },
         (finished) => {
           if (finished) {
-            runOnJS(setRendered)(false);
+            runOnJS(swapAndOpen)(next);
           }
         },
       );
     }
-  }, [isOpen, sheetHeight, translateY]);
+  }, [active, displayed, sheetHeight, translateY, swapAndOpen]);
 
   const pan = Gesture.Pan()
     .onUpdate((event) => {
@@ -79,23 +105,24 @@ const Modal: FC = () => {
     ),
   }));
 
-  if (!rendered) {
+  if (displayed === null) {
     return null;
   }
 
   return (
     <View style={StyleSheet.absoluteFill}>
       <GestureDetector gesture={tapBackdrop}>
-        <Animated.View style={[styles.backdrop, backdropStyle]}>
-          <Text>Space</Text>
-        </Animated.View>
+        <Animated.View style={[styles.backdrop, backdropStyle]} />
       </GestureDetector>
       <GestureDetector gesture={pan}>
         <Animated.View
           style={[styles.sheet, { height: sheetHeight }, sheetStyle]}
         >
           <View style={styles.handle} />
-          <TrackContent id={id} />
+          {displayed.kind === "track" && <TrackContent id={trackId} />}
+          {displayed.kind === "playlist" && (
+            <PlaylistContent trackId={trackId} />
+          )}
         </Animated.View>
       </GestureDetector>
     </View>
@@ -125,14 +152,8 @@ const makeStyles = (colors: ThemeColors) =>
       borderRadius: 2,
       marginTop: 8,
       marginBottom: 12,
-      backgroundColor: "rgba(127, 127, 127, 0.4)",
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: "600",
-      paddingHorizontal: 16,
-      color: "#888888",
+      backgroundColor: colors.primary,
     },
   });
 
-export default Modal;
+export default SheetModal;

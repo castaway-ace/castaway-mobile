@@ -16,7 +16,7 @@ const PlaylistItem: FC<PlaylistProps> = ({ playlist }) => {
   return (
     <View style={styles.playlistContainer}>
       <Image
-        source={require("../../assets/placeholders/album-placeholder.png")}
+        source={require("../../../assets/placeholders/album-placeholder.png")}
         style={styles.playlistArt}
       />
       <Text style={styles.playlistName}>{playlist.name}</Text>

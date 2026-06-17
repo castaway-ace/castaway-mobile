@@ -2,9 +2,9 @@ import { useAlbums } from "@/api/queries/albums";
 import { useArtists } from "@/api/queries/artists";
 import { usePlaylists } from "@/api/queries/playlist";
 import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
-import AlbumItem from "@/components/reusable/albumItem";
-import ArtistItem from "@/components/reusable/artistItem";
-import PlaylistItem from "@/components/reusable/playlistItem";
+import AlbumItem from "@/components/(tabs)/reusable/albumItem";
+import ArtistItem from "@/components/(tabs)/reusable/artistItem";
+import PlaylistItem from "@/components/(tabs)/reusable/playlistItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
@@ -24,7 +24,7 @@ const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: playlists } = usePlaylists();
+  const { data: playlistData } = usePlaylists();
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
   const { data: interactions } = useInteractions();
@@ -37,6 +37,8 @@ const HomeScreen = () => {
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
+
+  const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
 
   const playlistsAvailable = !!playlists?.length;
   const interactionsAvailable = !!interactions?.length;
