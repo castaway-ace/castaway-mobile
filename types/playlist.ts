@@ -1,11 +1,16 @@
+export enum PlaylistType {
+  USER = 'USER',
+  LIKED = 'LIKED'
+}
+
 interface PlaylistTrackArtist {
   id: string;
   name: string;
 }
 
-export enum PlaylistType {
-  USER = 'USER',
-  LIKED = 'LIKED'
+interface PlaylistTrackAlbum {
+  id: string;
+  title: string;
 }
 
 export interface PlaylistTrack {
@@ -13,13 +18,19 @@ export interface PlaylistTrack {
   trackId: string;
   title: string;
   artists: PlaylistTrackArtist[];
+  album: PlaylistTrackAlbum;
 }
 
 export interface Playlist {
-    id: string;
-    name: string;
-    description: string;
-    type: PlaylistType;
-    tracks: PlaylistTrack[];
-  }
-  
+  id: string;
+  name: string;
+  description: string;
+  type: PlaylistType;
+  albumCoverUrls: string[];
+}
+
+export interface PlaylistSummary {
+  id: string;
+  name: string;
+  type: PlaylistType;
+}

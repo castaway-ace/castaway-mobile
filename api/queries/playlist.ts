@@ -41,11 +41,11 @@ export const usePlaylist = (id: string | undefined) => {
   });
 };
 
-export const usePlaylistTracks = (id: string) => {
+export const usePlaylistTracks = (playlistId: string) => {
   return useQuery({
-    queryKey: ['playlist-tracks', id],
-    queryFn: () => playlistApi.getAllTracks(id),
-    enabled: !!id,
+    queryKey: ['playlist-tracks', playlistId],
+    queryFn: () => playlistApi.getAllTracks(playlistId),
+    enabled: !!playlistId,
   });
 }
 

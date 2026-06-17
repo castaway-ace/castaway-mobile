@@ -108,7 +108,7 @@ const HomeScreen = () => {
                     key={playlist.id}
                     onPress={() => onPlaylistPress(playlist.id)}
                   >
-                    <PlaylistItem playlist={playlist} />
+                    <PlaylistItem id={playlist.id} />
                   </Pressable>
                 ))}
               </ScrollView>
