@@ -14,9 +14,9 @@ import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-    useUpdateAlbumInteraction,
-    useUpdateArtistInteraction,
-    useUpdatePlaylistInteraction,
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+  useUpdatePlaylistInteraction,
 } from "../../../api/mutations/interactions";
 import { useInteractions } from "../../../api/queries/interactions";
 
@@ -24,7 +24,7 @@ const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: playlists } = usePlaylists();
+  const { data: playlistData } = usePlaylists();
   const { data: favoriteAlbumsData } = useAlbums({ starred: true });
   const { data: favoriteArtistsData } = useArtists({ starred: true });
   const { data: interactions } = useInteractions();
@@ -37,6 +37,8 @@ const HomeScreen = () => {
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
   const favoriteArtists =
     favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
+
+  const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
 
   const playlistsAvailable = !!playlists?.length;
   const interactionsAvailable = !!interactions?.length;

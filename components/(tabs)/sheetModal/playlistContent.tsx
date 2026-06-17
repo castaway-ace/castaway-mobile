@@ -13,8 +13,10 @@ interface PlaylistContent {
 }
 
 const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
-  const { data: playlists } = usePlaylists();
+  const { data: playlistData } = usePlaylists({ onlyUser: true });
   const { data: track } = useTrack(trackId);
+
+  const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
 
   const { mutate: addPlaylistTrack } = useAddTrackToPlaylist();
 
