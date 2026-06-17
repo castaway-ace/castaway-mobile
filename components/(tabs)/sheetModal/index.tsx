@@ -5,8 +5,13 @@ import {
   useSheetModal,
 } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  LayoutChangeEvent,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
@@ -26,24 +31,41 @@ const SheetModal: FC = () => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { height } = useWindowDimensions();
-  const sheetHeight = height * 0.45;
-  const translateY = useSharedValue(sheetHeight);
+  const sheetHeight = useSharedValue(0);
+  const translateY = useSharedValue(height);
 
   const [displayed, setDisplayed] = useState<SheetContent | null>(null);
 
-  const swapAndOpen = useCallback(
-    (next: SheetContent): void => {
-      setDisplayed(next);
-      translateY.value = withTiming(0, { duration: 280 });
+  const pendingOpenRef = useRef(false);
+
+  const beginOpen = useCallback((next: SheetContent): void => {
+    pendingOpenRef.current = true;
+    setDisplayed(next);
+  }, []);
+
+  const onSheetLayout = useCallback(
+    (event: LayoutChangeEvent): void => {
+      const measured = event.nativeEvent.layout.height;
+      if (measured <= 0) {
+        return;
+      }
+
+      sheetHeight.value = measured;
+
+      if (pendingOpenRef.current) {
+        pendingOpenRef.current = false;
+        translateY.value = measured;
+        translateY.value = withTiming(0, { duration: 280 });
+      }
     },
-    [translateY],
+    [sheetHeight, translateY],
   );
 
   useEffect(() => {
     if (active === null) {
       if (displayed !== null) {
         translateY.value = withTiming(
-          sheetHeight,
+          sheetHeight.value || height,
           { duration: 220 },
           (finished) => {
             if (finished) {
@@ -62,20 +84,20 @@ const SheetModal: FC = () => {
     }
 
     if (displayed === null) {
-      swapAndOpen(active);
+      beginOpen(active);
     } else {
       const next = active;
       translateY.value = withTiming(
-        sheetHeight,
+        sheetHeight.value || height,
         { duration: 220 },
         (finished) => {
           if (finished) {
-            runOnJS(swapAndOpen)(next);
+            runOnJS(beginOpen)(next);
           }
         },
       );
     }
-  }, [active, displayed, sheetHeight, translateY, swapAndOpen]);
+  }, [active, displayed, height, sheetHeight, translateY, beginOpen]);
 
   const pan = Gesture.Pan()
     .onUpdate((event) => {
@@ -101,14 +123,17 @@ const SheetModal: FC = () => {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      translateY.value,
-      [0, sheetHeight],
-      [1, 0],
-      Extrapolation.CLAMP,
-    ),
-  }));
+  const backdropStyle = useAnimatedStyle(() => {
+    const span = sheetHeight.value > 0 ? sheetHeight.value : 1;
+    return {
+      opacity: interpolate(
+        translateY.value,
+        [0, span],
+        [1, 0],
+        Extrapolation.CLAMP,
+      ),
+    };
+  });
 
   if (displayed === null) {
     return null;
@@ -121,7 +146,8 @@ const SheetModal: FC = () => {
       </GestureDetector>
       <GestureDetector gesture={pan}>
         <Animated.View
-          style={[styles.sheet, { height: sheetHeight }, sheetStyle]}
+          style={[styles.sheet, sheetStyle]}
+          onLayout={onSheetLayout}
         >
           <View style={styles.handle} />
           {displayed.type === SheetType.ALBUM && <AlbumTrackContent />}
@@ -150,6 +176,7 @@ const makeStyles = (colors: ThemeColors) =>
       borderTopRightRadius: 16,
       overflow: "hidden",
       backgroundColor: colors.background,
+      paddingBottom: 40,
     },
     handle: {
       alignSelf: "center",

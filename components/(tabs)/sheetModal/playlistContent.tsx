@@ -1,6 +1,6 @@
 import { useAddTrackToPlaylist } from "@/api/mutations/playlists";
 import { usePlaylists } from "@/api/queries/playlist";
-import { useTrack } from "@/api/queries/tracks";
+import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -13,8 +13,8 @@ interface PlaylistContent {
 }
 
 const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
+  const { close } = useSheetModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
-  const { data: track } = useTrack(trackId);
 
   const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
 
@@ -23,10 +23,10 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  if (!playlists || !track) return;
+  if (!playlists) return;
 
   const onPlaylistPress = (id: string) => {
-    addPlaylistTrack({ playlistId: id, trackId: track.id });
+    addPlaylistTrack({ playlistId: id, trackId: trackId });
     close();
   };
 
