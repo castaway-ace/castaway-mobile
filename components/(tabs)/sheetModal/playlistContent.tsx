@@ -1,10 +1,10 @@
 import { useAddTrackToPlaylist } from "@/api/mutations/playlists";
 import { usePlaylists } from "@/api/queries/playlist";
 import { useSheetModal } from "@/contexts/sheet-modal-context";
+import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
 
@@ -33,19 +33,30 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
   return (
     <View style={styles.container}>
       {playlists.map((playlist) => {
+        const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
+        const areTilesPresent = tiles.length > 0;
+
         return (
           <Pressable
             key={playlist.id}
             style={styles.spacing}
             onPress={() => onPlaylistPress(playlist.id)}
           >
-            <Image
-              source={{
-                uri: "",
-              }}
-              placeholder={blurHash}
-              style={styles.albumArt}
-            />
+            <View style={styles.albumArt}>
+              {tiles.map((url, index) => {
+                return (
+                  <Image
+                    key={`${url}-${index}`}
+                    source={{ uri: url }}
+                    style={
+                      tiles.length === 1
+                        ? styles.playlistFullArt
+                        : styles.playlistMiniArt
+                    }
+                  />
+                );
+              })}
+            </View>
             <View style={styles.trackLeftInfo}>
               <Text style={styles.trackTitle}>{playlist.name}</Text>
             </View>
@@ -75,6 +86,14 @@ const makeStyles = (colors: ThemeColors) =>
       width: 60,
       height: 60,
       borderRadius: 16,
+    },
+    playlistFullArt: {
+      width: "100%",
+      height: "100%",
+    },
+    playlistMiniArt: {
+      width: "50%",
+      height: "50%",
     },
     trackLeftInfo: {
       display: "flex",

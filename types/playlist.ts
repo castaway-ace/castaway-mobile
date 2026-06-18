@@ -33,4 +33,5 @@ export interface PlaylistSummary {
   id: string;
   name: string;
   type: PlaylistType;
+  albumCoverUrls: string[];
 }
