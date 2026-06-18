@@ -74,7 +74,10 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.itemContainerWrapper}>
           {favoriteAlbumsAvailable && (
             <View style={styles.itemsContainer}>

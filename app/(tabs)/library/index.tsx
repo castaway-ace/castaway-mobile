@@ -8,8 +8,10 @@ import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { useRouter } from "expo-router";
+import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LibraryInteractionItem from "../../../components/(tabs)/library/interactionItem";
 
@@ -18,6 +20,8 @@ const Library = () => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const router = useRouter();
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   const { data: interactions } = useInteractions();
 
@@ -55,20 +59,26 @@ const Library = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>Library</Text>
-      {interactionsAvailable && (
-        <View style={styles.itemContainer}>
-          {interactions.map((interaction) => {
-            return (
-              <Pressable
-                key={interaction.id}
-                onPress={() => onInteractionPress(interaction)}
-              >
-                <LibraryInteractionItem interaction={interaction} />
-              </Pressable>
-            );
-          })}
-        </View>
-      )}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {interactionsAvailable && (
+          <View style={styles.itemContainer}>
+            {interactions.map((interaction) => {
+              return (
+                <Pressable
+                  key={interaction.id}
+                  onPress={() => onInteractionPress(interaction)}
+                >
+                  <LibraryInteractionItem interaction={interaction} />
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -78,7 +88,7 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      padding: 16,
+      paddingTop: 16,
     },
     itemContainer: {
       gap: 16,
@@ -88,6 +98,10 @@ const makeStyles = (colors: ThemeColors) =>
       fontWeight: "bold",
       marginBottom: 16,
       color: colors.primary,
+      paddingHorizontal: 16,
+    },
+    scrollView: {
+      paddingHorizontal: 16,
     },
   });
 
