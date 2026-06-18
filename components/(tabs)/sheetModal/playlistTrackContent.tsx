@@ -1,3 +1,4 @@
+import { useRemoveTrackFromPlaylist } from "@/api/mutations/playlists";
 import { useTrackStar } from "@/api/mutations/tracks";
 import { usePlaylist } from "@/api/queries/playlist";
 import {
@@ -34,6 +35,7 @@ const PlaylistTrackContent: FC = () => {
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: trackStar } = useTrackStar();
+  const { mutate: removePlaylistTrack } = useRemoveTrackFromPlaylist();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -52,7 +54,9 @@ const PlaylistTrackContent: FC = () => {
   };
 
   const onRemoveFromPlaylistPress = () => {
-    console.log("remove");
+    if (!playlist?.id) return;
+    removePlaylistTrack({ playlistId: playlist.id, trackId: track.id });
+    close();
   };
 
   const onLikedSongPress = () => {

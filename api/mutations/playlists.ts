@@ -63,6 +63,7 @@ export const useRemoveTrackFromPlaylist = () => {
         },
         onSuccess: (_data, { playlistId }): void => {
             queryClient.invalidateQueries({ queryKey: ['playlist', playlistId] });
+            queryClient.invalidateQueries({ queryKey: ['playlist-tracks', playlistId] });
           },
     });
 };

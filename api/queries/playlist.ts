@@ -19,7 +19,7 @@ const DEFAULT_PLAYLIST_OPTIONS: PlaylistOptions = {
 export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
   const { limit, orderBy, order, onlyUser } = { ...DEFAULT_PLAYLIST_OPTIONS, ...options };
   return useInfiniteQuery({
-    queryKey: ['tracks', { limit, order, orderBy, onlyUser }],
+    queryKey: ['playlists', { limit, order, orderBy, onlyUser }],
     queryFn: ({ pageParam }) => playlistApi.getAll({ limit, offset: pageParam, orderBy, order, onlyUser }),
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < limit) {

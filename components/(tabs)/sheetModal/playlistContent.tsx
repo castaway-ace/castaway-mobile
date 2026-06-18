@@ -34,6 +34,7 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
     <View style={styles.container}>
       {playlists.map((playlist) => {
         const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
+
         const areTilesPresent = tiles.length > 0;
 
         return (
@@ -42,21 +43,29 @@ const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
             style={styles.spacing}
             onPress={() => onPlaylistPress(playlist.id)}
           >
-            <View style={styles.albumArt}>
-              {tiles.map((url, index) => {
-                return (
-                  <Image
-                    key={`${url}-${index}`}
-                    source={{ uri: url }}
-                    style={
-                      tiles.length === 1
-                        ? styles.playlistFullArt
-                        : styles.playlistMiniArt
-                    }
-                  />
-                );
-              })}
-            </View>
+            {!areTilesPresent && (
+              <Image
+                source={require("../../../assets/placeholders/album-placeholder.png")}
+                style={styles.albumArt}
+              />
+            )}
+            {areTilesPresent && (
+              <View style={styles.albumArt}>
+                {tiles.map((url, index) => {
+                  return (
+                    <Image
+                      key={`${url}-${index}`}
+                      source={{ uri: url }}
+                      style={
+                        tiles.length === 1
+                          ? styles.playlistFullArt
+                          : styles.playlistMiniArt
+                      }
+                    />
+                  );
+                })}
+              </View>
+            )}
             <View style={styles.trackLeftInfo}>
               <Text style={styles.trackTitle}>{playlist.name}</Text>
             </View>
@@ -86,6 +95,9 @@ const makeStyles = (colors: ThemeColors) =>
       width: 60,
       height: 60,
       borderRadius: 16,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      overflow: "hidden",
     },
     playlistFullArt: {
       width: "100%",
