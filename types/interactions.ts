@@ -16,6 +16,7 @@ interface AlbumInteraction {
   type: InteractionType.ALBUM;
   albumId: string;
   title: string;
+  coverUrl: string;
   artists: AlbumArtistInteraction[]
 };
 
@@ -24,6 +25,7 @@ interface ArtistInteraction {
   userId: string;
   updatedAt: Date;
   artistId: string;
+  coverUrl: string;
   type: InteractionType.ARTIST;
   name: string;
 };
@@ -34,6 +36,7 @@ interface PlaylistInteraction {
   updatedAt: Date;
   playlistId: string;
   name: string;
+  coverUrls: string[];
   type: InteractionType.PLAYLIST;
 };
 

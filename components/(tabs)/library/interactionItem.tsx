@@ -1,13 +1,10 @@
-import { albumApi } from "@/api/albums";
-import { artistApi } from "@/api/artists";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
-import { useQuery } from "@tanstack/react-query";
+import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { blurHash } from "../../../constants/blur";
 
 interface InteractionItemProps {
   interaction: Interaction;
@@ -21,26 +18,9 @@ const LibraryInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const isAlbum = interaction.type === InteractionType.ALBUM;
   const isArtist = interaction.type === InteractionType.ARTIST;
+  const isPlaylist = interaction.type === InteractionType.PLAYLIST;
 
   const placeholder = isArtist ? ARTIST_PLACEHOLDER : ALBUM_PLACEHOLDER;
-
-  const { data: source } = useQuery({
-    queryKey: isAlbum
-      ? ["albumCover", interaction.albumId]
-      : isArtist
-        ? ["artistImage", interaction.artistId]
-        : ["interaction-image", "none"],
-    queryFn: () => {
-      if (isAlbum) {
-        return albumApi.getCover(interaction.albumId);
-      }
-      if (isArtist) {
-        return artistApi.getImage(interaction.artistId);
-      }
-      return null;
-    },
-    enabled: Boolean(isAlbum || isArtist),
-  });
 
   const text = isAlbum
     ? interaction.title
@@ -54,13 +34,48 @@ const LibraryInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
       ? "Artist"
       : "Playlist";
 
-  return (
-    <View key={interaction.id} style={styles.interactionItem}>
+  const ImageContent = () => {
+    if (isPlaylist) {
+      const tiles = buildPlaylistCover(interaction?.coverUrls);
+      const areTilesPresent = tiles.length > 0;
+      if (!areTilesPresent) {
+        return (
+          <Image
+            source={require("../../../assets/placeholders/album-placeholder.png")}
+            style={styles.interactionArt}
+          />
+        );
+      }
+
+      return (
+        <View style={styles.interactionArt}>
+          {tiles.map((url, index) => {
+            return (
+              <Image
+                key={`${url}-${index}`}
+                source={{ uri: url }}
+                style={
+                  tiles.length === 1
+                    ? styles.playlistFullArt
+                    : styles.playlistMiniArt
+                }
+              />
+            );
+          })}
+        </View>
+      );
+    }
+    return (
       <Image
-        source={source ?? placeholder}
-        placeholder={blurHash}
+        source={interaction.coverUrl ?? placeholder}
         style={styles.interactionArt}
       />
+    );
+  };
+
+  return (
+    <View key={interaction.id} style={styles.interactionItem}>
+      <ImageContent />
       <View style={styles.textContainer}>
         <Text style={styles.text} numberOfLines={1}>
           {text}
@@ -83,6 +98,17 @@ const makeStyles = (colors: ThemeColors) =>
       width: 100,
       aspectRatio: 1,
       borderRadius: 12,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      overflow: "hidden",
+    },
+    playlistFullArt: {
+      width: "100%",
+      height: "100%",
+    },
+    playlistMiniArt: {
+      width: "50%",
+      height: "50%",
     },
     textContainer: {
       gap: 4,
