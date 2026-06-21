@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/api/client";
 import { useAlbumCover } from "@/api/queries/albums";
 import { trackApi } from "@/api/tracks";
+import { PlaylistTrack } from "@/types/playlist";
 import { Track, TrackSummary } from "@/types/tracks";
 import {
   setAudioModeAsync,
@@ -24,10 +25,10 @@ import {
 export type RepeatMode = "off" | "all" | "one";
 
 interface AudioPlayerContextValue {
-  currentTrack: TrackSummary | null;
+  currentTrack: TrackSummary | PlaylistTrack | null;
   coverArtUrl: string | undefined;
-  queue: TrackSummary[];
-  upNext: TrackSummary[];
+  queue: TrackSummary[] | PlaylistTrack[];
+  upNext: TrackSummary[] | PlaylistTrack[];
   position: number;
   isShuffled: boolean;
   repeatMode: RepeatMode;
@@ -37,8 +38,11 @@ interface AudioPlayerContextValue {
   currentTime: number;
   duration: number;
   loadTrack: (trackId: string) => Promise<void>;
-  playQueue: (tracks: TrackSummary[], startIndex?: number) => void;
-  addToQueue: (track: TrackSummary) => void;
+  playQueue: (
+    tracks: TrackSummary[] | PlaylistTrack[],
+    startIndex?: number,
+  ) => void;
+  addToQueue: (track: TrackSummary | PlaylistTrack) => void;
   clearQueue: () => void;
   play: () => void;
   pause: () => void;
@@ -215,12 +219,12 @@ export const AudioPlayerProvider = ({
 
   const [shouldPlay, setShouldPlay] = useState(false);
 
-  const currentTrack = useMemo<TrackSummary | null>(() => {
+  const currentTrack = useMemo<TrackSummary | PlaylistTrack | null>(() => {
     if (position < 0 || order[position] === undefined) return null;
     return queue[order[position]] ?? null;
   }, [queue, order, position]);
 
-  const upNext = useMemo<TrackSummary[]>(() => {
+  const upNext = useMemo<TrackSummary[] | PlaylistTrack[]>(() => {
     if (position < 0) return [];
     return order.slice(position + 1).map((i) => queue[i]);
   }, [queue, order, position]);
@@ -236,13 +240,14 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const playTrack = useCallback(
-    async (track: TrackSummary): Promise<void> => {
+    async (track: TrackSummary | PlaylistTrack): Promise<void> => {
       setIsLoading(true);
       setError(null);
       try {
         const token = await SecureStore.getItemAsync("accessToken");
+        const streamId = "trackId" in track ? track.trackId : track.id;
         player.replace({
-          uri: `${BASE_URL}/tracks/${track.id}/stream`,
+          uri: `${BASE_URL}/tracks/${streamId}/stream`,
           headers: { Authorization: `Bearer ${token}` },
         });
         setShouldPlay(true);
@@ -321,15 +326,18 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const playQueue = useCallback(
-    (tracks: TrackSummary[], startIndex = 0): void => {
+    (tracks: TrackSummary[] | PlaylistTrack[], startIndex = 0): void => {
       dispatch({ type: "SET_QUEUE", tracks, startIndex });
     },
     [],
   );
 
-  const addToQueue = useCallback((track: TrackSummary): void => {
-    dispatch({ type: "ENQUEUE", track });
-  }, []);
+  const addToQueue = useCallback(
+    (track: TrackSummary | PlaylistTrack): void => {
+      dispatch({ type: "ENQUEUE", track });
+    },
+    [],
+  );
 
   const clearQueue = useCallback((): void => {
     dispatch({ type: "CLEAR" });
