@@ -64,11 +64,11 @@ const HomeScreen = () => {
 
   const onInteractionPress = (interaction: Interaction) => {
     if (interaction.type === InteractionType.ALBUM) {
-      onAlbumPress(interaction.albumId);
+      onAlbumPress(interaction.album.id);
     } else if (interaction.type === InteractionType.ARTIST) {
-      onArtistPress(interaction.artistId);
+      onArtistPress(interaction.artist.id);
     } else {
-      onPlaylistPress(interaction.playlistId);
+      onPlaylistPress(interaction.playlist.id);
     }
   };
 
@@ -87,14 +87,16 @@ const HomeScreen = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.albumScrollContent}
               >
-                {favoriteAlbums.map((album) => (
-                  <Pressable
-                    key={album.id}
-                    onPress={() => onAlbumPress(album.id)}
-                  >
-                    <AlbumItem id={album.id} />
-                  </Pressable>
-                ))}
+                {favoriteAlbums.map((album) => {
+                  return (
+                    <Pressable
+                      key={album.id}
+                      onPress={() => onAlbumPress(album.id)}
+                    >
+                      <AlbumItem id={album.id} />
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
             </View>
           )}
@@ -125,14 +127,16 @@ const HomeScreen = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.albumScrollContent}
               >
-                {interactions.map((interaction) => (
-                  <Pressable
-                    key={interaction.id}
-                    onPress={() => onInteractionPress(interaction)}
-                  >
-                    <HomeInteractionItem interaction={interaction} />
-                  </Pressable>
-                ))}
+                {interactions.map((interaction) => {
+                  return (
+                    <Pressable
+                      key={interaction.id}
+                      onPress={() => onInteractionPress(interaction)}
+                    >
+                      <HomeInteractionItem interaction={interaction} />
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
             </View>
           )}

@@ -23,10 +23,10 @@ const LibraryInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   const placeholder = isArtist ? ARTIST_PLACEHOLDER : ALBUM_PLACEHOLDER;
 
   const text = isAlbum
-    ? interaction.title
+    ? interaction.album.title
     : isArtist
-      ? interaction.name
-      : interaction.name;
+      ? interaction.artist.name
+      : interaction.playlist.name;
 
   const subText = isAlbum
     ? interaction.artists.map((artist) => artist.name)
