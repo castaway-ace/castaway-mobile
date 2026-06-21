@@ -197,6 +197,8 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const status = useAudioPlayerStatus(player);
 
+  const [shouldPlay, setShouldPlay] = useState(false);
+
   const currentTrack = useMemo<Track | null>(() => {
     if (position < 0 || order[position] === undefined) return null;
     return queue[order[position]] ?? null;
@@ -222,28 +224,35 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       setError(null);
       try {
-        if (player.playing) player.pause();
         const token = await SecureStore.getItemAsync("accessToken");
         player.replace({
           uri: `${BASE_URL}/tracks/${track.id}/stream`,
           headers: { Authorization: `Bearer ${token}` },
         });
-        player.play();
+        setShouldPlay(true);
+
         player.setActiveForLockScreen(true, {
           title: track.title,
           artist: track.artists?.map((artist) => artist.name)?.join(", "),
           albumTitle: track.album.title,
         });
       } catch (err) {
+        setIsLoading(false);
         setError(
           err instanceof Error ? err : new Error("Failed to load track"),
         );
-      } finally {
-        setIsLoading(false);
       }
     },
     [player],
   );
+
+  useEffect(() => {
+    if (shouldPlay && status.isLoaded) {
+      player.play();
+      setShouldPlay(false);
+      setIsLoading(false);
+    }
+  }, [shouldPlay, status.isLoaded, player]);
 
   useEffect(() => {
     if (!currentTrack) {
