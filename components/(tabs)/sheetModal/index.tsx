@@ -116,7 +116,15 @@ const SheetModal: FC = () => {
     });
 
   const tapBackdrop = Gesture.Tap().onEnd(() => {
-    runOnJS(close)();
+    translateY.value = withTiming(
+      sheetHeight.value || height,
+      { duration: 280 },
+      (finished) => {
+        if (finished) {
+          runOnJS(close)();
+        }
+      },
+    );
   });
 
   const sheetStyle = useAnimatedStyle(() => ({
