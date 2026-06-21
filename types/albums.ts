@@ -1,4 +1,4 @@
-import { Track } from "./tracks";
+import { TrackSummary } from "./tracks";
 
 export interface AlbumArtist {
     id: string;
@@ -14,7 +14,7 @@ export interface Album {
     compilation: boolean,
     artists: AlbumArtist[],
     starred: boolean,
-    tracks: Track[],
+    tracks: TrackSummary[],
 }
 
 export interface AlbumSummary {

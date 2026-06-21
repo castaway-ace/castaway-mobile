@@ -13,8 +13,8 @@ export interface Track {
   title: string;
   releaseDate: Date;
   suffix: string;
-  trackNumber: string;
-  discNumber: string;
+  trackNumber: number;
+  discNumber: number;
   genres: string[];
   duration: number;
   size: number;

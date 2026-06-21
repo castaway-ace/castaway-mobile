@@ -2,7 +2,6 @@ import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
-import { Track } from "@/types/tracks";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -36,7 +35,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const onTrackPress = (index: number) => {
     if (!playlistTracks) return;
-    playQueue(playlistTracks as unknown as Track[], index);
+    playQueue(playlistTracks, index);
   };
 
   const onOptionPress = (trackId: string) => {

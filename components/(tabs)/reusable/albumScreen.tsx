@@ -12,7 +12,6 @@ import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbumStar } from "../../../api/mutations/albums";
-import { useStarredTracks } from "../../../api/queries/tracks";
 import { Album } from "../../../types/albums";
 import { IconSymbol } from "../../ui/icon-symbol";
 
@@ -22,7 +21,6 @@ interface AlbumScreenProps {
 }
 
 const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
-  const { data: starredTracks } = useStarredTracks();
   const { mutate: albumStar } = useAlbumStar();
 
   const { colors } = useTheme();
