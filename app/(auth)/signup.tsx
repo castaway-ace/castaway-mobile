@@ -23,6 +23,7 @@ const Signup = () => {
   const [email, setEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [referralCode, setReferralCode] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const [zodErrors, setZodErrors] = useState<
@@ -30,7 +31,7 @@ const Signup = () => {
   >({});
 
   const validation = useMemo(
-    () => SignUpSchema.safeParse({ email, userName, password }),
+    () => SignUpSchema.safeParse({ email, userName, password, referralCode }),
     [email, userName, password],
   );
 
@@ -53,6 +54,11 @@ const Signup = () => {
   const onPasswordChange = (text: string) => {
     setZodErrors({ ...zodErrors, password: undefined });
     setPassword(text);
+  };
+
+  const onReferralCodeChange = (text: string) => {
+    setZodErrors({ ...zodErrors, referralCode: undefined });
+    setReferralCode(text);
   };
 
   const onSignupPress = async () => {
@@ -145,6 +151,22 @@ const Signup = () => {
           </View>
           {zodErrors?.password ? (
             <Text style={styles.errorText}>{zodErrors.password}</Text>
+          ) : null}
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Referral Code</Text>
+          <TextInput
+            style={styles.inputField}
+            autoCapitalize="none"
+            autoCorrect={false}
+            selectionColor={colors.accent}
+            placeholderTextColor={colors.secondary}
+            placeholder="Referral Code"
+            value={referralCode}
+            onChangeText={onReferralCodeChange}
+          />
+          {zodErrors?.email ? (
+            <Text style={styles.errorText}>{zodErrors.email}</Text>
           ) : null}
         </View>
         <Pressable
