@@ -48,13 +48,15 @@ const Library = () => {
 
   const onInteractionPress = (interaction: Interaction) => {
     if (interaction.type === InteractionType.ALBUM) {
-      onAlbumPress(interaction.albumId);
+      onAlbumPress(interaction.album.id);
     } else if (interaction.type === InteractionType.ARTIST) {
-      onArtistPress(interaction.artistId);
+      onArtistPress(interaction.artist.id);
     } else {
-      onPlaylistPress(interaction.playlistId);
+      onPlaylistPress(interaction.playlist.id);
     }
   };
+
+  const onPlaylistCreatePress = () => {};
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
