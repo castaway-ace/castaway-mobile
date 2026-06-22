@@ -2,7 +2,7 @@ import { useRemoveTrackFromPlaylist } from "@/api/mutations/playlists";
 import { useTrackStar } from "@/api/mutations/tracks";
 import { usePlaylist } from "@/api/queries/playlist";
 import {
-  SheetPlaylist,
+  SheetPlaylistTrack,
   SheetType,
   useSheetModal,
 } from "@/contexts/sheet-modal-context";
@@ -24,7 +24,7 @@ import { IconSymbol } from "../../ui/icon-symbol";
 
 const PlaylistTrackContent: FC = () => {
   const { active, open, close } = useSheetModal();
-  const playlistContent = active as SheetPlaylist | null;
+  const playlistContent = active as SheetPlaylistTrack | null;
   const { data: track } = useTrack(playlistContent?.trackId);
   const { data: playlist } = usePlaylist(playlistContent?.id);
   const pathname = usePathname();

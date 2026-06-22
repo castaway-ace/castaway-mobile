@@ -4,7 +4,9 @@ import {
   useUpdatePlaylistInteraction,
 } from "@/api/mutations/interactions";
 import { useInteractions } from "@/api/queries/interactions";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
+import { usePopupModal } from "@/contexts/popup-modal.context";
 import { useTheme } from "@/contexts/theme-context";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { useRouter } from "expo-router";
@@ -24,6 +26,8 @@ const Library = () => {
   const tabBarHeight = useBottomTabBarHeight();
 
   const { data: interactions } = useInteractions();
+
+  const { open } = usePopupModal();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
@@ -56,11 +60,18 @@ const Library = () => {
     }
   };
 
-  const onPlaylistCreatePress = () => {};
+  const onPlaylistCreatePress = () => {
+    open();
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <Text style={styles.title}>Library</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Library</Text>
+        <Pressable onPress={onPlaylistCreatePress}>
+          <IconSymbol size={28} name={"plus"} color={colors.primary} />
+        </Pressable>
+      </View>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
@@ -91,6 +102,11 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
       paddingTop: 16,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingRight: 16,
     },
     itemContainer: {
       gap: 16,

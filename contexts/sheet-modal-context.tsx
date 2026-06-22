@@ -9,18 +9,24 @@ import {
 
 export enum SheetType {
   PLAYLIST = "playlist",
+  PLAYLIST_TRACK = "playlist-track",
   PLAYLIST_SELECT = "playlist-select",
-  ALBUM = "album",
+  ALBUM_TRACK = "album-track",
 }
 
-export type SheetAlbum = {
-  type: SheetType.ALBUM;
+export type SheetAlbumTrack = {
+  type: SheetType.ALBUM_TRACK;
   trackId: string;
   id: string;
 };
 
 export type SheetPlaylist = {
   type: SheetType.PLAYLIST;
+  id: string;
+};
+
+export type SheetPlaylistTrack = {
+  type: SheetType.PLAYLIST_TRACK;
   trackId: string;
   id: string;
 };
@@ -30,7 +36,11 @@ export type SheetPlaylistSelect = {
   trackId: string;
 };
 
-export type SheetContent = SheetAlbum | SheetPlaylist | SheetPlaylistSelect;
+export type SheetContent =
+  | SheetAlbumTrack
+  | SheetPlaylistTrack
+  | SheetPlaylistSelect
+  | SheetPlaylist;
 
 interface SheetModalContextValue {
   active: SheetContent | null;

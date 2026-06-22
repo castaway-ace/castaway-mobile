@@ -44,8 +44,8 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
     albumStar({ id: album.id, starred: !!album.starred });
   };
 
-  const onOptionPress = (trackId: string) => {
-    open({ type: SheetType.ALBUM, id: album.id, trackId });
+  const onTrackOptionPress = (trackId: string) => {
+    open({ type: SheetType.ALBUM_TRACK, id: album.id, trackId });
   };
 
   return (
@@ -110,7 +110,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
-                  <Pressable onPress={() => onOptionPress(track.id)}>
+                  <Pressable onPress={() => onTrackOptionPress(track.id)}>
                     <IconSymbol
                       name={"ellipsis"}
                       size={32}

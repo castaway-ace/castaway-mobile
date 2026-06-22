@@ -1,5 +1,5 @@
 import { OrderBy } from "@/constants/api";
-import { Playlist, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
+import { Playlist, PlaylistIdentity, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
 import { Track } from "@/types/tracks";
 import apiClient from "./client";
 
@@ -17,9 +17,9 @@ interface PlaylistParams {
 }
 
 export const playlistApi = {
-  getAll: async ({limit, offset, order, orderBy, onlyUser}: PlaylistParams): Promise<PlaylistSummary[]> => {
+  getAll: async ({ limit, offset, order, orderBy, onlyUser }: PlaylistParams): Promise<PlaylistSummary[]> => {
     const { data } = await apiClient.get('/playlists', {
-      params: {limit, offset, order, orderBy, onlyUser}
+      params: { limit, offset, order, orderBy, onlyUser }
     });
     return data;
   },
@@ -29,7 +29,14 @@ export const playlistApi = {
     return data;
   },
 
-  update: async (id: string, body: {name: string}): Promise<void> => {
+  create: async (name: string): Promise<PlaylistIdentity> => {
+    const { data } = await apiClient.post(`/playlists`, {
+      "name": name
+    });
+    return data;
+  },
+
+  update: async (id: string, body: { name: string }): Promise<void> => {
     await apiClient.patch(`/playlists/${id}`, body);
   },
 

@@ -5,6 +5,12 @@ export enum PlaylistType {
   LIKED = 'LIKED'
 }
 
+export interface PlaylistIdentity {
+  id: string;
+  ownerId: string;
+  type: PlaylistType;
+}
+
 export interface Playlist {
   id: string;
   name: string;

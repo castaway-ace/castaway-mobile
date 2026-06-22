@@ -17,6 +17,18 @@ interface PlaylistTrackMutation {
     trackId: string;
 }
 
+export const useCreatePlaylist = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (name: string) => {
+            return playlistApi.create(name);
+        },
+        onSuccess: (_data): void => {
+            queryClient.invalidateQueries({ queryKey: ['playlists'] });
+        },
+    });
+};
+
 export const useUpdatePlaylist = () => {
     const queryClient = useQueryClient();
     return useMutation({

@@ -38,9 +38,14 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
     playQueue(playlistTracks, index);
   };
 
-  const onOptionPress = (trackId: string) => {
+  const onOptionPress = () => {
     if (!playlist) return;
-    open({ type: SheetType.PLAYLIST, id: playlist?.id, trackId });
+    open({ type: SheetType.PLAYLIST, id: playlist?.id });
+  };
+
+  const onTrackOptionPress = (trackId: string) => {
+    if (!playlist) return;
+    open({ type: SheetType.PLAYLIST_TRACK, id: playlist?.id, trackId });
   };
 
   return (
@@ -81,6 +86,9 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         </View>
         <View style={styles.playlistInfoContainer}>
           <Text style={styles.playlistTitle}>{playlist?.name}</Text>
+          <Pressable onPress={onOptionPress}>
+            <IconSymbol name={"ellipsis"} size={32} color={colors.primary} />
+          </Pressable>
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>
@@ -101,7 +109,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
                     </Text>
                   </View>
                   <Pressable
-                    onPress={() => onOptionPress(playlistTrack.trackId)}
+                    onPress={() => onTrackOptionPress(playlistTrack.trackId)}
                   >
                     <IconSymbol
                       name={"ellipsis"}

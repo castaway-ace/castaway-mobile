@@ -6,6 +6,7 @@ import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
 import { HapticTab } from "@/components/(tabs)/haptic-tab";
 import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
 import SheetModal from "@/components/(tabs)/sheetModal";
+import PopupModal from "@/components/popupModal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { useTheme } from "@/contexts/theme-context";
@@ -112,6 +113,7 @@ const TabLayout = () => {
       </Tabs>
       {currentTrack && <MusicPlayerModal />}
       <SheetModal />
+      <PopupModal />
       <Toast config={toastConfig} />
     </>
   );

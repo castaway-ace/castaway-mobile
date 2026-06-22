@@ -8,11 +8,11 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
 
-interface PlaylistContent {
+interface PlaylistSelectContent {
   trackId: string;
 }
 
-const PlaylistContent: FC<PlaylistContent> = ({ trackId }) => {
+const PlaylistSelectContent: FC<PlaylistSelectContent> = ({ trackId }) => {
   const { close } = useSheetModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
 
@@ -134,4 +134,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default PlaylistContent;
+export default PlaylistSelectContent;
