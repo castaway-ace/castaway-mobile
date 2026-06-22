@@ -22,6 +22,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 import AlbumTrackContent from "./albumTrackContent";
+import PlaylistContent from "./playlistContent";
 import PlaylistSelectContent from "./playlistSelectContent";
 import PlaylistTrackContent from "./playlistTrackContent";
 
@@ -158,7 +159,7 @@ const SheetModal: FC = () => {
           onLayout={onSheetLayout}
         >
           <View style={styles.handle} />
-          {displayed.type === SheetType.PLAYLIST && <AlbumTrackContent />}
+          {displayed.type === SheetType.PLAYLIST && <PlaylistContent />}
           {displayed.type === SheetType.ALBUM_TRACK && <AlbumTrackContent />}
           {displayed.type === SheetType.PLAYLIST_TRACK && (
             <PlaylistTrackContent />

@@ -8,11 +8,11 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
 
-interface PlaylistSelectContent {
+interface PlaylistSelectContentProps {
   trackId: string;
 }
 
-const PlaylistSelectContent: FC<PlaylistSelectContent> = ({ trackId }) => {
+const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   const { close } = useSheetModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
 

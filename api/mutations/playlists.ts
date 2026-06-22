@@ -44,12 +44,13 @@ export const useUpdatePlaylist = () => {
 export const useDeletePlaylist = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ id }: PlaylistDeleteMutation) => {
+        mutationFn: async (id: string) => {
             await playlistApi.delete(id);
         },
-        onSuccess: (_data, { id }): void => {
+        onSuccess: (_data,  id): void => {
             queryClient.invalidateQueries({ queryKey: ['playlist', id] });
             queryClient.invalidateQueries({ queryKey: ['playlists'] });
+            queryClient.invalidateQueries({ queryKey: ['interactions'] });
           },
     });
 };

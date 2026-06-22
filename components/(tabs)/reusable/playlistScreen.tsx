@@ -163,8 +163,8 @@ const makeStyles = (colors: ThemeColors) =>
       height: "50%",
     },
     playlistInfoContainer: {
-      display: "flex",
-      gap: 8,
+      flexDirection: "row",
+      justifyContent: "space-between",
       marginBottom: 24,
     },
     playlistTitle: {

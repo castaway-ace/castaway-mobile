@@ -9,6 +9,7 @@ import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import {
+  SheetAlbumTrack,
   SheetType,
   useSheetModal,
 } from "../../../contexts/sheet-modal-context";
@@ -17,7 +18,8 @@ import { IconSymbol } from "../../ui/icon-symbol";
 
 const AlbumTrackContent: FC = () => {
   const { active, open, close } = useSheetModal();
-  const { data: track } = useTrack(active?.trackId);
+  const trackInfo = active as SheetAlbumTrack;
+  const { data: track } = useTrack(trackInfo.trackId);
   const pathname = usePathname();
 
   const { data: starredTracks } = useStarredTracks();
