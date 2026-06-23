@@ -19,7 +19,7 @@ import { IconSymbol } from "../../ui/icon-symbol";
 const AlbumTrackContent: FC = () => {
   const { active, open, close } = useSheetModal();
   const trackInfo = active as SheetAlbumTrack;
-  const { data: track } = useTrack(trackInfo.trackId);
+  const { data: track } = useTrack(trackInfo?.trackId);
   const pathname = usePathname();
 
   const { data: starredTracks } = useStarredTracks();
