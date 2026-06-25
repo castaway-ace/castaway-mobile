@@ -32,7 +32,7 @@ const Signup = () => {
 
   const validation = useMemo(
     () => SignUpSchema.safeParse({ email, userName, password, referralCode }),
-    [email, userName, password],
+    [email, userName, password, referralCode],
   );
 
   const {
