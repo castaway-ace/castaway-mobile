@@ -2,6 +2,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
 import { useTheme } from "@/contexts/theme-context";
+import { PlaylistType } from "@/types/playlist";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -86,9 +87,11 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         </View>
         <View style={styles.playlistInfoContainer}>
           <Text style={styles.playlistTitle}>{playlist?.name}</Text>
-          <Pressable onPress={onOptionPress}>
-            <IconSymbol name={"ellipsis"} size={32} color={colors.primary} />
-          </Pressable>
+          {playlist?.type === PlaylistType.USER && (
+            <Pressable onPress={onOptionPress}>
+              <IconSymbol name={"ellipsis"} size={32} color={colors.primary} />
+            </Pressable>
+          )}
         </View>
         <View style={styles.trackContainer}>
           <Text style={styles.trackHeader}>Tracks</Text>

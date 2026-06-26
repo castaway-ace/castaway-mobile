@@ -32,7 +32,7 @@ const Signup = () => {
 
   const validation = useMemo(
     () => SignUpSchema.safeParse({ email, userName, password, referralCode }),
-    [email, userName, password],
+    [email, userName, password, referralCode],
   );
 
   const {
@@ -165,8 +165,8 @@ const Signup = () => {
             value={referralCode}
             onChangeText={onReferralCodeChange}
           />
-          {zodErrors?.email ? (
-            <Text style={styles.errorText}>{zodErrors.email}</Text>
+          {zodErrors?.referralCode ? (
+            <Text style={styles.errorText}>{zodErrors.referralCode}</Text>
           ) : null}
         </View>
         <Pressable
