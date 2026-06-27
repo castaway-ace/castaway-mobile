@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import {
   createContext,
@@ -24,8 +25,8 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  logIn: (token: string, refreshToken: string) => Promise<void>;
-  signUp: (token: string, refreshToken: string) => Promise<void>;
+  logIn: (accessToken: string, refreshToken: string) => Promise<void>;
+  signUp: (accessToken: string, refreshToken: string) => Promise<void>;
   logOut: () => Promise<void>;
 }
 
@@ -42,6 +43,7 @@ async function clearTokens(): Promise<void> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -59,10 +61,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(data);
         }
       } catch {
-        if (!cancelled) {
-          await clearTokens();
-          setUser(null);
-        }
       } finally {
         if (!cancelled) {
           setIsLoading(false);
@@ -80,12 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setAuthFailureHandler(() => {
       setUser(null);
+      queryClient.clear();
     });
     return () => setAuthFailureHandler(null);
   }, []);
 
-  const logIn = useCallback(
-    async (accessToken: string, refreshToken: string) => {
+  const establishSession = useCallback(
+    async (accessToken: string, refreshToken: string): Promise<void> => {
       await storeTokens({ accessToken, refreshToken });
       const { data } = await apiClient.get<User>("/user/me");
       setUser(data);
@@ -93,22 +92,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const signUp = useCallback(
-    async (accessToken: string, refreshToken: string) => {
-      await storeTokens({ accessToken, refreshToken });
-      const { data } = await apiClient.get<User>("/user/me");
-      setUser(data);
-    },
-    [],
-  );
+  const logIn = establishSession;
+  const signUp = establishSession;
 
-  const logOut = useCallback(async () => {
+  const logOut = useCallback(async (): Promise<void> => {
     try {
       await apiClient.post("/auth/logout");
     } catch {}
     await clearTokens();
     setUser(null);
-  }, []);
+    queryClient.clear();
+  }, [queryClient]);
 
   return (
     <AuthContext.Provider
