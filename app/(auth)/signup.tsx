@@ -1,14 +1,16 @@
 import { useSignUp } from "@/api/auth/mutations";
+import AuthField from "@/components/auth/authField";
 import { ThemeColors } from "@/constants/theme";
 import { SignUpSchema } from "@/constants/validation";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -20,19 +22,15 @@ const Signup = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const [email, setEmail] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-
+  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [zodErrors, setZodErrors] = useState<
     Record<string, string | undefined>
   >({});
 
-  const validation = useMemo(
-    () => SignUpSchema.safeParse({ email, userName, password }),
-    [email, userName, password],
-  );
+  const userNameRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const {
     mutateAsync: signup,
@@ -40,20 +38,13 @@ const Signup = () => {
     error: signUpError,
   } = useSignUp();
 
-  const onEmailChange = (text: string) => {
-    setZodErrors({ ...zodErrors, email: undefined });
-    setEmail(text);
-  };
+  const validation = useMemo(
+    () => SignUpSchema.safeParse({ email, userName, password }),
+    [email, userName, password],
+  );
 
-  const onUserNameChange = (text: string) => {
-    setZodErrors({ ...zodErrors, userName: undefined });
-    setUserName(text);
-  };
-
-  const onPasswordChange = (text: string) => {
-    setZodErrors({ ...zodErrors, password: undefined });
-    setPassword(text);
-  };
+  const clearError = (field: string) =>
+    setZodErrors((prev) => ({ ...prev, [field]: undefined }));
 
   const onSignupPress = async () => {
     if (!validation.success) {
@@ -70,101 +61,98 @@ const Signup = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <KeyboardAvoidingView
-        style={{
-          flex: 1,
-          gap: 32,
-          justifyContent: "center",
-          paddingHorizontal: 32,
-        }}
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.logoContainer}>
-          <Image
-            style={styles.logo}
-            source={require("../../assets/images/castaway.png")}
-          />
-          <Text style={styles.logoText}>Castaway</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <TextInput
-            style={styles.inputField}
-            autoCapitalize="none"
-            autoCorrect={false}
-            selectionColor={colors.accent}
-            placeholderTextColor={colors.secondary}
-            keyboardType="email-address"
-            textContentType="emailAddress"
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoContainer}>
+            <Image
+              style={styles.logo}
+              source={require("../../assets/images/castaway.png")}
+            />
+            <Text style={styles.logoText}>Castaway</Text>
+          </View>
+
+          <AuthField
+            label="Email"
             placeholder="Email Address"
             value={email}
-            onChangeText={onEmailChange}
-          />
-          {zodErrors?.email ? (
-            <Text style={styles.errorText}>{zodErrors.email}</Text>
-          ) : null}
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Username</Text>
-          <TextInput
-            style={styles.inputField}
+            onChangeText={(text) => {
+              clearError("email");
+              setEmail(text);
+            }}
+            error={zodErrors.email}
             autoCapitalize="none"
             autoCorrect={false}
-            selectionColor={colors.accent}
-            placeholderTextColor={colors.secondary}
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={() => userNameRef.current?.focus()}
+          />
+
+          <AuthField
+            ref={userNameRef}
+            label="Username"
             placeholder="User name"
             value={userName}
-            onChangeText={onUserNameChange}
+            onChangeText={(text) => {
+              clearError("userName");
+              setUserName(text);
+            }}
+            error={zodErrors.userName}
+            autoCapitalize="none"
+            autoCorrect={false}
+            textContentType="username"
+            autoComplete="username"
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={() => passwordRef.current?.focus()}
           />
-          {zodErrors?.userName ? (
-            <Text style={styles.errorText}>{zodErrors.userName}</Text>
+
+          <AuthField
+            ref={passwordRef}
+            label="Password"
+            placeholder="Password"
+            secure
+            value={password}
+            onChangeText={(text) => {
+              clearError("password");
+              setPassword(text);
+            }}
+            error={zodErrors.password}
+            autoCapitalize="none"
+            autoCorrect={false}
+            textContentType="newPassword"
+            autoComplete="password"
+            returnKeyType="go"
+            onSubmitEditing={onSignupPress}
+          />
+
+          <Pressable
+            style={[styles.button, isSignupPending && styles.buttonDisabled]}
+            disabled={isSignupPending}
+            onPress={onSignupPress}
+          >
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </Pressable>
+
+          {signUpError?.message ? (
+            <Text style={styles.formError}>{signUpError.message}</Text>
           ) : null}
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Password</Text>
-          <View style={styles.passwordWrapper}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Password"
-              value={password}
-              selectionColor={colors.accent}
-              placeholderTextColor={colors.secondary}
-              onChangeText={onPasswordChange}
-              secureTextEntry={!isPasswordVisible}
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="password"
-            />
-            <Pressable
-              onPress={() => setIsPasswordVisible((prev) => !prev)}
-              style={styles.toggleButton}
-            >
-              <Text style={styles.toggleText}>
-                {isPasswordVisible ? "Hide" : "Show"}
-              </Text>
-            </Pressable>
+
+          <View style={styles.signupSection}>
+            <Text style={styles.signupText}>Already have an account?</Text>
+            <Link style={styles.signupLink} href={"/(auth)/login"}>
+              Log in
+            </Link>
           </View>
-          {zodErrors?.password ? (
-            <Text style={styles.errorText}>{zodErrors.password}</Text>
-          ) : null}
-        </View>
-        <Pressable
-          style={[styles.button, isSignupPending && styles.buttonDisabled]}
-          disabled={isSignupPending}
-          onPress={onSignupPress}
-        >
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </Pressable>
-        {signUpError?.message ? (
-          <Text style={[styles.errorText, { textAlign: "center" }]}>
-            {signUpError.message}
-          </Text>
-        ) : null}
-        <View style={styles.signupSection}>
-          <Text style={styles.signupText}>Already have an account?</Text>
-          <Link style={styles.signupLink} href={"/(auth)/login"}>
-            Log in
-          </Link>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -176,56 +164,20 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
     },
-    logoContainer: {
-      display: "flex",
-      flexDirection: "column",
+    flex: { flex: 1 },
+    content: {
+      flexGrow: 1,
       justifyContent: "center",
+      gap: 24,
+      paddingHorizontal: 32,
+      paddingVertical: 32,
+    },
+    logoContainer: {
       alignItems: "center",
       gap: 8,
     },
     logo: { width: 72, height: 72, borderRadius: 12 },
     logoText: { color: colors.primary, fontSize: 48, textAlign: "center" },
-    inputContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
-    },
-    inputLabel: {
-      fontSize: 16,
-      color: colors.primary,
-    },
-    inputField: {
-      backgroundColor: colors.surface,
-      borderColor: colors.primary,
-      borderWidth: 1,
-      color: colors.primary,
-      paddingHorizontal: 8,
-      paddingVertical: 16,
-      borderRadius: 8,
-    },
-    passwordWrapper: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: colors.surface,
-      borderColor: colors.primary,
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingRight: 8,
-    },
-    passwordInput: {
-      flex: 1,
-      color: colors.primary,
-      paddingHorizontal: 8,
-      paddingVertical: 16,
-    },
-    toggleButton: {
-      paddingHorizontal: 8,
-      paddingVertical: 8,
-    },
-    toggleText: {
-      color: colors.accent,
-      fontSize: 16,
-    },
     button: {
       backgroundColor: colors.accent,
       padding: 16,
@@ -236,14 +188,14 @@ const makeStyles = (colors: ThemeColors) =>
       opacity: 0.6,
     },
     buttonText: { color: "white", textAlign: "center", fontSize: 18 },
-    errorText: {
-      color: "red",
+    formError: {
+      color: colors.error,
+      textAlign: "center",
+      fontSize: 14,
     },
     signupSection: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
       alignItems: "center",
+      gap: 8,
     },
     signupText: {
       fontSize: 18,

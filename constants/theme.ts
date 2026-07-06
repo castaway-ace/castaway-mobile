@@ -12,6 +12,7 @@ export interface ThemeColors {
   secondary: string;
   accent: string;
   highlight: string;
+  error: string;
 }
 
 export type ThemeName = 'light' | 'dark';
@@ -23,6 +24,7 @@ const Light: ThemeColors = {
   secondary: '#6E6266',
   accent: "#AE0558",
   highlight: "#E4DB5A",
+  error: "#D92D20",
 };
 
 const Dark: ThemeColors = {
@@ -32,6 +34,7 @@ const Dark: ThemeColors = {
   secondary: '#A89BA0',
   accent: "#E94B8A",
   highlight: "#E4DB5A",
+  error: "#F97066",
 };
 
 export const Themes: Record<ThemeName, ThemeColors> = {
