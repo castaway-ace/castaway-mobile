@@ -1,6 +1,6 @@
 import { OrderBy } from "@/constants/api";
 import { Artist, ArtistSummary } from "@/types/artists";
-import apiClient from "./client";
+import apiClient from "../client";
 
 export enum ArtistOrder {
   NAME = 'name',

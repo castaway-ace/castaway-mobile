@@ -1,4 +1,4 @@
-import { useArtist, useArtistImage } from "@/api/queries/artists";
+import { useArtist, useArtistImage } from "@/api/artists/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";
@@ -7,7 +7,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useArtistStar } from "../../../api/mutations/artists";
+import { useArtistStar } from "../../../api/artists/mutations";
 import { blurHash } from "../../../constants/blur";
 import { IconSymbol } from "../../ui/icon-symbol";
 import AlbumItem from "./albumItem";

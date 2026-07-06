@@ -1,4 +1,4 @@
-import { useArtist, useArtistImage } from "@/api/queries/artists";
+import { useArtist, useArtistImage } from "@/api/artists/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { Image } from "expo-image";

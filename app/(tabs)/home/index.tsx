@@ -1,5 +1,5 @@
 import { useAlbums } from "@/api/albums/queries";
-import { useArtists } from "@/api/queries/artists";
+import { useArtists } from "@/api/artists/queries";
 import { usePlaylists } from "@/api/queries/playlist";
 import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
 import AlbumItem from "@/components/(tabs)/reusable/albumItem";

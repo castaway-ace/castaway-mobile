@@ -1,5 +1,5 @@
 import { albumCoverQueryOptions } from "@/api/albums/queries";
-import { artistImageQueryOptions } from "@/api/queries/artists";
+import { artistImageQueryOptions } from "@/api/artists/queries";
 import { Search } from "@/types/search";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
