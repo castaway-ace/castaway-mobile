@@ -1,3 +1,7 @@
+import { useSignUp } from "@/api/auth/mutations";
+import { ThemeColors } from "@/constants/theme";
+import { SignUpSchema } from "@/constants/validation";
+import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
@@ -11,10 +15,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSignUp } from "@/api/auth/mutations";
-import { SignUpSchema } from "@/constants/validation";
-import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/themeContext";
 
 const Signup = () => {
   const { colors } = useTheme();
@@ -23,7 +23,6 @@ const Signup = () => {
   const [email, setEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [referralCode, setReferralCode] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const [zodErrors, setZodErrors] = useState<
@@ -31,8 +30,8 @@ const Signup = () => {
   >({});
 
   const validation = useMemo(
-    () => SignUpSchema.safeParse({ email, userName, password, referralCode }),
-    [email, userName, password, referralCode],
+    () => SignUpSchema.safeParse({ email, userName, password }),
+    [email, userName, password],
   );
 
   const {
@@ -54,11 +53,6 @@ const Signup = () => {
   const onPasswordChange = (text: string) => {
     setZodErrors({ ...zodErrors, password: undefined });
     setPassword(text);
-  };
-
-  const onReferralCodeChange = (text: string) => {
-    setZodErrors({ ...zodErrors, referralCode: undefined });
-    setReferralCode(text);
   };
 
   const onSignupPress = async () => {
@@ -151,22 +145,6 @@ const Signup = () => {
           </View>
           {zodErrors?.password ? (
             <Text style={styles.errorText}>{zodErrors.password}</Text>
-          ) : null}
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Referral Code</Text>
-          <TextInput
-            style={styles.inputField}
-            autoCapitalize="none"
-            autoCorrect={false}
-            selectionColor={colors.accent}
-            placeholderTextColor={colors.secondary}
-            placeholder="Referral Code"
-            value={referralCode}
-            onChangeText={onReferralCodeChange}
-          />
-          {zodErrors?.referralCode ? (
-            <Text style={styles.errorText}>{zodErrors.referralCode}</Text>
           ) : null}
         </View>
         <Pressable

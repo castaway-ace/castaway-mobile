@@ -28,9 +28,7 @@ export const SignUpSchema = z.object({
     })
     .refine((val) => /[0-9]/.test(val), {
       message: "Must contain at least one number",
-    }),
-  referralCode: z.string()
-    .min(8, { message: "Referral Code must be at least 8 characters" })
+    })
 });
 
 export type SignUpSchemaType = z.infer<typeof SignUpSchema>;
