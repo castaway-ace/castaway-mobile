@@ -1,5 +1,6 @@
 import { useSignUp } from "@/api/auth/mutations";
 import AuthField from "@/components/auth/authField";
+import AuthScreen from "@/components/auth/authScreen";
 import PasswordRequirements from "@/components/auth/passwordRequirements";
 import { ThemeColors } from "@/constants/theme";
 import { SignUpSchema } from "@/constants/validation";
@@ -7,17 +8,7 @@ import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 const Signup = () => {
   const { colors } = useTheme();
@@ -60,116 +51,93 @@ const Signup = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <AuthScreen>
+      <View style={styles.logoContainer}>
+        <Image
+          style={styles.logo}
+          source={require("../../assets/images/castaway.png")}
+        />
+        <Text style={styles.logoText}>Castaway</Text>
+      </View>
+
+      <AuthField
+        label="Email"
+        placeholder="Email Address"
+        value={email}
+        onChangeText={(text) => {
+          clearError("email");
+          setEmail(text);
+        }}
+        error={zodErrors.email}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+        textContentType="emailAddress"
+        autoComplete="email"
+        returnKeyType="next"
+        submitBehavior="submit"
+        onSubmitEditing={() => userNameRef.current?.focus()}
+      />
+
+      <AuthField
+        ref={userNameRef}
+        label="Username"
+        placeholder="User name"
+        value={userName}
+        onChangeText={(text) => {
+          clearError("userName");
+          setUserName(text);
+        }}
+        error={zodErrors.userName}
+        autoCapitalize="none"
+        autoCorrect={false}
+        textContentType="username"
+        autoComplete="username"
+        returnKeyType="next"
+        submitBehavior="submit"
+        onSubmitEditing={() => passwordRef.current?.focus()}
+      />
+
+      <AuthField
+        ref={passwordRef}
+        label="Password"
+        placeholder="Password"
+        secure
+        value={password}
+        onChangeText={setPassword}
+        footer={<PasswordRequirements value={password} />}
+        autoCapitalize="none"
+        autoCorrect={false}
+        textContentType="newPassword"
+        autoComplete="password"
+        returnKeyType="go"
+        onSubmitEditing={onSignupPress}
+      />
+
+      <Pressable
+        style={[styles.button, isSignupPending && styles.buttonDisabled]}
+        disabled={isSignupPending}
+        onPress={onSignupPress}
       >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.logoContainer}>
-            <Image
-              style={styles.logo}
-              source={require("../../assets/images/castaway.png")}
-            />
-            <Text style={styles.logoText}>Castaway</Text>
-          </View>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </Pressable>
 
-          <AuthField
-            label="Email"
-            placeholder="Email Address"
-            value={email}
-            onChangeText={(text) => {
-              clearError("email");
-              setEmail(text);
-            }}
-            error={zodErrors.email}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            autoComplete="email"
-            returnKeyType="next"
-            submitBehavior="submit"
-            onSubmitEditing={() => userNameRef.current?.focus()}
-          />
+      {signUpError?.message ? (
+        <Text style={styles.formError}>{signUpError.message}</Text>
+      ) : null}
 
-          <AuthField
-            ref={userNameRef}
-            label="Username"
-            placeholder="User name"
-            value={userName}
-            onChangeText={(text) => {
-              clearError("userName");
-              setUserName(text);
-            }}
-            error={zodErrors.userName}
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="username"
-            autoComplete="username"
-            returnKeyType="next"
-            submitBehavior="submit"
-            onSubmitEditing={() => passwordRef.current?.focus()}
-          />
-
-          <AuthField
-            ref={passwordRef}
-            label="Password"
-            placeholder="Password"
-            secure
-            value={password}
-            onChangeText={setPassword}
-            footer={<PasswordRequirements value={password} />}
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="newPassword"
-            autoComplete="password"
-            returnKeyType="go"
-            onSubmitEditing={onSignupPress}
-          />
-
-          <Pressable
-            style={[styles.button, isSignupPending && styles.buttonDisabled]}
-            disabled={isSignupPending}
-            onPress={onSignupPress}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </Pressable>
-
-          {signUpError?.message ? (
-            <Text style={styles.formError}>{signUpError.message}</Text>
-          ) : null}
-
-          <View style={styles.signupSection}>
-            <Text style={styles.signupText}>Already have an account?</Text>
-            <Link style={styles.signupLink} href={"/(auth)/login"}>
-              Log in
-            </Link>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <View style={styles.signupSection}>
+        <Text style={styles.signupText}>Already have an account?</Text>
+        <Link style={styles.signupLink} href={"/(auth)/login"}>
+          Log in
+        </Link>
+      </View>
+    </AuthScreen>
   );
 };
 
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    flex: { flex: 1 },
-    content: {
-      flexGrow: 1,
-      justifyContent: "center",
-      gap: 24,
-      paddingHorizontal: 32,
-      paddingVertical: 32,
-    },
     logoContainer: {
       alignItems: "center",
       gap: 8,

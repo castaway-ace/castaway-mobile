@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import ThemeProvider from "@/contexts/themeContext";
 
@@ -61,13 +62,15 @@ const RootLayout = () => {
         <ThemeProvider>
           <AudioPlayerProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
-              <PlayerModalProvider>
-                <SheetModalProvider>
-                  <PopupModalProvider>
-                    <RootNavigator />
-                  </PopupModalProvider>
-                </SheetModalProvider>
-              </PlayerModalProvider>
+              <KeyboardProvider>
+                <PlayerModalProvider>
+                  <SheetModalProvider>
+                    <PopupModalProvider>
+                      <RootNavigator />
+                    </PopupModalProvider>
+                  </SheetModalProvider>
+                </PlayerModalProvider>
+              </KeyboardProvider>
             </GestureHandlerRootView>
           </AudioPlayerProvider>
         </ThemeProvider>
