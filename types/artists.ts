@@ -1,15 +1,4 @@
-import { Album } from "./albums";
+import type { components } from "@/schema";
 
-export interface Artist {
-  id: string;
-  name: string;
-  imageKey: string;
-  bio: string;
-  albums: Album[];
-  starred: boolean;
-}
-
-export interface ArtistSummary {
-  id: string;
-  name: string;
-}
+export type Artist = components["schemas"]["ArtistEntity"];
+export type ArtistSummary = components["schemas"]["ArtistSummaryEntity"];

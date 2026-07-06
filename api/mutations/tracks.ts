@@ -18,12 +18,13 @@ export const useTrackStar = () => {
                 await trackApi.star(id);
             }
         },
-        onSuccess: (_data, { starred }) => {
+        onSuccess: (_data, { id, starred }) => {
             Toast.show({
                 type: 'success',
                 text1: starred ? 'Removed from Liked Songs' : 'Added to Liked Songs',
               });
-            queryClient.invalidateQueries({ queryKey: ['starred-tracks'] });
+            queryClient.invalidateQueries({ queryKey: ['track', id] });
+            queryClient.invalidateQueries({ queryKey: ['tracks'] });
             queryClient.invalidateQueries({ queryKey: ['playlist-tracks'] });
           },
     });

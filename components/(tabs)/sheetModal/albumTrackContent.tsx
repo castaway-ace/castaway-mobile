@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useUpdateArtistInteraction } from "../../../api/mutations/interactions";
 import { useTrackStar } from "../../../api/mutations/tracks";
 import { useAlbumCover } from "../../../api/queries/albums";
-import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
+import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import {
@@ -22,7 +22,6 @@ const AlbumTrackContent: FC = () => {
   const { data: track } = useTrack(trackInfo?.trackId);
   const pathname = usePathname();
 
-  const { data: starredTracks } = useStarredTracks();
   const { data: albumArtUrl } = useAlbumCover(track?.album.id);
 
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
@@ -38,7 +37,7 @@ const AlbumTrackContent: FC = () => {
 
   if (!track) return null;
 
-  const starred = !!starredTracks?.includes(track.id);
+  const starred = track.starred;
 
   const onPlaylistPress = () => {
     open({ type: SheetType.PLAYLIST_SELECT, trackId: track.id });

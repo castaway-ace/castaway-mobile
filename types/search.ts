@@ -1,9 +1,3 @@
-import { AlbumSummary } from "./albums";
-import { ArtistSummary } from "./artists";
-import { TrackSummary } from "./tracks";
+import type { components } from "@/schema";
 
-export interface Search {
-    tracks: TrackSummary[]
-    albums: AlbumSummary[]
-    artists: ArtistSummary[]
-}
+export type Search = components["schemas"]["SearchResultsEntity"];

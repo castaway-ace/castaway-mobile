@@ -4,22 +4,6 @@
  */
 
 export interface paths {
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AppController_getHello"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/health": {
         parameters: {
             query?: never;
@@ -43,10 +27,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["UserController_find"];
+        get: operations["UsersController_find"];
         put?: never;
         post?: never;
-        delete: operations["UserController_delete"];
+        delete: operations["UsersController_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -132,22 +116,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tracks/starred": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["TracksController_getStarred"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/tracks/{id}": {
         parameters: {
             query?: never;
@@ -171,7 +139,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["TracksController_findTrackStream"];
+        get: operations["TracksController_getTrackStream"];
         put?: never;
         post?: never;
         delete?: never;
@@ -190,7 +158,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["TracksController_star"];
-        delete: operations["TracksController_unStar"];
+        delete: operations["TracksController_unstar"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/playlists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlaylistsController_findAll"];
+        put?: never;
+        post: operations["PlaylistsController_create"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -212,16 +196,16 @@ export interface paths {
         patch: operations["PlaylistsController_update"];
         trace?: never;
     };
-    "/playlists": {
+    "/playlists/{id}/tracks": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["PlaylistsController_findAll"];
+        get: operations["PlaylistsController_findTracks"];
         put?: never;
-        post: operations["PlaylistsController_create"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -239,22 +223,6 @@ export interface paths {
         put?: never;
         post: operations["PlaylistsController_addTrack"];
         delete: operations["PlaylistsController_deleteTrack"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/playlists/{id}/tracks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["PlaylistsController_findTracks"];
-        put?: never;
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -299,7 +267,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["AlbumsController_findAlbumCover"];
+        get: operations["AlbumsController_getAlbumCoverUrl"];
         put?: never;
         post?: never;
         delete?: never;
@@ -318,7 +286,7 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["AlbumsController_star"];
-        delete: operations["AlbumsController_unStar"];
+        delete: operations["AlbumsController_unstar"];
         options?: never;
         head?: never;
         patch?: never;
@@ -363,7 +331,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["ArtistsController_findArtistImage"];
+        get: operations["ArtistsController_getArtistImageUrl"];
         put?: never;
         post?: never;
         delete?: never;
@@ -382,7 +350,7 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["ArtistsController_star"];
-        delete: operations["ArtistsController_unStar"];
+        delete: operations["ArtistsController_unstar"];
         options?: never;
         head?: never;
         patch?: never;
@@ -404,7 +372,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/upload/artist": {
+    "/admin/artists": {
         parameters: {
             query?: never;
             header?: never;
@@ -420,7 +388,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/upload/artist-art/{id}": {
+    "/admin/artists/{id}/image": {
         parameters: {
             query?: never;
             header?: never;
@@ -429,14 +397,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["AdminController_uploadArtistArt"];
+        post: operations["AdminController_uploadArtistImage"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/delete/artist/{id}": {
+    "/admin/artists/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -452,7 +420,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/upload/album": {
+    "/admin/albums": {
         parameters: {
             query?: never;
             header?: never;
@@ -468,7 +436,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/delete/album/{id}": {
+    "/admin/albums/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -479,22 +447,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["AdminController_deleteAlbum"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/create/referral-code": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AdminController_createReferralCode"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -568,31 +520,210 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        DeviceInfoDto: {
+        UserEntity: {
+            id: string;
+            email: string;
+            userName: string;
+            isAdmin: boolean;
+        };
+        DeviceDto: {
+            /** Format: uuid */
             clientId: string;
-            name: string;
-            model: string;
+            name?: string;
+            model?: string;
         };
         LoginDto: {
+            /** Format: email */
             email: string;
+            /** Format: password */
             password: string;
-            deviceInfo: components["schemas"]["DeviceInfoDto"];
+            deviceInfo: components["schemas"]["DeviceDto"];
+        };
+        AuthTokensEntity: {
+            accessToken: string;
+            refreshToken: string;
         };
         SignUpDto: {
             userName: string;
+            /** Format: email */
             email: string;
+            /** Format: password */
             password: string;
-            referralCode: string;
-            deviceInfo: components["schemas"]["DeviceInfoDto"];
+            deviceInfo: components["schemas"]["DeviceDto"];
         };
         RefreshTokenDto: {
             refreshToken: string;
         };
-        PlaylistDto: {
+        /** @enum {string} */
+        TrackSortOrder: "title" | "album" | "year" | "added";
+        /** @enum {string} */
+        SortDirection: "asc" | "desc";
+        AlbumRef: {
+            id: string;
+            title: string;
+        };
+        ArtistRef: {
+            id: string;
             name: string;
         };
-        CreateArtistDto: {
+        TrackSummaryEntity: {
+            id: string;
+            title: string;
+            genres: string[];
+            duration: number;
+            /** Format: date-time */
+            releaseDate: string;
+            trackNumber: number;
+            starred: boolean;
+            album: components["schemas"]["AlbumRef"];
+            artists: components["schemas"]["ArtistRef"][];
+        };
+        TrackEntity: {
+            id: string;
+            title: string;
+            genres: string[];
+            duration: number;
+            /** Format: date-time */
+            releaseDate: string;
+            trackNumber: number;
+            discNumber: number;
+            size: number;
+            album: components["schemas"]["AlbumRef"];
+            artists: components["schemas"]["ArtistRef"][];
+            starred: boolean;
+        };
+        /** @enum {string} */
+        PlaylistSortOrder: "name" | "added";
+        /** @enum {number} */
+        PlaylistType: {
+            USER: "USER";
+            LIKED: "LIKED";
+        };
+        PlaylistSummaryEntity: {
+            id: string;
             name: string;
+            type: components["schemas"]["PlaylistType"];
+            albumCoverUrls: string[];
+        };
+        PlaylistEntity: {
+            id: string;
+            name: string;
+            description: string | null;
+            ownerId: string;
+            type: components["schemas"]["PlaylistType"];
+            albumCoverUrls: string[];
+        };
+        CreatePlaylistDto: {
+            name: string;
+        };
+        PlaylistRef: {
+            id: string;
+            name: string;
+        };
+        PlaylistTrackEntity: {
+            id: string;
+            trackId: string;
+            genres: string[];
+            duration: number;
+            trackNumber: number;
+            discNumber: number;
+            title: string;
+            album: components["schemas"]["AlbumRef"];
+            artists: components["schemas"]["ArtistRef"][];
+        };
+        /** @enum {string} */
+        AlbumSortOrder: "title" | "year" | "added";
+        AlbumSummaryEntity: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            releaseDate: string;
+            genres: string[];
+            artists: components["schemas"]["ArtistRef"][];
+            starred: boolean;
+        };
+        AlbumTrackEntity: {
+            id: string;
+            title: string;
+            genres: string[];
+            duration: number;
+            trackNumber: number;
+            discNumber: number;
+            album: components["schemas"]["AlbumRef"];
+            artists: components["schemas"]["ArtistRef"][];
+        };
+        AlbumEntity: {
+            id: string;
+            title: string;
+            /** Format: date-time */
+            releaseDate: string;
+            compilation: boolean;
+            genres: string[];
+            starred: boolean;
+            artists: components["schemas"]["ArtistRef"][];
+            tracks: components["schemas"]["AlbumTrackEntity"][];
+        };
+        /** @enum {string} */
+        ArtistSortOrder: "name";
+        ArtistSummaryEntity: {
+            id: string;
+            name: string;
+            starred: boolean;
+        };
+        ArtistEntity: {
+            id: string;
+            name: string;
+            bio: string | null;
+            starred: boolean;
+            albums: components["schemas"]["AlbumRef"][];
+        };
+        SearchResultsEntity: {
+            albums: components["schemas"]["AlbumSummaryEntity"][];
+            artists: components["schemas"]["ArtistSummaryEntity"][];
+            tracks: components["schemas"]["TrackSummaryEntity"][];
+        };
+        /** @enum {string} */
+        InteractionTypeArtist: "artist";
+        ArtistInteractionEntity: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "artist";
+            id: string;
+            /** Format: date-time */
+            updatedAt: string;
+            artist: components["schemas"]["ArtistRef"];
+            coverUrl: string | null;
+        };
+        /** @enum {string} */
+        InteractionTypePlaylist: "playlist";
+        PlaylistInteractionEntity: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "playlist";
+            id: string;
+            /** Format: date-time */
+            updatedAt: string;
+            playlist: components["schemas"]["PlaylistRef"];
+            coverUrls: string[];
+        };
+        /** @enum {string} */
+        InteractionTypeAlbum: "album";
+        AlbumInteractionEntity: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "album";
+            id: string;
+            /** Format: date-time */
+            updatedAt: string;
+            album: components["schemas"]["AlbumRef"];
+            artists: components["schemas"]["ArtistRef"][];
+            coverUrl: string | null;
         };
     };
     responses: never;
@@ -603,23 +734,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    AppController_getHello: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     HealthController_check: {
         parameters: {
             query?: never;
@@ -738,7 +852,7 @@ export interface operations {
             };
         };
     };
-    UserController_find: {
+    UsersController_find: {
         parameters: {
             query?: never;
             header?: never;
@@ -751,11 +865,27 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["UserEntity"];
+                };
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
     };
-    UserController_delete: {
+    UsersController_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -764,7 +894,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -789,6 +926,22 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensEntity"];
+                };
+            };
+            /** @description Invalid request body. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid credentials. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
@@ -810,6 +963,22 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensEntity"];
+                };
+            };
+            /** @description Invalid request body. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Email already registered. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
@@ -828,6 +997,15 @@ export interface operations {
         };
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensEntity"];
+                };
+            };
+            /** @description Invalid or revoked refresh token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -854,11 +1032,28 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     TracksController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                artistIds?: string[];
+                albumIds?: string[];
+                genres?: string[];
+                search?: string;
+                starred?: boolean;
+                order?: components["schemas"]["TrackSortOrder"];
+                orderBy?: components["schemas"]["SortDirection"];
+                limit?: number;
+                offset?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -869,20 +1064,19 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["TrackSummaryEntity"][];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
-        };
-    };
-    TracksController_getStarred: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -905,11 +1099,27 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["TrackEntity"];
+                };
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Track not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
     };
-    TracksController_findTrackStream: {
+    TracksController_getTrackStream: {
         parameters: {
             query?: never;
             header: {
@@ -922,7 +1132,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Audio stream. Returns 206 Partial Content when Range is set. */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Track not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -947,9 +1172,23 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Track not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    TracksController_unStar: {
+    TracksController_unstar: {
         parameters: {
             query?: never;
             header?: never;
@@ -961,6 +1200,96 @@ export interface operations {
         requestBody?: never;
         responses: {
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Track not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlaylistsController_findAll: {
+        parameters: {
+            query?: {
+                onlyUser?: boolean;
+                order?: components["schemas"]["PlaylistSortOrder"];
+                orderBy?: components["schemas"]["SortDirection"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaylistSummaryEntity"][];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlaylistsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePlaylistDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaylistRef"];
+                };
+            };
+            /** @description Invalid playlist name. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -983,6 +1312,22 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["PlaylistEntity"];
+                };
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
@@ -998,7 +1343,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1017,11 +1376,25 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PlaylistDto"];
+                "application/json": components["schemas"]["CreatePlaylistDto"];
             };
         };
         responses: {
-            200: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1029,11 +1402,13 @@ export interface operations {
             };
         };
     };
-    PlaylistsController_findAll: {
+    PlaylistsController_findTracks: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1042,24 +1417,19 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["PlaylistTrackEntity"][];
+                };
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
-        };
-    };
-    PlaylistsController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PlaylistDto"];
-            };
-        };
-        responses: {
-            201: {
+            /** @description Playlist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1083,6 +1453,22 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["PlaylistTrackEntity"];
+                };
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist or track not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
@@ -1099,7 +1485,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist or track not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1119,26 +1519,21 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-        };
-    };
-    PlaylistsController_findTracks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
+            /** @description Playlist or track not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1148,7 +1543,16 @@ export interface operations {
     };
     AlbumsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                artistIds?: string[];
+                genres?: string[];
+                search?: string;
+                starred?: boolean;
+                order?: components["schemas"]["AlbumSortOrder"];
+                orderBy?: components["schemas"]["SortDirection"];
+                limit?: number;
+                offset?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1156,6 +1560,22 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumSummaryEntity"][];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1178,11 +1598,34 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["AlbumEntity"];
+                };
+            };
+            /** @description Invalid album id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
     };
-    AlbumsController_findAlbumCover: {
+    AlbumsController_getAlbumCoverUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -1194,6 +1637,29 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Invalid album id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album cover not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1218,9 +1684,30 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Invalid album id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    AlbumsController_unStar: {
+    AlbumsController_unstar: {
         parameters: {
             query?: never;
             header?: never;
@@ -1237,11 +1724,32 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Invalid album id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     ArtistsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                starred?: boolean;
+                search?: string;
+                order?: components["schemas"]["ArtistSortOrder"];
+                orderBy?: components["schemas"]["SortDirection"];
+                limit?: number;
+                offset?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1249,6 +1757,22 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArtistSummaryEntity"][];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1271,11 +1795,34 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["ArtistEntity"];
+                };
+            };
+            /** @description Invalid artist id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
     };
-    ArtistsController_findArtistImage: {
+    ArtistsController_getArtistImageUrl: {
         parameters: {
             query?: never;
             header?: never;
@@ -1287,6 +1834,29 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Invalid artist id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist image not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1311,9 +1881,30 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Invalid artist id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
-    ArtistsController_unStar: {
+    ArtistsController_unstar: {
         parameters: {
             query?: never;
             header?: never;
@@ -1330,11 +1921,27 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Invalid artist id. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     SearchController_find: {
         parameters: {
-            query?: never;
+            query: {
+                query: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1342,6 +1949,22 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResultsEntity"];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1358,7 +1981,10 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateArtistDto"];
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
             };
         };
         responses: {
@@ -1366,11 +1992,41 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
+                content: {
+                    "application/json": components["schemas"]["ArtistRef"];
+                };
+            };
+            /** @description Invalid request body. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requires admin privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist with this name already exists. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
                 content?: never;
             };
         };
     };
-    AdminController_uploadArtistArt: {
+    AdminController_uploadArtistImage: {
         parameters: {
             query?: never;
             header?: never;
@@ -1379,9 +2035,37 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
         responses: {
-            201: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requires admin privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1400,7 +2084,28 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requires admin privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1415,9 +2120,44 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
         responses: {
+            /** @description Album imported. */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid files or metadata. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requires admin privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album already imported. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1436,24 +2176,28 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-        };
-    };
-    AdminController_createReferralCode: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requires admin privileges. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1463,7 +2207,9 @@ export interface operations {
     };
     InteractionsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1471,6 +2217,22 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": (components["schemas"]["ArtistInteractionEntity"] | components["schemas"]["PlaylistInteractionEntity"] | components["schemas"]["AlbumInteractionEntity"])[];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1495,6 +2257,20 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Album not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     InteractionsController_createOrUpdateArtist: {
@@ -1514,6 +2290,20 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artist not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     InteractionsController_createOrUpdatePlaylist: {
@@ -1528,6 +2318,20 @@ export interface operations {
         requestBody?: never;
         responses: {
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid bearer token. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Playlist not found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,37 +1,7 @@
-interface TrackArtist {
-  id: string;
-  name: string;
-}
+import type { components } from "@/schema";
 
-interface TrackAlbum {
-  id: string;
-  title: string;
-}
+export type TrackArtist = components["schemas"]["ArtistRef"];
+export type TrackAlbum = components["schemas"]["AlbumRef"];
 
-export interface Track {
-  id: string;
-  title: string;
-  releaseDate: Date;
-  suffix: string;
-  trackNumber: number;
-  discNumber: number;
-  genres: string[];
-  duration: number;
-  size: number;
-  bitRate: number;
-  sampleRate: number;
-  bitDepth: number | null;
-  album: TrackAlbum;
-  artists: TrackArtist[];
-}
-
-export interface TrackSummary {
-  id: string;
-  title: string;
-  releaseDate: Date;
-  genres: string[];
-  duration: number;
-  album: TrackAlbum;
-  artists: TrackArtist[];
-  trackNumber: number;
-}
+export type Track = components["schemas"]["TrackEntity"];
+export type TrackSummary = components["schemas"]["TrackSummaryEntity"];

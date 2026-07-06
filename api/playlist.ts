@@ -1,6 +1,5 @@
 import { OrderBy } from "@/constants/api";
-import { Playlist, PlaylistIdentity, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
-import { Track } from "@/types/tracks";
+import { Playlist, PlaylistRef, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
 import apiClient from "./client";
 
 export enum PlaylistOrder {
@@ -29,7 +28,7 @@ export const playlistApi = {
     return data;
   },
 
-  create: async (name: string): Promise<PlaylistIdentity> => {
+  create: async (name: string): Promise<PlaylistRef> => {
     const { data } = await apiClient.post(`/playlists`, {
       "name": name
     });
@@ -49,7 +48,7 @@ export const playlistApi = {
     return data
   },
 
-  getTrack: async (playlistId: string, trackId: string): Promise<Track> => {
+  getTrack: async (playlistId: string, trackId: string): Promise<PlaylistTrack> => {
     const { data } = await apiClient.get(`/playlists/${playlistId}/tracks/${trackId}`);
     return data
   },

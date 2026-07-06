@@ -16,7 +16,7 @@ import {
   useUpdateArtistInteraction,
 } from "../../../api/mutations/interactions";
 import { useAlbumCover } from "../../../api/queries/albums";
-import { useStarredTracks, useTrack } from "../../../api/queries/tracks";
+import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
@@ -29,7 +29,6 @@ const PlaylistTrackContent: FC = () => {
   const { data: playlist } = usePlaylist(playlistContent?.id);
   const pathname = usePathname();
 
-  const { data: starredTracks } = useStarredTracks();
   const { data: albumArtUrl } = useAlbumCover(track?.album.id);
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
@@ -47,7 +46,7 @@ const PlaylistTrackContent: FC = () => {
 
   if (!track) return null;
 
-  const starred = !!starredTracks?.includes(track.id);
+  const starred = track.starred;
 
   const onPlaylistPress = () => {
     open({ type: SheetType.PLAYLIST_SELECT, trackId: track.id });

@@ -1,0 +1,1795 @@
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: HealthController_check
+      parameters: []
+      responses:
+        '200':
+          description: The Health Check is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example: {}
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+        '503':
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      tags:
+        - Health
+  /user/me:
+    get:
+      operationId: UsersController_find
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: User not found.
+      security:
+        - bearer: []
+      tags:
+        - User
+    delete:
+      operationId: UsersController_delete
+      parameters: []
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - User
+  /auth/login:
+    post:
+      operationId: AuthController_signIn
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensEntity'
+        '400':
+          description: Invalid request body.
+        '401':
+          description: Invalid credentials.
+      tags:
+        - Auth
+  /auth/signup:
+    post:
+      operationId: AuthController_signup
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensEntity'
+        '400':
+          description: Invalid request body.
+        '409':
+          description: Email already registered.
+      tags:
+        - Auth
+  /auth/refresh:
+    post:
+      operationId: AuthController_refresh
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensEntity'
+        '401':
+          description: Invalid or revoked refresh token.
+      tags:
+        - Auth
+  /auth/logout:
+    post:
+      operationId: AuthController_logout
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Auth
+  /tracks:
+    get:
+      operationId: TracksController_findAll
+      parameters:
+        - name: artistIds
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: albumIds
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: genres
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: starred
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: order
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/TrackSortOrder'
+        - name: orderBy
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/SortDirection'
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            default: 100
+            type: number
+        - name: offset
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            default: 0
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrackSummaryEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Tracks
+  /tracks/{id}:
+    get:
+      operationId: TracksController_find
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Track not found.
+      security:
+        - bearer: []
+      tags:
+        - Tracks
+  /tracks/{id}/stream:
+    get:
+      operationId: TracksController_getTrackStream
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: range
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audio stream. Returns 206 Partial Content when Range is set.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Track not found.
+      security:
+        - bearer: []
+      tags:
+        - Tracks
+  /tracks/{id}/star:
+    post:
+      operationId: TracksController_star
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Track not found.
+      security:
+        - bearer: []
+      tags:
+        - Tracks
+    delete:
+      operationId: TracksController_unstar
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Track not found.
+      security:
+        - bearer: []
+      tags:
+        - Tracks
+  /playlists:
+    get:
+      operationId: PlaylistsController_findAll
+      parameters:
+        - name: onlyUser
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: order
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/PlaylistSortOrder'
+        - name: orderBy
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/SortDirection'
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            default: 100
+            type: number
+        - name: offset
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            default: 0
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaylistSummaryEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+    post:
+      operationId: PlaylistsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlaylistDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistRef'
+        '400':
+          description: Invalid playlist name.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+  /playlists/{id}:
+    get:
+      operationId: PlaylistsController_find
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+    patch:
+      operationId: PlaylistsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlaylistDto'
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+    delete:
+      operationId: PlaylistsController_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+  /playlists/{id}/tracks:
+    get:
+      operationId: PlaylistsController_findTracks
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaylistTrackEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+  /playlists/{id}/tracks/{trackId}:
+    get:
+      operationId: PlaylistsController_findTrack
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: trackId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistTrackEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist or track not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+    post:
+      operationId: PlaylistsController_addTrack
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: trackId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist or track not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+    delete:
+      operationId: PlaylistsController_deleteTrack
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: trackId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist or track not found.
+      security:
+        - bearer: []
+      tags:
+        - Playlists
+  /albums:
+    get:
+      operationId: AlbumsController_findAll
+      parameters:
+        - name: artistIds
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: genres
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: starred
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: order
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/AlbumSortOrder'
+        - name: orderBy
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/SortDirection'
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            default: 100
+            type: number
+        - name: offset
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            default: 0
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlbumSummaryEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Albums
+  /albums/{id}:
+    get:
+      operationId: AlbumsController_find
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlbumEntity'
+        '400':
+          description: Invalid album id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Album not found.
+      security:
+        - bearer: []
+      tags:
+        - Albums
+  /albums/{id}/cover:
+    get:
+      operationId: AlbumsController_getAlbumCoverUrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Presigned URL to the cover image.
+        '400':
+          description: Invalid album id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Album cover not found.
+      security:
+        - bearer: []
+      tags:
+        - Albums
+  /albums/{id}/star:
+    post:
+      operationId: AlbumsController_star
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Invalid album id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Album not found.
+      security:
+        - bearer: []
+      tags:
+        - Albums
+    delete:
+      operationId: AlbumsController_unstar
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Invalid album id.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Albums
+  /artists:
+    get:
+      operationId: ArtistsController_findAll
+      parameters:
+        - name: starred
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: order
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/ArtistSortOrder'
+        - name: orderBy
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/SortDirection'
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            default: 100
+            type: number
+        - name: offset
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            default: 0
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistSummaryEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Artists
+  /artists/{id}:
+    get:
+      operationId: ArtistsController_find
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistEntity'
+        '400':
+          description: Invalid artist id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Artist not found.
+      security:
+        - bearer: []
+      tags:
+        - Artists
+  /artists/{id}/image:
+    get:
+      operationId: ArtistsController_getArtistImageUrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Presigned URL to the artist image.
+        '400':
+          description: Invalid artist id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Artist image not found.
+      security:
+        - bearer: []
+      tags:
+        - Artists
+  /artists/{id}/star:
+    post:
+      operationId: ArtistsController_star
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Invalid artist id.
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Artist not found.
+      security:
+        - bearer: []
+      tags:
+        - Artists
+    delete:
+      operationId: ArtistsController_unstar
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Invalid artist id.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Artists
+  /search:
+    get:
+      operationId: SearchController_find
+      parameters:
+        - name: query
+          required: true
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResultsEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Search
+  /admin/artists:
+    post:
+      operationId: AdminController_uploadArtist
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistRef'
+        '400':
+          description: Invalid request body.
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '409':
+          description: Artist with this name already exists.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /admin/artists/{id}/image:
+    post:
+      operationId: AdminController_uploadArtistImage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '404':
+          description: Artist not found.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /admin/artists/{id}:
+    delete:
+      operationId: AdminController_deleteArtist
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '404':
+          description: Artist not found.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /admin/albums:
+    post:
+      operationId: AdminController_uploadAlbum
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - files
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Album imported.
+        '400':
+          description: Invalid files or metadata.
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '409':
+          description: Album already imported.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /admin/albums/{id}:
+    delete:
+      operationId: AdminController_deleteAlbum
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '404':
+          description: Album not found.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /interactions:
+    get:
+      operationId: InteractionsController_findAll
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 20
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/ArtistInteractionEntity'
+                    - $ref: '#/components/schemas/PlaylistInteractionEntity'
+                    - $ref: '#/components/schemas/AlbumInteractionEntity'
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      artist: '#/components/schemas/ArtistInteractionEntity'
+                      playlist: '#/components/schemas/PlaylistInteractionEntity'
+                      album: '#/components/schemas/AlbumInteractionEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Interactions
+  /interactions/albums/{id}:
+    post:
+      operationId: InteractionsController_createOrUpdateAlbum
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Album not found.
+      security:
+        - bearer: []
+      tags:
+        - Interactions
+  /interactions/artists/{id}:
+    post:
+      operationId: InteractionsController_createOrUpdateArtist
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Artist not found.
+      security:
+        - bearer: []
+      tags:
+        - Interactions
+  /interactions/playlists/{id}:
+    post:
+      operationId: InteractionsController_createOrUpdatePlaylist
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '404':
+          description: Playlist not found.
+      security:
+        - bearer: []
+      tags:
+        - Interactions
+info:
+  title: Castaway
+  description: The API documentation
+  version: '0.1'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        userName:
+          type: string
+        isAdmin:
+          type: boolean
+      required:
+        - id
+        - email
+        - userName
+        - isAdmin
+    DeviceDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 120
+        model:
+          type: string
+          maxLength: 120
+      required:
+        - clientId
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          format: password
+          minLength: 12
+        deviceInfo:
+          $ref: '#/components/schemas/DeviceDto'
+      required:
+        - email
+        - password
+        - deviceInfo
+    AuthTokensEntity:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - accessToken
+        - refreshToken
+    SignUpDto:
+      type: object
+      properties:
+        userName:
+          type: string
+          minLength: 1
+          maxLength: 32
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          format: password
+          minLength: 12
+        deviceInfo:
+          $ref: '#/components/schemas/DeviceDto'
+      required:
+        - userName
+        - email
+        - password
+        - deviceInfo
+    RefreshTokenDto:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+    TrackSortOrder:
+      type: string
+      enum:
+        - title
+        - album
+        - year
+        - added
+    SortDirection:
+      type: string
+      enum:
+        - asc
+        - desc
+    AlbumRef:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+      required:
+        - id
+        - title
+    ArtistRef:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
+    TrackSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        duration:
+          type: number
+        releaseDate:
+          format: date-time
+          type: string
+        trackNumber:
+          type: number
+        starred:
+          type: boolean
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+      required:
+        - id
+        - title
+        - genres
+        - duration
+        - releaseDate
+        - trackNumber
+        - starred
+        - album
+        - artists
+    TrackEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        duration:
+          type: number
+        releaseDate:
+          format: date-time
+          type: string
+        trackNumber:
+          type: number
+        discNumber:
+          type: number
+        size:
+          type: number
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+        starred:
+          type: boolean
+      required:
+        - id
+        - title
+        - genres
+        - duration
+        - releaseDate
+        - trackNumber
+        - discNumber
+        - size
+        - album
+        - artists
+        - starred
+    PlaylistSortOrder:
+      type: string
+      enum:
+        - name
+        - added
+    PlaylistType:
+      type: number
+      enum:
+        - USER: USER
+          LIKED: LIKED
+    PlaylistSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/PlaylistType'
+        albumCoverUrls:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - type
+        - albumCoverUrls
+    PlaylistEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        ownerId:
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/PlaylistType'
+        albumCoverUrls:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - description
+        - ownerId
+        - type
+        - albumCoverUrls
+    CreatePlaylistDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - name
+    PlaylistRef:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
+    PlaylistTrackEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        trackId:
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        duration:
+          type: number
+        trackNumber:
+          type: number
+        discNumber:
+          type: number
+        title:
+          type: string
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+      required:
+        - id
+        - trackId
+        - genres
+        - duration
+        - trackNumber
+        - discNumber
+        - title
+        - album
+        - artists
+    AlbumSortOrder:
+      type: string
+      enum:
+        - title
+        - year
+        - added
+    AlbumSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        releaseDate:
+          format: date-time
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+        starred:
+          type: boolean
+      required:
+        - id
+        - title
+        - releaseDate
+        - genres
+        - artists
+        - starred
+    AlbumTrackEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        genres:
+          type: array
+          items:
+            type: string
+        duration:
+          type: number
+        trackNumber:
+          type: number
+        discNumber:
+          type: number
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+      required:
+        - id
+        - title
+        - genres
+        - duration
+        - trackNumber
+        - discNumber
+        - album
+        - artists
+    AlbumEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        releaseDate:
+          format: date-time
+          type: string
+        compilation:
+          type: boolean
+        genres:
+          type: array
+          items:
+            type: string
+        starred:
+          type: boolean
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+        tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlbumTrackEntity'
+      required:
+        - id
+        - title
+        - releaseDate
+        - compilation
+        - genres
+        - starred
+        - artists
+        - tracks
+    ArtistSortOrder:
+      type: string
+      enum:
+        - name
+    ArtistSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        starred:
+          type: boolean
+      required:
+        - id
+        - name
+        - starred
+    ArtistEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        starred:
+          type: boolean
+        albums:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlbumRef'
+      required:
+        - id
+        - name
+        - bio
+        - starred
+        - albums
+    SearchResultsEntity:
+      type: object
+      properties:
+        albums:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlbumSummaryEntity'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistSummaryEntity'
+        tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrackSummaryEntity'
+      required:
+        - albums
+        - artists
+        - tracks
+    InteractionTypeArtist:
+      type: string
+      enum:
+        - artist
+    ArtistInteractionEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/InteractionTypeArtist'
+        id:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        artist:
+          $ref: '#/components/schemas/ArtistRef'
+        coverUrl:
+          type: string
+          nullable: true
+      required:
+        - type
+        - id
+        - updatedAt
+        - artist
+        - coverUrl
+    InteractionTypePlaylist:
+      type: string
+      enum:
+        - playlist
+    PlaylistInteractionEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/InteractionTypePlaylist'
+        id:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        playlist:
+          $ref: '#/components/schemas/PlaylistRef'
+        coverUrls:
+          type: array
+          items:
+            type: string
+      required:
+        - type
+        - id
+        - updatedAt
+        - playlist
+        - coverUrls
+    InteractionTypeAlbum:
+      type: string
+      enum:
+        - album
+    AlbumInteractionEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/InteractionTypeAlbum'
+        id:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+        coverUrl:
+          type: string
+          nullable: true
+      required:
+        - type
+        - id
+        - updatedAt
+        - album
+        - artists
+        - coverUrl

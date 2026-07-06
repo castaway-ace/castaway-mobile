@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { useTrackStar } from "../../api/mutations/tracks";
-import { useStarredTracks } from "../../api/queries/tracks";
+import { useTrack } from "../../api/queries/tracks";
 import { blurHash } from "../../constants/blur";
 import { IconSymbol } from "../ui/icon-symbol";
 
@@ -30,7 +30,12 @@ const MusicPlayer = () => {
   const { open } = usePlayerModal();
   const { colors } = useTheme();
   const { mutate: trackStar } = useTrackStar();
-  const { data: starredTracks } = useStarredTracks();
+  const activeTrackId = currentTrack
+    ? "trackId" in currentTrack
+      ? currentTrack.trackId
+      : currentTrack.id
+    : undefined;
+  const { data: trackDetail } = useTrack(activeTrackId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const progress =
@@ -40,10 +45,11 @@ const MusicPlayer = () => {
     return null;
   }
 
-  const starred = !!starredTracks?.includes(currentTrack.id);
+  const starred = !!trackDetail?.starred;
 
   const onLikeTrackButtonPress = () => {
-    trackStar({ id: currentTrack.id, starred: !!starred });
+    if (!activeTrackId) return;
+    trackStar({ id: activeTrackId, starred });
   };
 
   const handlePlayTrack = () => {

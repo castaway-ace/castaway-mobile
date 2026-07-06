@@ -1,27 +1,7 @@
-import { TrackSummary } from "./tracks";
+import type { components } from "@/schema";
 
-export interface AlbumArtist {
-    id: string;
-    name: string;
-}
+export type AlbumArtist = components["schemas"]["ArtistRef"];
+export type AlbumTrack = components["schemas"]["AlbumTrackEntity"];
 
-export interface Album {
-    id: string,
-    title: string,
-    releaseDate: string,
-    genre: string,
-    imageUrl: string,
-    compilation: boolean,
-    artists: AlbumArtist[],
-    starred: boolean,
-    tracks: TrackSummary[],
-}
-
-export interface AlbumSummary {
-    id: string,
-    title: string,
-    releaseDate: string,
-    genre: string,
-    imageUrl: string,
-    artists: AlbumArtist[],
-}
+export type Album = components["schemas"]["AlbumEntity"];
+export type AlbumSummary = components["schemas"]["AlbumSummaryEntity"];

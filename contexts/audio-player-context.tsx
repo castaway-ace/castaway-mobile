@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/api/client";
 import { useAlbumCover } from "@/api/queries/albums";
 import { trackApi } from "@/api/tracks";
+import { AlbumTrack } from "@/types/albums";
 import { PlaylistTrack } from "@/types/playlist";
 import { Track, TrackSummary } from "@/types/tracks";
 import {
@@ -24,11 +25,13 @@ import {
 
 export type RepeatMode = "off" | "all" | "one";
 
+export type PlayableTrack = TrackSummary | AlbumTrack | PlaylistTrack;
+
 interface AudioPlayerContextValue {
-  currentTrack: TrackSummary | PlaylistTrack | null;
+  currentTrack: PlayableTrack | null;
   coverArtUrl: string | undefined;
-  queue: TrackSummary[] | PlaylistTrack[];
-  upNext: TrackSummary[] | PlaylistTrack[];
+  queue: PlayableTrack[];
+  upNext: PlayableTrack[];
   position: number;
   isShuffled: boolean;
   repeatMode: RepeatMode;
@@ -38,11 +41,8 @@ interface AudioPlayerContextValue {
   currentTime: number;
   duration: number;
   loadTrack: (trackId: string) => Promise<void>;
-  playQueue: (
-    tracks: TrackSummary[] | PlaylistTrack[],
-    startIndex?: number,
-  ) => void;
-  addToQueue: (track: TrackSummary | PlaylistTrack) => void;
+  playQueue: (tracks: PlayableTrack[], startIndex?: number) => void;
+  addToQueue: (track: PlayableTrack) => void;
   clearQueue: () => void;
   play: () => void;
   pause: () => void;
@@ -57,7 +57,7 @@ interface AudioPlayerContextValue {
 const RESTART_THRESHOLD_SECONDS = 3;
 
 interface QueueState {
-  queue: TrackSummary[];
+  queue: PlayableTrack[];
   order: number[];
   position: number;
   isShuffled: boolean;
@@ -65,10 +65,10 @@ interface QueueState {
 }
 
 type QueueAction =
-  | { type: "SET_QUEUE"; tracks: TrackSummary[]; startIndex: number }
+  | { type: "SET_QUEUE"; tracks: PlayableTrack[]; startIndex: number }
   | { type: "NEXT"; naturalEnd: boolean }
   | { type: "PREVIOUS" }
-  | { type: "ENQUEUE"; track: TrackSummary }
+  | { type: "ENQUEUE"; track: PlayableTrack }
   | { type: "TOGGLE_SHUFFLE" }
   | { type: "CYCLE_REPEAT" }
   | { type: "SET_REPEAT"; mode: RepeatMode }
@@ -190,6 +190,7 @@ const toTrackSummary = (track: Track): TrackSummary => ({
   album: track.album,
   artists: track.artists,
   trackNumber: track.trackNumber,
+  starred: track.starred,
 });
 
 const AudioPlayerContext = createContext<AudioPlayerContextValue | undefined>(
@@ -219,12 +220,12 @@ export const AudioPlayerProvider = ({
 
   const [shouldPlay, setShouldPlay] = useState(false);
 
-  const currentTrack = useMemo<TrackSummary | PlaylistTrack | null>(() => {
+  const currentTrack = useMemo<PlayableTrack | null>(() => {
     if (position < 0 || order[position] === undefined) return null;
     return queue[order[position]] ?? null;
   }, [queue, order, position]);
 
-  const upNext = useMemo<TrackSummary[] | PlaylistTrack[]>(() => {
+  const upNext = useMemo<PlayableTrack[]>(() => {
     if (position < 0) return [];
     return order.slice(position + 1).map((i) => queue[i]);
   }, [queue, order, position]);
@@ -240,7 +241,7 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const playTrack = useCallback(
-    async (track: TrackSummary | PlaylistTrack): Promise<void> => {
+    async (track: PlayableTrack): Promise<void> => {
       setIsLoading(true);
       setError(null);
       try {
@@ -326,18 +327,15 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const playQueue = useCallback(
-    (tracks: TrackSummary[] | PlaylistTrack[], startIndex = 0): void => {
+    (tracks: PlayableTrack[], startIndex = 0): void => {
       dispatch({ type: "SET_QUEUE", tracks, startIndex });
     },
     [],
   );
 
-  const addToQueue = useCallback(
-    (track: TrackSummary | PlaylistTrack): void => {
-      dispatch({ type: "ENQUEUE", track });
-    },
-    [],
-  );
+  const addToQueue = useCallback((track: PlayableTrack): void => {
+    dispatch({ type: "ENQUEUE", track });
+  }, []);
 
   const clearQueue = useCallback((): void => {
     dispatch({ type: "CLEAR" });

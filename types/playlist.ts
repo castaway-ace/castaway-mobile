@@ -1,31 +1,21 @@
-import { TrackSummary } from "./tracks";
+import type { components } from "@/schema";
 
 export enum PlaylistType {
-  USER = 'USER',
-  LIKED = 'LIKED'
+  USER = "USER",
+  LIKED = "LIKED",
 }
 
-export interface PlaylistIdentity {
-  id: string;
-  ownerId: string;
+export type PlaylistRef = components["schemas"]["PlaylistRef"];
+
+export type Playlist = Omit<components["schemas"]["PlaylistEntity"], "type"> & {
   type: PlaylistType;
-}
+};
 
-export interface Playlist {
-  id: string;
-  name: string;
-  description: string;
+export type PlaylistSummary = Omit<
+  components["schemas"]["PlaylistSummaryEntity"],
+  "type"
+> & {
   type: PlaylistType;
-  albumCoverUrls: string[];
-}
+};
 
-export interface PlaylistTrack extends TrackSummary {
-  trackId: string;
-}
-
-export interface PlaylistSummary {
-  id: string;
-  name: string;
-  type: PlaylistType;
-  albumCoverUrls: string[];
-}
+export type PlaylistTrack = components["schemas"]["PlaylistTrackEntity"];

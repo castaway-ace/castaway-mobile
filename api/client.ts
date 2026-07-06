@@ -1,3 +1,4 @@
+import type { components } from '@/schema';
 import axios, { AxiosError, isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
@@ -9,10 +10,7 @@ declare module 'axios' {
   }
 }
 
-interface RefreshResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+type RefreshResponse = components['schemas']['AuthTokensEntity'];
 
 const apiClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
