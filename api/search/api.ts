@@ -1,5 +1,5 @@
 import { Search } from "@/types/search";
-import apiClient from "./client";
+import apiClient from "../client";
 
 export const searchApi = {
   get: async (input: string): Promise<Search> => {

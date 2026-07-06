@@ -1,15 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { playlistApi } from "../playlist";
+import { playlistApi } from "./api";
 
 interface PlaylistUpdateMutation {
     id: string;
     body: {
         name: string;
     }
-}
-
-interface PlaylistDeleteMutation {
-    id: string;
 }
 
 interface PlaylistTrackMutation {

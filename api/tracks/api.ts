@@ -1,6 +1,6 @@
 import { OrderBy } from "@/constants/api";
 import { Track, TrackSummary } from "@/types/tracks";
-import apiClient from "./client";
+import apiClient from "../client";
 
 export enum TrackOrder {
   TITLE = 'title',

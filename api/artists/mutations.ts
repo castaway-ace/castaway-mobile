@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import { artistApi } from "../artists";
+import { artistApi } from "./api";
 
 interface ArtistStarMutation {
     id: string;

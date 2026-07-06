@@ -1,6 +1,6 @@
-import { trackApi, TrackOrder } from "@/api/tracks";
 import { OrderBy } from "@/constants/api";
 import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { trackApi, TrackOrder } from "./api";
 
 interface TrackOptions {
     order: TrackOrder

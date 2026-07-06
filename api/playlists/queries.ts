@@ -1,6 +1,6 @@
 import { OrderBy } from "@/constants/api";
 import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { playlistApi, PlaylistOrder } from "../playlist";
+import { playlistApi, PlaylistOrder } from "./api";
 
 export interface PlaylistOptions {
   order: PlaylistOrder

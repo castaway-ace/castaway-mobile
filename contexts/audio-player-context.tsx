@@ -1,6 +1,6 @@
 import { useAlbumCover } from "@/api/albums/queries";
 import { BASE_URL } from "@/api/client";
-import { trackApi } from "@/api/tracks";
+import { trackApi } from "@/api/tracks/api";
 import { AlbumTrack } from "@/types/albums";
 import { PlaylistTrack } from "@/types/playlist";
 import { Track, TrackSummary } from "@/types/tracks";

@@ -1,6 +1,6 @@
 import { OrderBy } from "@/constants/api";
 import { Playlist, PlaylistRef, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
-import apiClient from "./client";
+import apiClient from "../client";
 
 export enum PlaylistOrder {
   NAME = 'name',

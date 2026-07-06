@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { searchApi } from "../search";
+import { searchApi } from "./api";
 
 export const useSearch = (input: string) => {
     return useQuery({

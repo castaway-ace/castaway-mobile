@@ -1,4 +1,4 @@
-import { useSearch } from "@/api/queries/search";
+import { useSearch } from "@/api/search/queries";
 import SearchItem from "@/components/(tabs)/search/item";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
@@ -7,12 +7,12 @@ import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo, useState } from "react";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbums } from "../../../api/albums/queries";
