@@ -17,20 +17,20 @@ interface PlaylistParams {
 
 export const playlistApi = {
   getAll: async ({ limit, offset, order, orderBy, onlyUser }: PlaylistParams): Promise<PlaylistSummary[]> => {
-    const { data } = await apiClient.get('/playlists', {
+    const { data } = await apiClient.get<PlaylistSummary[]>('/playlists', {
       params: { limit, offset, order, orderBy, onlyUser }
     });
     return data;
   },
 
   getOne: async (id: string): Promise<Playlist> => {
-    const { data } = await apiClient.get(`/playlists/${id}`);
+    const { data } = await apiClient.get<Playlist>(`/playlists/${id}`);
     return data;
   },
 
   create: async (name: string): Promise<PlaylistRef> => {
-    const { data } = await apiClient.post(`/playlists`, {
-      "name": name
+    const { data } = await apiClient.post<PlaylistRef>(`/playlists`, {
+      name,
     });
     return data;
   },
@@ -44,13 +44,13 @@ export const playlistApi = {
   },
 
   getAllTracks: async (playlistId: string): Promise<PlaylistTrack[]> => {
-    const { data } = await apiClient.get(`/playlists/${playlistId}/tracks`);
-    return data
+    const { data } = await apiClient.get<PlaylistTrack[]>(`/playlists/${playlistId}/tracks`);
+    return data;
   },
 
   getTrack: async (playlistId: string, trackId: string): Promise<PlaylistTrack> => {
-    const { data } = await apiClient.get(`/playlists/${playlistId}/tracks/${trackId}`);
-    return data
+    const { data } = await apiClient.get<PlaylistTrack>(`/playlists/${playlistId}/tracks/${trackId}`);
+    return data;
   },
 
   addTrack: async (playlistId: string, trackId: string): Promise<void> => {

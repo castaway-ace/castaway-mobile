@@ -1,5 +1,7 @@
 import { OrderBy } from "@/constants/api";
+import { GC_TIME, STALE_TIME } from "@/constants/query";
 import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../queryKeys";
 import { trackApi, TrackOrder } from "./api";
 
 interface TrackOptions {
@@ -19,7 +21,7 @@ const DEFAULT_TRACK_OPTIONS: TrackOptions = {
 export const useTracks = (options: Partial<TrackOptions> = {}) => {
     const { limit, orderBy, order, starred } = { ...DEFAULT_TRACK_OPTIONS, ...options };
     return useInfiniteQuery({
-        queryKey: ['tracks', { limit, order, orderBy, starred }],
+        queryKey: queryKeys.tracks.list({ limit, order, orderBy, starred }),
         queryFn: ({ pageParam }) => trackApi.getAll({ limit, offset: pageParam, orderBy, order, starred }),
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.length < limit) {
@@ -27,16 +29,16 @@ export const useTracks = (options: Partial<TrackOptions> = {}) => {
             }
             return allPages.length * limit;
         },
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
+        staleTime: STALE_TIME.SHORT,
+        gcTime: GC_TIME,
         initialPageParam: 0,
     });
 }
 
 export const useTrack = (id: string | undefined) => {
     return useQuery({
-        queryKey: ['track', id],
+        queryKey: queryKeys.tracks.detail(id),
         queryFn: id ? () => trackApi.getOne(id) : skipToken,
-        staleTime: 10 * 60 * 1000,
+        staleTime: STALE_TIME.LONG,
     });
 };

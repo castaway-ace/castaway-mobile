@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLogin } from "../../api/mutations/login";
+import { useLogin } from "../../api/auth/mutations";
 import { LoginSchema } from "../../constants/schema";
 import { ThemeColors } from "../../constants/theme";
 import { useTheme } from "../../contexts/theme-context";

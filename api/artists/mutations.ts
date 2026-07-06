@@ -1,30 +1,17 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import { queryKeys } from "../queryKeys";
+import { useStarMutation } from "../starMutation";
 import { artistApi } from "./api";
 
-interface ArtistStarMutation {
-    id: string;
-    starred: boolean;
-}
-
-export const useArtistStar = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({id, starred}: ArtistStarMutation) => {
-            if (starred) {
-                await artistApi.unStar(id);
-            }
-            else {
-                await artistApi.star(id);
-            }
-        },
-        onSuccess: (_data, { id, starred }) => {
-            Toast.show({
-                type: 'success',
-                text1: starred ? 'Removed from Your Library' : 'Added to Your Library',
-              });
-            queryClient.invalidateQueries({ queryKey: ['artist', id] });
-            queryClient.invalidateQueries({ queryKey: ['artists'] });
-        },
-    });
-};
+export const useArtistStar = () =>
+  useStarMutation({
+    star: artistApi.star,
+    unStar: artistApi.unStar,
+    messages: {
+      added: "Added to Your Library",
+      removed: "Removed from Your Library",
+    },
+    invalidateKeys: (id) => [
+      queryKeys.artists.detail(id),
+      queryKeys.artists.all,
+    ],
+  });

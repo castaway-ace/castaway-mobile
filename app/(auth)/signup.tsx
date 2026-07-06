@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSignUp } from "../../api/mutations/signup";
+import { useSignUp } from "../../api/auth/mutations";
 import { SignUpSchema } from "../../constants/schema";
 import { ThemeColors } from "../../constants/theme";
 import { useTheme } from "../../contexts/theme-context";

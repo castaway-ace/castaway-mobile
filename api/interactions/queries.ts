@@ -1,11 +1,13 @@
+import { GC_TIME, STALE_TIME } from "@/constants/query";
 import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../queryKeys";
 import { interactionApi } from "./api";
 
 export const useInteractions = () => {
     return useQuery({
-        queryKey: ['interactions'],
+        queryKey: queryKeys.interactions,
         queryFn: () => interactionApi.getAll(),
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
+        staleTime: STALE_TIME.SHORT,
+        gcTime: GC_TIME,
     });
 }

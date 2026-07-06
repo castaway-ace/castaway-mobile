@@ -1,31 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import { queryKeys } from "../queryKeys";
+import { useStarMutation } from "../starMutation";
 import { trackApi } from "./api";
 
-interface TrackStarMutation {
-    id: string;
-    starred: boolean;
-}
-
-export const useTrackStar = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, starred }: TrackStarMutation) => {
-            if (starred) {
-                await trackApi.unStar(id);
-            }
-            else {
-                await trackApi.star(id);
-            }
-        },
-        onSuccess: (_data, { id, starred }) => {
-            Toast.show({
-                type: 'success',
-                text1: starred ? 'Removed from Liked Songs' : 'Added to Liked Songs',
-              });
-            queryClient.invalidateQueries({ queryKey: ['track', id] });
-            queryClient.invalidateQueries({ queryKey: ['tracks'] });
-            queryClient.invalidateQueries({ queryKey: ['playlist-tracks'] });
-          },
-    });
-};
+export const useTrackStar = () =>
+  useStarMutation({
+    star: trackApi.star,
+    unStar: trackApi.unStar,
+    messages: {
+      added: "Added to Liked Songs",
+      removed: "Removed from Liked Songs",
+    },
+    invalidateKeys: (id) => [
+      queryKeys.tracks.detail(id),
+      queryKeys.tracks.all,
+      queryKeys.playlists.tracksAll,
+    ],
+  });

@@ -1,5 +1,7 @@
 import { OrderBy } from "@/constants/api";
+import { GC_TIME, STALE_TIME } from "@/constants/query";
 import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../queryKeys";
 import { playlistApi, PlaylistOrder } from "./api";
 
 export interface PlaylistOptions {
@@ -19,7 +21,7 @@ const DEFAULT_PLAYLIST_OPTIONS: PlaylistOptions = {
 export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
   const { limit, orderBy, order, onlyUser } = { ...DEFAULT_PLAYLIST_OPTIONS, ...options };
   return useInfiniteQuery({
-    queryKey: ['playlists', { limit, order, orderBy, onlyUser }],
+    queryKey: queryKeys.playlists.list({ limit, order, orderBy, onlyUser }),
     queryFn: ({ pageParam }) => playlistApi.getAll({ limit, offset: pageParam, orderBy, order, onlyUser }),
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < limit) {
@@ -27,32 +29,30 @@ export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
       }
       return allPages.length * limit;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: STALE_TIME.SHORT,
+    gcTime: GC_TIME,
     initialPageParam: 0,
   });
 }
 
 export const usePlaylist = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['playlist', id],
+    queryKey: queryKeys.playlists.detail(id),
     queryFn: id ? () => playlistApi.getOne(id) : skipToken,
-    staleTime: 10 * 60 * 1000,
+    staleTime: STALE_TIME.LONG,
   });
 };
 
-export const usePlaylistTracks = (playlistId: string) => {
+export const usePlaylistTracks = (playlistId: string | undefined) => {
   return useQuery({
-    queryKey: ['playlist-tracks', playlistId],
-    queryFn: () => playlistApi.getAllTracks(playlistId),
-    enabled: !!playlistId,
+    queryKey: queryKeys.playlists.tracks(playlistId),
+    queryFn: playlistId ? () => playlistApi.getAllTracks(playlistId) : skipToken,
   });
 }
 
-export const usePlaylistTrack = (playlistId: string, trackId: string) => {
+export const usePlaylistTrack = (playlistId: string | undefined, trackId: string | undefined) => {
   return useQuery({
-    queryKey: ['playlist-tracks', playlistId, trackId],
-    queryFn: () => playlistApi.getTrack(playlistId, trackId),
-    enabled: !!playlistId && !!trackId,
+    queryKey: queryKeys.playlists.track(playlistId, trackId),
+    queryFn: playlistId && trackId ? () => playlistApi.getTrack(playlistId, trackId) : skipToken,
   });
 }

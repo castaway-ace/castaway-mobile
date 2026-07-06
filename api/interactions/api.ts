@@ -1,9 +1,9 @@
-import { Interaction } from "../../types/interactions";
+import { Interaction } from "@/types/interactions";
 import apiClient from "../client";
 
 export const interactionApi = {
     getAll: async (): Promise<Interaction[]> => {
-        const { data } = await apiClient.get('/interactions');
+        const { data } = await apiClient.get<Interaction[]>('/interactions');
         return data;
     },
 

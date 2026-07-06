@@ -18,15 +18,15 @@ interface TrackParams {
 }
 
 export const trackApi = {
-  getAll: async ({limit, offset, order, orderBy, starred}: TrackParams): Promise<TrackSummary[]> => {
-    const { data } = await apiClient.get('/tracks', {
+  getAll: async ({ limit, offset, order, orderBy, starred }: TrackParams): Promise<TrackSummary[]> => {
+    const { data } = await apiClient.get<TrackSummary[]>('/tracks', {
       params: { limit, offset, order, orderBy, starred },
     });
     return data;
   },
 
   getOne: async (id: string): Promise<Track> => {
-    const { data } = await apiClient.get(`/tracks/${id}`);
+    const { data } = await apiClient.get<Track>(`/tracks/${id}`);
     return data;
   },
 

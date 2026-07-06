@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../queryKeys";
 import { playlistApi } from "./api";
 
 interface PlaylistUpdateMutation {
@@ -19,8 +20,8 @@ export const useCreatePlaylist = () => {
         mutationFn: async (name: string) => {
             return playlistApi.create(name);
         },
-        onSuccess: (_data): void => {
-            queryClient.invalidateQueries({ queryKey: ['playlists'] });
+        onSuccess: (): void => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
         },
     });
 };
@@ -32,8 +33,9 @@ export const useUpdatePlaylist = () => {
             await playlistApi.update(id, body);
         },
         onSuccess: (_data, { id }): void => {
-            queryClient.invalidateQueries({ queryKey: ['playlist', id] });
-          },
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+        },
     });
 };
 
@@ -43,11 +45,11 @@ export const useDeletePlaylist = () => {
         mutationFn: async (id: string) => {
             await playlistApi.delete(id);
         },
-        onSuccess: (_data,  id): void => {
-            queryClient.invalidateQueries({ queryKey: ['playlist', id] });
-            queryClient.invalidateQueries({ queryKey: ['playlists'] });
-            queryClient.invalidateQueries({ queryKey: ['interactions'] });
-          },
+        onSuccess: (_data, id): void => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
+        },
     });
 };
 
@@ -58,9 +60,10 @@ export const useAddTrackToPlaylist = () => {
             await playlistApi.addTrack(playlistId, trackId);
         },
         onSuccess: (_data, { playlistId }): void => {
-            queryClient.invalidateQueries({ queryKey: ['playlist', playlistId] });
-            queryClient.invalidateQueries({ queryKey: ['playlists'] });
-          },
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(playlistId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+        },
     });
 };
 
@@ -71,8 +74,9 @@ export const useRemoveTrackFromPlaylist = () => {
             await playlistApi.deleteTrack(playlistId, trackId);
         },
         onSuccess: (_data, { playlistId }): void => {
-            queryClient.invalidateQueries({ queryKey: ['playlist', playlistId] });
-            queryClient.invalidateQueries({ queryKey: ['playlist-tracks', playlistId] });
-          },
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(playlistId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+        },
     });
 };

@@ -17,20 +17,20 @@ interface AlbumParams {
 }
 
 export const albumApi = {
-  getAll: async ({limit, offset, order, orderBy, starred}: AlbumParams): Promise<AlbumSummary[]> => {
-    const { data } = await apiClient.get('/albums', {
+  getAll: async ({ limit, offset, order, orderBy, starred }: AlbumParams): Promise<AlbumSummary[]> => {
+    const { data } = await apiClient.get<AlbumSummary[]>('/albums', {
       params: { limit, offset, order, orderBy, starred },
     });
     return data;
   },
 
   getOne: async (id: string): Promise<Album> => {
-    const { data } = await apiClient.get(`/albums/${id}`);
+    const { data } = await apiClient.get<Album>(`/albums/${id}`);
     return data;
   },
 
   getCover: async (id: string): Promise<string> => {
-    const { data } = await apiClient.get(`/albums/${id}/cover`);
+    const { data } = await apiClient.get<string>(`/albums/${id}/cover`);
     return data;
   },
 
