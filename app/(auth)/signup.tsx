@@ -108,7 +108,7 @@ const Signup = () => {
         footer={<PasswordRequirements value={password} />}
         autoCapitalize="none"
         autoCorrect={false}
-        textContentType="newPassword"
+        textContentType="password"
         autoComplete="password"
         returnKeyType="go"
         onSubmitEditing={onSignupPress}
