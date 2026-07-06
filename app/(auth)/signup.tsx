@@ -1,5 +1,6 @@
 import { useSignUp } from "@/api/auth/mutations";
 import AuthField from "@/components/auth/authField";
+import PasswordRequirements from "@/components/auth/passwordRequirements";
 import { ThemeColors } from "@/constants/theme";
 import { SignUpSchema } from "@/constants/validation";
 import { useTheme } from "@/contexts/themeContext";
@@ -121,11 +122,8 @@ const Signup = () => {
             placeholder="Password"
             secure
             value={password}
-            onChangeText={(text) => {
-              clearError("password");
-              setPassword(text);
-            }}
-            error={zodErrors.password}
+            onChangeText={setPassword}
+            footer={<PasswordRequirements value={password} />}
             autoCapitalize="none"
             autoCorrect={false}
             textContentType="newPassword"

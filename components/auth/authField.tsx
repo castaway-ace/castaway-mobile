@@ -1,6 +1,6 @@
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
-import { forwardRef, useMemo, useRef, useState } from "react";
+import { forwardRef, ReactNode, useMemo, useRef, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -14,6 +14,7 @@ export interface AuthFieldProps extends TextInputProps {
   label: string;
   error?: string;
   secure?: boolean;
+  footer?: ReactNode;
 }
 
 const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
@@ -21,6 +22,7 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
     label,
     error,
     secure = false,
+    footer,
     onFocus,
     onBlur,
     value,
@@ -93,6 +95,7 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
         ) : null}
       </View>
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      {footer}
     </View>
   );
 });
