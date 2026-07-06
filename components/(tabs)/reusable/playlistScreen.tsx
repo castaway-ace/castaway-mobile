@@ -10,7 +10,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePlaylist, usePlaylistTracks } from "../../../api/queries/playlist";
+import { usePlaylist, usePlaylistTracks } from "../../../api/playlists/queries";
 import { IconSymbol } from "../../ui/icon-symbol";
 
 interface PlaylistScreenProps {

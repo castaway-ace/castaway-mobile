@@ -1,6 +1,6 @@
-import { useRemoveTrackFromPlaylist } from "@/api/mutations/playlists";
 import { useTrackStar } from "@/api/mutations/tracks";
-import { usePlaylist } from "@/api/queries/playlist";
+import { useRemoveTrackFromPlaylist } from "@/api/playlists/mutations";
+import { usePlaylist } from "@/api/playlists/queries";
 import {
     SheetPlaylistTrack,
     SheetType,

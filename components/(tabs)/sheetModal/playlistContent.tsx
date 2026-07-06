@@ -1,4 +1,4 @@
-import { useDeletePlaylist } from "@/api/mutations/playlists";
+import { useDeletePlaylist } from "@/api/playlists/mutations";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { router, usePathname } from "expo-router";

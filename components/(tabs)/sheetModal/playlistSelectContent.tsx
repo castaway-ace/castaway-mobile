@@ -1,5 +1,5 @@
-import { useAddTrackToPlaylist } from "@/api/mutations/playlists";
-import { usePlaylists } from "@/api/queries/playlist";
+import { useAddTrackToPlaylist } from "@/api/playlists/mutations";
+import { usePlaylists } from "@/api/playlists/queries";
 import { useSheetModal } from "@/contexts/sheet-modal-context";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";

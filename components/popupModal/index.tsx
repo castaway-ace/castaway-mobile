@@ -1,5 +1,5 @@
 import { useUpdatePlaylistInteraction } from "@/api/interactions/mutations";
-import { useCreatePlaylist } from "@/api/mutations/playlists";
+import { useCreatePlaylist } from "@/api/playlists/mutations";
 import { ThemeColors } from "@/constants/theme";
 import { usePopupModal } from "@/contexts/popup-modal.context";
 import { useTheme } from "@/contexts/theme-context";

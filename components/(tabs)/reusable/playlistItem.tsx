@@ -1,4 +1,4 @@
-import { usePlaylist } from "@/api/queries/playlist";
+import { usePlaylist } from "@/api/playlists/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/theme-context";
 import { buildPlaylistCover } from "@/utils/playlist";
