@@ -2,7 +2,7 @@ import { albumApi } from "@/api/albums/api";
 import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
-} from "@/api/mutations/interactions";
+} from "@/api/interactions/mutations";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";

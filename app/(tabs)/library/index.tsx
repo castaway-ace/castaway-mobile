@@ -1,9 +1,9 @@
 import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
-  useUpdatePlaylistInteraction,
-} from "@/api/mutations/interactions";
-import { useInteractions } from "@/api/queries/interactions";
+    useUpdateAlbumInteraction,
+    useUpdateArtistInteraction,
+    useUpdatePlaylistInteraction,
+} from "@/api/interactions/mutations";
+import { useInteractions } from "@/api/interactions/queries";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";
 import { usePopupModal } from "@/contexts/popup-modal.context";

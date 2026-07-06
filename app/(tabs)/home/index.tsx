@@ -17,8 +17,8 @@ import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
     useUpdatePlaylistInteraction,
-} from "../../../api/mutations/interactions";
-import { useInteractions } from "../../../api/queries/interactions";
+} from "../../../api/interactions/mutations";
+import { useInteractions } from "../../../api/interactions/queries";
 
 const HomeScreen = () => {
   const { colors } = useTheme();

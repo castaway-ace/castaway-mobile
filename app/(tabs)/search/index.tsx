@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbums } from "../../../api/albums/queries";
-import { useUpdateAlbumInteraction } from "../../../api/mutations/interactions";
+import { useUpdateAlbumInteraction } from "../../../api/interactions/mutations";
 import AlbumItem from "../../../components/(tabs)/reusable/albumItem";
 
 const Search = () => {

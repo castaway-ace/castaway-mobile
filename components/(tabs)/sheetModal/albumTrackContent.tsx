@@ -3,7 +3,7 @@ import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAlbumCover } from "../../../api/albums/queries";
-import { useUpdateArtistInteraction } from "../../../api/mutations/interactions";
+import { useUpdateArtistInteraction } from "../../../api/interactions/mutations";
 import { useTrackStar } from "../../../api/mutations/tracks";
 import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";

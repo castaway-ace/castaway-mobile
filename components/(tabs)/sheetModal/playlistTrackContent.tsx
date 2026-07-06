@@ -15,7 +15,7 @@ import { useAlbumCover } from "../../../api/albums/queries";
 import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
-} from "../../../api/mutations/interactions";
+} from "../../../api/interactions/mutations";
 import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";

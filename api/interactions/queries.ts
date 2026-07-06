@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { interactionApi } from "../interactions";
+import { interactionApi } from "./api";
 
 export const useInteractions = () => {
     return useQuery({
