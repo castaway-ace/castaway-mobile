@@ -1,6 +1,6 @@
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -17,13 +17,44 @@ export interface AuthFieldProps extends TextInputProps {
 }
 
 const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
-  { label, error, secure = false, onFocus, onBlur, ...inputProps },
+  {
+    label,
+    error,
+    secure = false,
+    onFocus,
+    onBlur,
+    value,
+    onChangeText,
+    ...inputProps
+  },
   ref,
 ) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const toggledAt = useRef(0);
+  const valueRef = useRef(value);
+  valueRef.current = value;
+
+  const handleToggle = () => {
+    toggledAt.current = Date.now();
+    setIsVisible((prev) => !prev);
+  };
+
+  const handleChangeText = (text: string) => {
+    if (
+      secure &&
+      text.length === 0 &&
+      (valueRef.current?.length ?? 0) > 0 &&
+      Date.now() - toggledAt.current < 500
+    ) {
+      onChangeText?.(valueRef.current ?? "");
+      return;
+    }
+    onChangeText?.(text);
+  };
 
   const borderColor = error
     ? colors.error
@@ -43,6 +74,8 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
           placeholderTextColor={colors.secondary}
           selectionColor={colors.accent}
           secureTextEntry={secure && !isVisible}
+          value={value}
+          onChangeText={handleChangeText}
           onFocus={(e) => {
             setIsFocused(true);
             onFocus?.(e);
@@ -54,11 +87,7 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
           {...inputProps}
         />
         {secure ? (
-          <Pressable
-            onPress={() => setIsVisible((prev) => !prev)}
-            style={styles.toggle}
-            hitSlop={8}
-          >
+          <Pressable onPress={handleToggle} style={styles.toggle} hitSlop={8}>
             <Text style={styles.toggleText}>{isVisible ? "Hide" : "Show"}</Text>
           </Pressable>
         ) : null}
