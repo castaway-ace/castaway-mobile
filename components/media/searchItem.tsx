@@ -3,6 +3,7 @@ import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
 } from "@/api/interactions/mutations";
+import { queryKeys } from "@/api/queryKeys";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
@@ -41,20 +42,16 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
       artistInteraction(item.id);
       router.navigate(`/(tabs)/search/artists/${item.id}`);
     } else {
-      const albumId = item?.albumId;
+      const albumId = item.albumId;
       if (!albumId || isStarting) {
         return;
       }
 
       setIsStarting(true);
 
-      if (!albumId) {
-        return;
-      }
-
       try {
         const album = await queryClient.fetchQuery({
-          queryKey: ["album", albumId],
+          queryKey: queryKeys.albums.detail(albumId),
           queryFn: () => albumApi.getOne(albumId),
         });
 

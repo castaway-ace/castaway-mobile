@@ -2,6 +2,7 @@ import { useSearch } from "@/api/search/queries";
 import SearchItem from "@/components/media/searchItem";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
+import { useDebouncedValue } from "@/utils/useDebouncedValue";
 import { useOrganizedSearch } from "@/utils/search";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -21,8 +22,9 @@ import AlbumItem from "@/components/media/albumItem";
 
 const Search = () => {
   const [searchInput, setSearchInput] = useState<string>("");
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
 
-  const { data: searchData } = useSearch(searchInput);
+  const { data: searchData } = useSearch(debouncedSearch);
 
   const { data: albumsData } = useAlbums({ starred: true });
 
@@ -42,7 +44,7 @@ const Search = () => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const isInputted = searchInput?.length > 0;
+  const isInputted = searchInput.length > 0;
   const albumsAvailable = !!albums.length;
 
   return (
@@ -85,7 +87,7 @@ const Search = () => {
         >
           <View style={styles.searchItemContainer}>
             {search.map((data) => {
-              return <SearchItem key={data.text} item={data} />;
+              return <SearchItem key={`${data.type}-${data.id}`} item={data} />;
             })}
           </View>
         </ScrollView>
