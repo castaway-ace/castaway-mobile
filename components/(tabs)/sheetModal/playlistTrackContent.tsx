@@ -2,20 +2,20 @@ import { useRemoveTrackFromPlaylist } from "@/api/mutations/playlists";
 import { useTrackStar } from "@/api/mutations/tracks";
 import { usePlaylist } from "@/api/queries/playlist";
 import {
-  SheetPlaylistTrack,
-  SheetType,
-  useSheetModal,
+    SheetPlaylistTrack,
+    SheetType,
+    useSheetModal,
 } from "@/contexts/sheet-modal-context";
 import { PlaylistType } from "@/types/playlist";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useAlbumCover } from "../../../api/albums/queries";
 import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
+    useUpdateAlbumInteraction,
+    useUpdateArtistInteraction,
 } from "../../../api/mutations/interactions";
-import { useAlbumCover } from "../../../api/queries/albums";
 import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";

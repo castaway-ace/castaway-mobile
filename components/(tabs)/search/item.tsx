@@ -1,7 +1,7 @@
-import { albumApi } from "@/api/albums";
+import { albumApi } from "@/api/albums/api";
 import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
+    useUpdateAlbumInteraction,
+    useUpdateArtistInteraction,
 } from "@/api/mutations/interactions";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemeColors } from "@/constants/theme";

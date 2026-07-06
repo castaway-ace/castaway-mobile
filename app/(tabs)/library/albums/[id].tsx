@@ -1,7 +1,7 @@
 import AlbumScreen from "@/components/(tabs)/reusable/albumScreen";
 import { router, useLocalSearchParams } from "expo-router";
+import { useAlbum } from "../../../../api/albums/queries";
 import { useUpdateArtistInteraction } from "../../../../api/mutations/interactions";
-import { useAlbum } from "../../../../api/queries/albums";
 
 const LibraryAlbumPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();

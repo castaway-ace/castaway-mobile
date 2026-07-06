@@ -1,4 +1,4 @@
-import { useAlbumCover } from "@/api/queries/albums";
+import { useAlbumCover } from "@/api/albums/queries";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
@@ -11,7 +11,7 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbumStar } from "../../../api/mutations/albums";
+import { useAlbumStar } from "../../../api/albums/mutations";
 import { Album } from "../../../types/albums";
 import { IconSymbol } from "../../ui/icon-symbol";
 

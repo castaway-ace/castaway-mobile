@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import { albumApi } from "../albums";
+import { albumApi } from "./api";
 
 interface AlbumStarMutation {
     id: string;

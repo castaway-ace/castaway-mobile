@@ -2,16 +2,16 @@ import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useAlbumCover } from "../../../api/albums/queries";
 import { useUpdateArtistInteraction } from "../../../api/mutations/interactions";
 import { useTrackStar } from "../../../api/mutations/tracks";
-import { useAlbumCover } from "../../../api/queries/albums";
 import { useTrack } from "../../../api/queries/tracks";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import {
-  SheetAlbumTrack,
-  SheetType,
-  useSheetModal,
+    SheetAlbumTrack,
+    SheetType,
+    useSheetModal,
 } from "../../../contexts/sheet-modal-context";
 import { useTheme } from "../../../contexts/theme-context";
 import { IconSymbol } from "../../ui/icon-symbol";

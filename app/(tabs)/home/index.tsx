@@ -1,4 +1,4 @@
-import { useAlbums } from "@/api/queries/albums";
+import { useAlbums } from "@/api/albums/queries";
 import { useArtists } from "@/api/queries/artists";
 import { usePlaylists } from "@/api/queries/playlist";
 import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
@@ -14,9 +14,9 @@ import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  useUpdateAlbumInteraction,
-  useUpdateArtistInteraction,
-  useUpdatePlaylistInteraction,
+    useUpdateAlbumInteraction,
+    useUpdateArtistInteraction,
+    useUpdatePlaylistInteraction,
 } from "../../../api/mutations/interactions";
 import { useInteractions } from "../../../api/queries/interactions";
 

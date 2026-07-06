@@ -1,4 +1,4 @@
-import { useAlbumCover } from "@/api/queries/albums";
+import { useAlbumCover } from "@/api/albums/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audio-player-context";
 import { usePlayerModal } from "@/contexts/player-modal-context";
