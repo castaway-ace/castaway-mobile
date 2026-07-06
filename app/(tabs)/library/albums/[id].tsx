@@ -1,22 +1,3 @@
-import AlbumScreen from "@/components/(tabs)/reusable/albumScreen";
-import { router, useLocalSearchParams } from "expo-router";
-import { useAlbum } from "../../../../api/albums/queries";
-import { useUpdateArtistInteraction } from "../../../../api/interactions/mutations";
+import { createAlbumPage } from "@/components/pages/albumPage";
 
-const LibraryAlbumPage = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-
-  const { data: album } = useAlbum(id);
-  const { mutate: artistInteraction } = useUpdateArtistInteraction();
-
-  if (!album) return;
-
-  const onArtistPress = (artistId: string) => {
-    artistInteraction(artistId);
-    router.navigate(`/(tabs)/library/artists/${artistId}`);
-  };
-
-  return <AlbumScreen album={album} onArtistPress={onArtistPress} />;
-};
-
-export default LibraryAlbumPage;
+export default createAlbumPage("library");

@@ -3,8 +3,8 @@ import {
   SheetContent,
   SheetType,
   useSheetModal,
-} from "@/contexts/sheet-modal-context";
-import { useTheme } from "@/contexts/theme-context";
+} from "@/contexts/sheetModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LayoutChangeEvent,

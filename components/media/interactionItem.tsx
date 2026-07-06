@@ -1,21 +1,27 @@
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+type InteractionVariant = "grid" | "row";
+
 interface InteractionItemProps {
   interaction: Interaction;
+  variant?: InteractionVariant;
 }
 
-const ARTIST_PLACEHOLDER = require("../../../assets/placeholders/artist-placeholder.png");
-const ALBUM_PLACEHOLDER = require("../../../assets/placeholders/album-placeholder.png");
+const ARTIST_PLACEHOLDER = require("../../assets/placeholders/artist-placeholder.png");
+const ALBUM_PLACEHOLDER = require("../../assets/placeholders/album-placeholder.png");
 
-const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
+const InteractionItem: FC<InteractionItemProps> = ({
+  interaction,
+  variant = "grid",
+}) => {
   const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const styles = useMemo(() => makeStyles(colors, variant), [colors, variant]);
   const isAlbum = interaction.type === InteractionType.ALBUM;
   const isArtist = interaction.type === InteractionType.ARTIST;
   const isPlaylist = interaction.type === InteractionType.PLAYLIST;
@@ -41,7 +47,7 @@ const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
       if (!areTilesPresent) {
         return (
           <Image
-            source={require("../../../assets/placeholders/album-placeholder.png")}
+            source={require("../../assets/placeholders/album-placeholder.png")}
             style={styles.interactionArt}
           />
         );
@@ -88,14 +94,14 @@ const HomeInteractionItem: FC<InteractionItemProps> = ({ interaction }) => {
   );
 };
 
-const makeStyles = (colors: ThemeColors) =>
+const makeStyles = (colors: ThemeColors, variant: InteractionVariant) =>
   StyleSheet.create({
-    interactionItem: {
-      width: 160,
-      gap: 12,
-    },
+    interactionItem:
+      variant === "grid"
+        ? { width: 160, gap: 12 }
+        : { flexDirection: "row", gap: 16 },
     interactionArt: {
-      width: "100%",
+      width: variant === "grid" ? "100%" : 100,
       aspectRatio: 1,
       borderRadius: 12,
       flexDirection: "row",
@@ -112,9 +118,10 @@ const makeStyles = (colors: ThemeColors) =>
     },
     textContainer: {
       gap: 4,
+      ...(variant === "row" ? { justifyContent: "center" as const } : {}),
     },
     text: {
-      fontSize: 16,
+      fontSize: variant === "grid" ? 16 : 18,
       fontWeight: "bold",
       maxWidth: "100%",
       color: colors.primary,
@@ -126,4 +133,4 @@ const makeStyles = (colors: ThemeColors) =>
     },
   });
 
-export default HomeInteractionItem;
+export default InteractionItem;

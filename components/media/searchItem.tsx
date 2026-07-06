@@ -3,24 +3,24 @@ import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
 } from "@/api/interactions/mutations";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { useTheme } from "@/contexts/themeContext";
 import { SearchItemElement, SearchItemType } from "@/utils/search";
 import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { blurHash } from "../../../constants/blur";
+import { blurHash } from "@/constants/blur";
 
 interface SearchItemProps {
   item: SearchItemElement;
 }
 
-const albumPlaceholder = require("../../../assets/placeholders/album-placeholder.png");
-const artistPlaceholder = require("../../../assets/placeholders/artist-placeholder.png");
+const albumPlaceholder = require("../../assets/placeholders/album-placeholder.png");
+const artistPlaceholder = require("../../assets/placeholders/artist-placeholder.png");
 
 const SearchItem: FC<SearchItemProps> = ({ item }) => {
   const { colors } = useTheme();

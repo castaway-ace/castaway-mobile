@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { FC, useEffect, useMemo, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
-import { usePlayerModal } from "../../../contexts/player-modal-context";
+import { usePlayerModal } from "@/contexts/playerModalContext";
 import MusicPlayerModalContent from "./content";
 
 const MusicPlayerModal: FC = () => {

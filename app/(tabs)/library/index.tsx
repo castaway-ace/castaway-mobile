@@ -4,10 +4,10 @@ import {
     useUpdatePlaylistInteraction,
 } from "@/api/interactions/mutations";
 import { useInteractions } from "@/api/interactions/queries";
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
-import { usePopupModal } from "@/contexts/popup-modal.context";
-import { useTheme } from "@/contexts/theme-context";
+import { usePopupModal } from "@/contexts/popupModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { useRouter } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -15,7 +15,7 @@ import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import LibraryInteractionItem from "../../../components/(tabs)/library/interactionItem";
+import InteractionItem from "@/components/media/interactionItem";
 
 const Library = () => {
   const { colors } = useTheme();
@@ -85,7 +85,7 @@ const Library = () => {
                   key={interaction.id}
                   onPress={() => onInteractionPress(interaction)}
                 >
-                  <LibraryInteractionItem interaction={interaction} />
+                  <InteractionItem interaction={interaction} variant="row" />
                 </Pressable>
               );
             })}

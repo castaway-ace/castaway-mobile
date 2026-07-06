@@ -1,4 +1,4 @@
-import type { components } from '@/schema';
+import type { components } from '@/api/schema';
 import axios, { AxiosError, isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 

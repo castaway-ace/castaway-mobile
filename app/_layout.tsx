@@ -1,15 +1,15 @@
 import LoadingScreen from "@/components/ui/loadingScreen";
-import { AudioPlayerProvider } from "@/contexts/audio-player-context";
-import { AuthProvider, useAuth } from "@/contexts/auth-context";
-import { PlayerModalProvider } from "@/contexts/player-modal-context";
-import { PopupModalProvider } from "@/contexts/popup-modal.context";
-import { SheetModalProvider } from "@/contexts/sheet-modal-context";
+import { AudioPlayerProvider } from "@/contexts/audioPlayerContext";
+import { AuthProvider, useAuth } from "@/contexts/authContext";
+import { PlayerModalProvider } from "@/contexts/playerModalContext";
+import { PopupModalProvider } from "@/contexts/popupModalContext";
+import { SheetModalProvider } from "@/contexts/sheetModalContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-import ThemeProvider from "../contexts/theme-context";
+import ThemeProvider from "@/contexts/themeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {

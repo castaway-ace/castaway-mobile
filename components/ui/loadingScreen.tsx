@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { FC, useMemo } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 

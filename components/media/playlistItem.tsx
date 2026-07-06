@@ -1,6 +1,6 @@
 import { usePlaylist } from "@/api/playlists/queries";
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
@@ -23,7 +23,7 @@ const PlaylistItem: FC<PlaylistItemProps> = ({ id }) => {
     <View style={styles.playlistContainer}>
       {!areTilesPresent && (
         <Image
-          source={require("../../../assets/placeholders/album-placeholder.png")}
+          source={require("../../assets/placeholders/album-placeholder.png")}
           style={styles.playlistArt}
         />
       )}

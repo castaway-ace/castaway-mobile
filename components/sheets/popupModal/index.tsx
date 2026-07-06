@@ -1,8 +1,8 @@
 import { useUpdatePlaylistInteraction } from "@/api/interactions/mutations";
 import { useCreatePlaylist } from "@/api/playlists/mutations";
 import { ThemeColors } from "@/constants/theme";
-import { usePopupModal } from "@/contexts/popup-modal.context";
-import { useTheme } from "@/contexts/theme-context";
+import { usePopupModal } from "@/contexts/popupModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { router } from "expo-router";
 import { FC, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";

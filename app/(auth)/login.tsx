@@ -11,10 +11,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLogin } from "../../api/auth/mutations";
-import { LoginSchema } from "../../constants/schema";
-import { ThemeColors } from "../../constants/theme";
-import { useTheme } from "../../contexts/theme-context";
+import { useLogin } from "@/api/auth/mutations";
+import { LoginSchema } from "@/constants/validation";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/themeContext";
 
 const Login = () => {
   const { colors } = useTheme();

@@ -1,7 +1,7 @@
 import { useSearch } from "@/api/search/queries";
-import SearchItem from "@/components/(tabs)/search/item";
+import SearchItem from "@/components/media/searchItem";
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { useOrganizedSearch } from "@/utils/search";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -15,9 +15,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbums } from "../../../api/albums/queries";
-import { useUpdateAlbumInteraction } from "../../../api/interactions/mutations";
-import AlbumItem from "../../../components/(tabs)/reusable/albumItem";
+import { useAlbums } from "@/api/albums/queries";
+import { useUpdateAlbumInteraction } from "@/api/interactions/mutations";
+import AlbumItem from "@/components/media/albumItem";
 
 const Search = () => {
   const [searchInput, setSearchInput] = useState<string>("");

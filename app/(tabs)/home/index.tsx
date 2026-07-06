@@ -1,12 +1,12 @@
 import { useAlbums } from "@/api/albums/queries";
 import { useArtists } from "@/api/artists/queries";
 import { usePlaylists } from "@/api/playlists/queries";
-import HomeInteractionItem from "@/components/(tabs)/home/interactionItem";
-import AlbumItem from "@/components/(tabs)/reusable/albumItem";
-import ArtistItem from "@/components/(tabs)/reusable/artistItem";
-import PlaylistItem from "@/components/(tabs)/reusable/playlistItem";
+import InteractionItem from "@/components/media/interactionItem";
+import AlbumItem from "@/components/media/albumItem";
+import ArtistItem from "@/components/media/artistItem";
+import PlaylistItem from "@/components/media/playlistItem";
 import { ThemeColors } from "@/constants/theme";
-import { useTheme } from "@/contexts/theme-context";
+import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -17,8 +17,8 @@ import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
     useUpdatePlaylistInteraction,
-} from "../../../api/interactions/mutations";
-import { useInteractions } from "../../../api/interactions/queries";
+} from "@/api/interactions/mutations";
+import { useInteractions } from "@/api/interactions/queries";
 
 const HomeScreen = () => {
   const { colors } = useTheme();
@@ -133,7 +133,7 @@ const HomeScreen = () => {
                       key={interaction.id}
                       onPress={() => onInteractionPress(interaction)}
                     >
-                      <HomeInteractionItem interaction={interaction} />
+                      <InteractionItem interaction={interaction} variant="grid" />
                     </Pressable>
                   );
                 })}

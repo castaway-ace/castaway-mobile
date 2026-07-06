@@ -1,7 +1,7 @@
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { StyleSheet, View } from "react-native";
-import MusicPlayer from "./music-player";
+import MusicPlayer from "@/components/player/musicPlayer";
 
 const CustomTabBar = (props: any) => {
   const { currentTrack } = useAudioPlayerContext();

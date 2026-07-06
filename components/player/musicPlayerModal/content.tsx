@@ -1,16 +1,16 @@
 import { useAlbumCover } from "@/api/albums/queries";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { usePlayerModal } from "@/contexts/player-modal-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { usePlayerModal } from "@/contexts/playerModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTrackStar } from "../../../api/tracks/mutations";
-import { useTrack } from "../../../api/tracks/queries";
-import { blurHash } from "../../../constants/blur";
-import { IconSymbol } from "../../ui/icon-symbol";
+import { useTrackStar } from "@/api/tracks/mutations";
+import { useTrack } from "@/api/tracks/queries";
+import { blurHash } from "@/constants/blur";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 import ProgressBar from "./progressBar";
 
 const MusicPlayerModalContent: FC = () => {

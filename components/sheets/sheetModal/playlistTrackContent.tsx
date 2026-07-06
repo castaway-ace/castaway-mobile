@@ -5,22 +5,22 @@ import {
     SheetPlaylistTrack,
     SheetType,
     useSheetModal,
-} from "@/contexts/sheet-modal-context";
+} from "@/contexts/sheetModalContext";
 import { PlaylistType } from "@/types/playlist";
 import { Image } from "expo-image";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useAlbumCover } from "../../../api/albums/queries";
+import { useAlbumCover } from "@/api/albums/queries";
 import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
-} from "../../../api/interactions/mutations";
-import { useTrack } from "../../../api/tracks/queries";
-import { blurHash } from "../../../constants/blur";
-import { ThemeColors } from "../../../constants/theme";
-import { useTheme } from "../../../contexts/theme-context";
-import { IconSymbol } from "../../ui/icon-symbol";
+} from "@/api/interactions/mutations";
+import { useTrack } from "@/api/tracks/queries";
+import { blurHash } from "@/constants/blur";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/themeContext";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 
 const PlaylistTrackContent: FC = () => {
   const { active, open, close } = useSheetModal();

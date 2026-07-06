@@ -1,12 +1,12 @@
 import { useAddTrackToPlaylist } from "@/api/playlists/mutations";
 import { usePlaylists } from "@/api/playlists/queries";
-import { useSheetModal } from "@/contexts/sheet-modal-context";
+import { useSheetModal } from "@/contexts/sheetModalContext";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ThemeColors } from "../../../constants/theme";
-import { useTheme } from "../../../contexts/theme-context";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/themeContext";
 
 interface PlaylistSelectContentProps {
   trackId: string;

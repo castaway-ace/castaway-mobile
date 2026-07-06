@@ -1,7 +1,7 @@
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { usePlayerModal } from "@/contexts/player-modal-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { usePlayerModal } from "@/contexts/playerModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import {
@@ -11,10 +11,10 @@ import {
     Text,
     View,
 } from "react-native";
-import { useTrackStar } from "../../api/tracks/mutations";
-import { useTrack } from "../../api/tracks/queries";
-import { blurHash } from "../../constants/blur";
-import { IconSymbol } from "../ui/icon-symbol";
+import { useTrackStar } from "@/api/tracks/mutations";
+import { useTrack } from "@/api/tracks/queries";
+import { blurHash } from "@/constants/blur";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 
 const MusicPlayer = () => {
   const {

@@ -1,5 +1,5 @@
-import { LoginSchemaType, SignUpSchemaType } from "@/constants/schema";
-import { useAuth } from "@/contexts/auth-context";
+import { LoginSchemaType, SignUpSchemaType } from "@/constants/validation";
+import { useAuth } from "@/contexts/authContext";
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "./api";
 

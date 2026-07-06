@@ -1,7 +1,7 @@
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useAuth } from "@/contexts/auth-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { useAuth } from "@/contexts/authContext";
+import { useTheme } from "@/contexts/themeContext";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

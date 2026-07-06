@@ -1,7 +1,7 @@
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { PlaylistType } from "@/types/playlist";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
@@ -10,8 +10,8 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePlaylist, usePlaylistTracks } from "../../../api/playlists/queries";
-import { IconSymbol } from "../../ui/icon-symbol";
+import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 
 interface PlaylistScreenProps {
   id: string;
@@ -63,7 +63,7 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         <View style={styles.playlistArtContainer}>
           {!areTilesPresent && (
             <Image
-              source={require("../../../assets/placeholders/album-placeholder.png")}
+              source={require("../../assets/placeholders/album-placeholder.png")}
               style={styles.playlistArt}
             />
           )}

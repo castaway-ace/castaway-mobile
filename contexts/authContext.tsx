@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import apiClient, { setAuthFailureHandler } from "../api/client";
+import apiClient, { setAuthFailureHandler } from "@/api/client";
 
 interface User {
   id: string;

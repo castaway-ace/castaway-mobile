@@ -1,9 +1,9 @@
 import { useAlbumCover } from "@/api/albums/queries";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { SheetType, useSheetModal } from "@/contexts/sheet-modal-context";
-import { useTheme } from "@/contexts/theme-context";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -11,9 +11,9 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbumStar } from "../../../api/albums/mutations";
-import { Album } from "../../../types/albums";
-import { IconSymbol } from "../../ui/icon-symbol";
+import { useAlbumStar } from "@/api/albums/mutations";
+import { Album } from "@/types/albums";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 
 interface AlbumScreenProps {
   album: Album;

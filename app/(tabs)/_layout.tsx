@@ -2,14 +2,14 @@ import { Tabs } from "expo-router";
 import React from "react";
 import Toast, { BaseToast } from "react-native-toast-message";
 
-import CustomTabBar from "@/components/(tabs)/custom-tab-bar";
-import { HapticTab } from "@/components/(tabs)/haptic-tab";
-import MusicPlayerModal from "@/components/(tabs)/musicPlayerModal";
-import SheetModal from "@/components/(tabs)/sheetModal";
-import PopupModal from "@/components/popupModal";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useAudioPlayerContext } from "@/contexts/audio-player-context";
-import { useTheme } from "@/contexts/theme-context";
+import CustomTabBar from "@/components/navigation/customTabBar";
+import { HapticTab } from "@/components/navigation/hapticTab";
+import MusicPlayerModal from "@/components/player/musicPlayerModal";
+import SheetModal from "@/components/sheets/sheetModal";
+import PopupModal from "@/components/sheets/popupModal";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import { useTheme } from "@/contexts/themeContext";
 
 const TabLayout = () => {
   const { currentTrack } = useAudioPlayerContext();

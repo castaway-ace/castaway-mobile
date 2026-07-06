@@ -3,8 +3,8 @@ import {
   AuthResponseType,
   LoginSchemaType,
   SignUpSchemaType,
-} from "@/constants/schema";
-import type { components } from "@/schema";
+} from "@/constants/validation";
+import type { components } from "@/api/schema";
 import * as Device from "expo-device";
 import apiClient from "../client";
 import { getOrCreateClientId } from "../utils";
