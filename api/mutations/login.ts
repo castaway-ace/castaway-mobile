@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import * as Device from "expo-device";
 import apiClient from '../client';
-import { getOrCreateClientId } from './utils';
+import { getOrCreateClientId } from '../utils';
 
 export const useLogin = () => {
     const { logIn } = useAuth();

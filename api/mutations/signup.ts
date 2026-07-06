@@ -3,7 +3,7 @@ import { AuthResponseSchema, AuthResponseType, SignUpSchemaType } from '@/consta
 import { useAuth } from '@/contexts/auth-context';
 import { useMutation } from '@tanstack/react-query';
 import * as Device from "expo-device";
-import { getOrCreateClientId } from './utils';
+import { getOrCreateClientId } from '../utils';
 
 export const useSignUp = () => {
     const { signUp } = useAuth();

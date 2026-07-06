@@ -1,6 +1,6 @@
-import { useTrackStar } from "@/api/mutations/tracks";
 import { useRemoveTrackFromPlaylist } from "@/api/playlists/mutations";
 import { usePlaylist } from "@/api/playlists/queries";
+import { useTrackStar } from "@/api/tracks/mutations";
 import {
     SheetPlaylistTrack,
     SheetType,
@@ -16,7 +16,7 @@ import {
     useUpdateAlbumInteraction,
     useUpdateArtistInteraction,
 } from "../../../api/interactions/mutations";
-import { useTrack } from "../../../api/queries/tracks";
+import { useTrack } from "../../../api/tracks/queries";
 import { blurHash } from "../../../constants/blur";
 import { ThemeColors } from "../../../constants/theme";
 import { useTheme } from "../../../contexts/theme-context";
