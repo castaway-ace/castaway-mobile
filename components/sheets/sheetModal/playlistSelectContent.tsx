@@ -1,10 +1,9 @@
 import { useAddTrackToPlaylist } from "@/api/playlists/mutations";
 import { usePlaylists } from "@/api/playlists/queries";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import PlaylistCover from "@/components/media/playlistCover";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useSheetModal } from "@/contexts/sheetModalContext";
-import { buildPlaylistCover } from "@/utils/playlist";
-import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ThemeColors } from "@/constants/theme";
@@ -46,46 +45,21 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
           <Text style={styles.trackTitle}>Create new playlist</Text>
         </View>
       </Pressable>
-      {playlists.map((playlist) => {
-        const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
-
-        const areTilesPresent = tiles.length > 0;
-
-        return (
-          <Pressable
-            key={playlist.id}
-            style={styles.spacing}
-            onPress={() => onPlaylistPress(playlist.id, playlist.name)}
-          >
-            {!areTilesPresent && (
-              <Image
-                source={require("../../../assets/placeholders/album-placeholder.png")}
-                style={styles.albumArt}
-              />
-            )}
-            {areTilesPresent && (
-              <View style={styles.albumArt}>
-                {tiles.map((url, index) => {
-                  return (
-                    <Image
-                      key={`${url}-${index}`}
-                      source={{ uri: url }}
-                      style={
-                        tiles.length === 1
-                          ? styles.playlistFullArt
-                          : styles.playlistMiniArt
-                      }
-                    />
-                  );
-                })}
-              </View>
-            )}
-            <View style={styles.trackLeftInfo}>
-              <Text style={styles.trackTitle}>{playlist.name}</Text>
-            </View>
-          </Pressable>
-        );
-      })}
+      {playlists.map((playlist) => (
+        <Pressable
+          key={playlist.id}
+          style={styles.spacing}
+          onPress={() => onPlaylistPress(playlist.id, playlist.name)}
+        >
+          <PlaylistCover
+            urls={playlist.albumCoverUrls}
+            style={styles.albumArt}
+          />
+          <View style={styles.trackLeftInfo}>
+            <Text style={styles.trackTitle}>{playlist.name}</Text>
+          </View>
+        </Pressable>
+      ))}
     </View>
   );
 };
@@ -105,9 +79,6 @@ const makeStyles = (colors: ThemeColors) =>
       width: 60,
       height: 60,
       borderRadius: 16,
-      flexDirection: "row",
-      flexWrap: "wrap",
-      overflow: "hidden",
     },
     createIcon: {
       width: 60,
@@ -116,14 +87,6 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: colors.secondary,
-    },
-    playlistFullArt: {
-      width: "100%",
-      height: "100%",
-    },
-    playlistMiniArt: {
-      width: "50%",
-      height: "50%",
     },
     trackLeftInfo: {
       display: "flex",

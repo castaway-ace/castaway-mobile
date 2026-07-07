@@ -127,18 +127,9 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.primary,
       fontSize: 24,
     },
-    albumArt: {
-      width: 120,
-      height: 120,
-      borderRadius: 8,
-    },
     albumItem: {
       display: "flex",
       gap: 8,
-    },
-    albumTitle: {
-      color: colors.primary,
-      fontSize: 16,
     },
     bottomSpacing: {
       height: 140,

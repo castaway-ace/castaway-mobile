@@ -3,8 +3,6 @@ import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { PlaylistType } from "@/types/playlist";
-import { buildPlaylistCover } from "@/utils/playlist";
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
@@ -12,6 +10,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import PlaylistCover from "./playlistCover";
 
 interface PlaylistScreenProps {
   id: string;
@@ -29,10 +28,6 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   const { playQueue } = useAudioPlayerContext();
 
   const tabBarHeight = useBottomTabBarHeight();
-
-  const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
-
-  const areTilesPresent = tiles.length > 0;
 
   const onTrackPress = (index: number) => {
     if (!playlistTracks) return;
@@ -61,29 +56,10 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
           <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
         </Pressable>
         <View style={styles.playlistArtContainer}>
-          {!areTilesPresent && (
-            <Image
-              source={require("../../assets/placeholders/album-placeholder.png")}
-              style={styles.playlistArt}
-            />
-          )}
-          {areTilesPresent && (
-            <View style={styles.playlistArt}>
-              {tiles.map((url, index) => {
-                return (
-                  <Image
-                    key={`${url}-${index}`}
-                    source={{ uri: url }}
-                    style={
-                      tiles.length === 1
-                        ? styles.playlistFullArt
-                        : styles.playlistMiniArt
-                    }
-                  />
-                );
-              })}
-            </View>
-          )}
+          <PlaylistCover
+            urls={playlist?.albumCoverUrls}
+            style={styles.playlistArt}
+          />
         </View>
         <View style={styles.playlistInfoContainer}>
           <Text style={styles.playlistTitle}>{playlist?.name}</Text>
@@ -137,9 +113,6 @@ const makeStyles = (colors: ThemeColors) =>
       backgroundColor: colors.background,
       paddingTop: 16,
     },
-    scrollContainer: {
-      paddingHorizontal: 16,
-    },
     backButton: {
       position: "absolute",
       left: 4,
@@ -153,17 +126,6 @@ const makeStyles = (colors: ThemeColors) =>
       width: "60%",
       aspectRatio: 800 / 800,
       borderRadius: 12,
-      flexDirection: "row",
-      flexWrap: "wrap",
-      overflow: "hidden",
-    },
-    playlistFullArt: {
-      width: "100%",
-      height: "100%",
-    },
-    playlistMiniArt: {
-      width: "50%",
-      height: "50%",
     },
     playlistInfoContainer: {
       flexDirection: "row",
@@ -174,14 +136,6 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.primary,
       fontSize: 22,
       fontWeight: 500,
-    },
-    artistName: {
-      color: colors.primary,
-      fontSize: 16,
-    },
-    releaseDate: {
-      color: colors.secondary,
-      fontSize: 16,
     },
     trackContainer: {
       display: "flex",
@@ -196,10 +150,6 @@ const makeStyles = (colors: ThemeColors) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 16,
-    },
-    trackNumber: {
-      color: colors.primary,
-      fontSize: 18,
     },
     trackInfo: {
       flex: 1,

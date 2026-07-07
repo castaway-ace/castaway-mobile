@@ -134,9 +134,6 @@ const makeStyles = (colors: ThemeColors) =>
       backgroundColor: colors.background,
       paddingTop: 16,
     },
-    scrollContainer: {
-      paddingHorizontal: 16,
-    },
     backButton: {
       position: "absolute",
       left: 4,
