@@ -1,13 +1,12 @@
 import { Image } from "expo-image";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useAlbumCover } from "@/api/albums/queries";
 import { useUpdateArtistInteraction } from "@/api/interactions/mutations";
 import { useTrackStar } from "@/api/tracks/mutations";
 import { useTrack } from "@/api/tracks/queries";
 import { blurHash } from "@/constants/blur";
-import { ThemeColors } from "@/constants/theme";
 import {
     SheetAlbumTrack,
     SheetType,
@@ -15,12 +14,17 @@ import {
 } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { useTabLocation } from "@/utils/useTabLocation";
+import { makeTrackSheetStyles } from "./sheetStyles";
 
-const AlbumTrackContent: FC = () => {
-  const { active, open, close } = useSheetModal();
-  const trackInfo = active as SheetAlbumTrack;
-  const { data: track } = useTrack(trackInfo?.trackId);
-  const pathname = usePathname();
+interface AlbumTrackContentProps {
+  content: SheetAlbumTrack;
+}
+
+const AlbumTrackContent: FC<AlbumTrackContentProps> = ({ content }) => {
+  const { open, close } = useSheetModal();
+  const { data: track } = useTrack(content.trackId);
+  const location = useTabLocation();
 
   const { data: albumArtUrl } = useAlbumCover(track?.album.id);
 
@@ -28,16 +32,11 @@ const AlbumTrackContent: FC = () => {
   const { mutate: trackStar } = useTrackStar();
 
   const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const inHome = pathname.startsWith("/home");
-  const inLibrary = pathname.startsWith("/library");
-
-  const location = inHome ? "home" : inLibrary ? "library" : "search";
+  const styles = useMemo(() => makeTrackSheetStyles(colors), [colors]);
 
   if (!track) return null;
 
-  const starred = track.starred;
+  const starred = !!track.starred;
 
   const onPlaylistPress = () => {
     open({ type: SheetType.PLAYLIST_SELECT, trackId: track.id });
@@ -99,52 +98,5 @@ const AlbumTrackContent: FC = () => {
     </View>
   );
 };
-
-const makeStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    trackInfo: {
-      borderBottomWidth: 1,
-      borderColor: colors.primary,
-    },
-    spacing: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
-      padding: 16,
-    },
-    albumArt: {
-      width: 60,
-      height: 60,
-      borderRadius: 16,
-    },
-    trackLeftInfo: {
-      display: "flex",
-      gap: 4,
-    },
-    trackTitle: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackArtists: {
-      color: colors.secondary,
-      fontSize: 16,
-    },
-    bottomContainer: {
-      padding: 16,
-      gap: 24,
-    },
-    bottomButton: {
-      flexDirection: "row",
-      gap: 16,
-      alignItems: "center",
-    },
-    text: {
-      color: colors.primary,
-      fontSize: 16,
-    },
-  });
 
 export default AlbumTrackContent;

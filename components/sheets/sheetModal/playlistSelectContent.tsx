@@ -26,8 +26,6 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  if (!playlists) return;
-
   const onPlaylistPress = (id: string, name: string) => {
     addPlaylistTrack({ playlistId: id, trackId, playlistName: name });
     close();
@@ -97,10 +95,6 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
     },
-    trackInfo: {
-      borderBottomWidth: 1,
-      borderColor: colors.primary,
-    },
     spacing: {
       flexDirection: "row",
       alignItems: "center",
@@ -138,23 +132,6 @@ const makeStyles = (colors: ThemeColors) =>
     trackTitle: {
       color: colors.primary,
       fontSize: 18,
-    },
-    trackArtists: {
-      color: colors.secondary,
-      fontSize: 16,
-    },
-    bottomContainer: {
-      padding: 16,
-      gap: 24,
-    },
-    bottomButton: {
-      flexDirection: "row",
-      gap: 16,
-      alignItems: "center",
-    },
-    text: {
-      color: colors.primary,
-      fontSize: 16,
     },
   });
 

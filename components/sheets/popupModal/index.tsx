@@ -8,7 +8,8 @@ import { usePlayerModal } from "@/contexts/playerModalContext";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { useBackHandler } from "@/utils/useBackHandler";
-import { router, usePathname } from "expo-router";
+import { useTabLocation } from "@/utils/useTabLocation";
+import { router } from "expo-router";
 import { FC, useCallback, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -19,7 +20,7 @@ const PopupModal: FC = () => {
   const { colors } = useTheme();
   const { isOpen, trackId, close } = usePopupModal();
   const { close: closePlayer } = usePlayerModal();
-  const pathname = usePathname();
+  const location = useTabLocation();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { mutate: createPlaylist } = useCreatePlaylist();
@@ -27,10 +28,6 @@ const PopupModal: FC = () => {
   const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
   const [playlistName, setPlaylistName] = useState<string>("");
-
-  const inHome = pathname.startsWith("/home");
-  const inLibrary = pathname.startsWith("/library");
-  const location = inHome ? "home" : inLibrary ? "library" : "search";
 
   const dismiss = useCallback(() => {
     setPlaylistName("");

@@ -12,7 +12,8 @@ const ProgressBar: FC = () => {
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubTime, setScrubTime] = useState(0);
 
-  const { currentTime, duration, moveTarget, play } = useAudioPlayerContext();
+  const { currentTime, duration, moveTarget, play, isPlaying } =
+    useAudioPlayerContext();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -34,7 +35,7 @@ const ProgressBar: FC = () => {
   const endScrub = (x: number) => {
     const target = xToTime(x);
     moveTarget(target);
-    play();
+    if (isPlaying) play();
     setScrubTime(target);
     setIsScrubbing(false);
   };
@@ -44,7 +45,7 @@ const ProgressBar: FC = () => {
     moveTarget(target);
     setScrubTime(target);
     setIsScrubbing(false);
-    play();
+    if (isPlaying) play();
   };
 
   const tap = Gesture.Tap()

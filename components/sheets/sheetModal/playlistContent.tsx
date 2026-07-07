@@ -1,14 +1,18 @@
 import { useDeletePlaylist } from "@/api/playlists/mutations";
 import { IconSymbol } from "@/components/ui/iconSymbol";
-import { useSheetModal } from "@/contexts/sheetModalContext";
+import { SheetPlaylist, useSheetModal } from "@/contexts/sheetModalContext";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 
-const PlaylistContent: FC = () => {
-  const { active, close } = useSheetModal();
+interface PlaylistContentProps {
+  content: SheetPlaylist;
+}
+
+const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
+  const { close } = useSheetModal();
   const pathname = usePathname();
 
   const { mutate: deletePlaylist } = useDeletePlaylist();
@@ -18,12 +22,10 @@ const PlaylistContent: FC = () => {
 
   const inLibrary = pathname.startsWith("/library");
 
-  if (active?.type !== "playlist") return null;
-
   const location = inLibrary ? "library" : "home";
 
   const onPlaylistDeletePress = () => {
-    deletePlaylist(active.id, {
+    deletePlaylist(content.id, {
       onSuccess: () => {
         close();
         router.replace(`/${location}`);

@@ -1,6 +1,5 @@
-import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -20,7 +19,6 @@ const MusicPlayerModal: FC = () => {
   const { isOpen, close } = usePlayerModal();
   const { coverColor } = useAudioPlayerContext();
 
-  const styles = useMemo(() => makeStyles(colors), [colors]);
   const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
 
   const [rendered, setRendered] = useState(false);
@@ -83,11 +81,10 @@ const MusicPlayerModal: FC = () => {
   );
 };
 
-const makeStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    sheet: {
-      ...StyleSheet.absoluteFill,
-    },
-  });
+const styles = StyleSheet.create({
+  sheet: {
+    ...StyleSheet.absoluteFill,
+  },
+});
 
 export default MusicPlayerModal;

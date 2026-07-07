@@ -8,9 +8,9 @@ import {
 } from "@/contexts/sheetModalContext";
 import { PlaylistType } from "@/types/playlist";
 import { Image } from "expo-image";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useAlbumCover } from "@/api/albums/queries";
 import {
     useUpdateAlbumInteraction,
@@ -18,16 +18,20 @@ import {
 } from "@/api/interactions/mutations";
 import { useTrack } from "@/api/tracks/queries";
 import { blurHash } from "@/constants/blur";
-import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { useTabLocation } from "@/utils/useTabLocation";
+import { makeTrackSheetStyles } from "./sheetStyles";
 
-const PlaylistTrackContent: FC = () => {
-  const { active, open, close } = useSheetModal();
-  const playlistContent = active as SheetPlaylistTrack | null;
-  const { data: track } = useTrack(playlistContent?.trackId);
-  const { data: playlist } = usePlaylist(playlistContent?.id);
-  const pathname = usePathname();
+interface PlaylistTrackContentProps {
+  content: SheetPlaylistTrack;
+}
+
+const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
+  const { open, close } = useSheetModal();
+  const { data: track } = useTrack(content.trackId);
+  const { data: playlist } = usePlaylist(content.id);
+  const location = useTabLocation();
 
   const { data: albumArtUrl } = useAlbumCover(track?.album.id);
 
@@ -37,12 +41,7 @@ const PlaylistTrackContent: FC = () => {
   const { mutate: removePlaylistTrack } = useRemoveTrackFromPlaylist();
 
   const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const inHome = pathname.startsWith("/home");
-  const inLibrary = pathname.startsWith("/library");
-
-  const location = inHome ? "home" : inLibrary ? "library" : "search";
+  const styles = useMemo(() => makeTrackSheetStyles(colors), [colors]);
 
   if (!track) return null;
 
@@ -143,52 +142,5 @@ const PlaylistTrackContent: FC = () => {
     </View>
   );
 };
-
-const makeStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    trackInfo: {
-      borderBottomWidth: 1,
-      borderColor: colors.primary,
-    },
-    spacing: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
-      padding: 16,
-    },
-    albumArt: {
-      width: 60,
-      height: 60,
-      borderRadius: 16,
-    },
-    trackLeftInfo: {
-      display: "flex",
-      gap: 4,
-    },
-    trackTitle: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackArtists: {
-      color: colors.secondary,
-      fontSize: 16,
-    },
-    bottomContainer: {
-      padding: 16,
-      gap: 24,
-    },
-    bottomButton: {
-      flexDirection: "row",
-      gap: 16,
-      alignItems: "center",
-    },
-    text: {
-      color: colors.primary,
-      fontSize: 16,
-    },
-  });
 
 export default PlaylistTrackContent;

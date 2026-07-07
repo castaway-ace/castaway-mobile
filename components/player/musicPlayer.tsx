@@ -11,19 +11,16 @@ import {
     Text,
     View,
 } from "react-native";
-import { useTrackStar } from "@/api/tracks/mutations";
-import { useTrack } from "@/api/tracks/queries";
 import { blurHash } from "@/constants/blur";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import Animated from "react-native-reanimated";
 import { useAnimatedBackground } from "./useAnimatedBackground";
+import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
 
 const MusicPlayer = () => {
   const {
     isPlaying,
     isLoading,
-    pause,
-    play,
     currentTrack,
     coverArtUrl,
     coverColor,
@@ -32,13 +29,8 @@ const MusicPlayer = () => {
   } = useAudioPlayerContext();
   const { open } = usePlayerModal();
   const { colors } = useTheme();
-  const { mutate: trackStar } = useTrackStar();
-  const activeTrackId = currentTrack
-    ? "trackId" in currentTrack
-      ? currentTrack.trackId
-      : currentTrack.id
-    : undefined;
-  const { data: trackDetail } = useTrack(activeTrackId);
+  const { starred, toggleStar } = useActiveTrackStar();
+  const handlePlayTrack = usePlayPause();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
 
@@ -48,21 +40,6 @@ const MusicPlayer = () => {
   if (!currentTrack) {
     return null;
   }
-
-  const starred = !!trackDetail?.starred;
-
-  const onLikeTrackButtonPress = () => {
-    if (!activeTrackId) return;
-    trackStar({ id: activeTrackId, starred });
-  };
-
-  const handlePlayTrack = () => {
-    if (isPlaying) {
-      pause();
-    } else {
-      play();
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -86,14 +63,12 @@ const MusicPlayer = () => {
             </View>
           </Pressable>
           <View style={styles.buttonContainer}>
-            <Pressable>
-              <Pressable onPress={onLikeTrackButtonPress}>
-                <IconSymbol
-                  name={starred ? "heart.fill" : "heart"}
-                  size={32}
-                  color={colors.primary}
-                />
-              </Pressable>
+            <Pressable onPress={toggleStar}>
+              <IconSymbol
+                name={starred ? "heart.fill" : "heart"}
+                size={32}
+                color={colors.primary}
+              />
             </Pressable>
             <Pressable onPress={handlePlayTrack} disabled={isLoading}>
               {isLoading ? (

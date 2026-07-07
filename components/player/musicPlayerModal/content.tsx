@@ -1,4 +1,3 @@
-import { useAlbumCover } from "@/api/albums/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
@@ -8,21 +7,19 @@ import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTrackStar } from "@/api/tracks/mutations";
-import { useTrack } from "@/api/tracks/queries";
 import { blurHash } from "@/constants/blur";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import ProgressBar from "./progressBar";
+import { useActiveTrackStar, usePlayPause } from "../useNowPlayingControls";
 
 const MusicPlayerModalContent: FC = () => {
   const { colors } = useTheme();
   const {
     isPlaying,
-    pause,
-    play,
     next,
     previous,
     currentTrack,
+    coverArtUrl,
     toggleShuffle,
     isShuffled,
     cycleRepeat,
@@ -30,35 +27,14 @@ const MusicPlayerModalContent: FC = () => {
   } = useAudioPlayerContext();
   const { close } = usePlayerModal();
   const { open: openOptions } = useSheetModal();
-  const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { mutate: trackStar } = useTrackStar();
-  const activeTrackId = currentTrack
-    ? "trackId" in currentTrack
-      ? currentTrack.trackId
-      : currentTrack.id
-    : undefined;
-  const { data: trackDetail } = useTrack(activeTrackId);
+  const { starred, toggleStar } = useActiveTrackStar();
+  const handlePlayTrack = usePlayPause();
 
   if (!currentTrack) {
     return null;
   }
-
-  const starred = !!trackDetail?.starred;
-
-  const onLikeTrackButtonPress = () => {
-    if (!activeTrackId) return;
-    trackStar({ id: activeTrackId, starred });
-  };
-
-  const handlePlayTrack = () => {
-    if (isPlaying) {
-      pause();
-    } else {
-      play();
-    }
-  };
 
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
@@ -74,7 +50,7 @@ const MusicPlayerModalContent: FC = () => {
       <View style={styles.albumArtContainer}>
         <Image
           source={{
-            uri: albumArtUrl,
+            uri: coverArtUrl,
           }}
           placeholder={blurHash}
           style={styles.albumArt}
@@ -90,7 +66,7 @@ const MusicPlayerModalContent: FC = () => {
               {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
             </Text>
           </View>
-          <Pressable onPress={onLikeTrackButtonPress}>
+          <Pressable onPress={toggleStar}>
             <IconSymbol
               name={starred ? "heart.fill" : "heart"}
               size={40}
@@ -130,7 +106,7 @@ const MusicPlayerModalContent: FC = () => {
               size={40}
               style={{ opacity: repeatMode === "off" ? 0.4 : 1 }}
               name={
-                repeatMode === "off" || repeatMode == "all"
+                repeatMode === "off" || repeatMode === "all"
                   ? "repeat"
                   : "repeat.1"
               }

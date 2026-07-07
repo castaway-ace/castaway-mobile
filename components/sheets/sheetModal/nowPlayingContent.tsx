@@ -3,31 +3,27 @@ import {
     useUpdateArtistInteraction,
 } from "@/api/interactions/mutations";
 import { IconSymbol } from "@/components/ui/iconSymbol";
-import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { useTabLocation } from "@/utils/useTabLocation";
+import { makeTrackSheetStyles } from "./sheetStyles";
 
 const NowPlayingContent: FC = () => {
   const { open, close } = useSheetModal();
   const { close: closePlayer } = usePlayerModal();
   const { currentTrack } = useAudioPlayerContext();
-  const pathname = usePathname();
+  const location = useTabLocation();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
 
   const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const inHome = pathname.startsWith("/home");
-  const inLibrary = pathname.startsWith("/library");
-
-  const location = inHome ? "home" : inLibrary ? "library" : "search";
+  const styles = useMemo(() => makeTrackSheetStyles(colors), [colors]);
 
   if (!currentTrack) return null;
 
@@ -80,25 +76,5 @@ const NowPlayingContent: FC = () => {
     </View>
   );
 };
-
-const makeStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    bottomContainer: {
-      padding: 16,
-      gap: 24,
-    },
-    bottomButton: {
-      flexDirection: "row",
-      gap: 16,
-      alignItems: "center",
-    },
-    text: {
-      color: colors.primary,
-      fontSize: 16,
-    },
-  });
 
 export default NowPlayingContent;
