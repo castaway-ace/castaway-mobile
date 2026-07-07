@@ -7,9 +7,14 @@ import {
     useState,
 } from "react";
 
+interface PopupModalOptions {
+  trackId?: string;
+}
+
 interface PopupModalContextValue {
   isOpen: boolean;
-  open: () => void;
+  trackId?: string;
+  open: (options?: PopupModalOptions) => void;
   close: () => void;
 }
 
@@ -17,8 +22,10 @@ const PopupModalContext = createContext<PopupModalContextValue | null>(null);
 
 export const PopupModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [trackId, setTrackId] = useState<string | undefined>(undefined);
 
-  const open = useCallback((): void => {
+  const open = useCallback((options?: PopupModalOptions): void => {
+    setTrackId(options?.trackId);
     setIsOpen(true);
   }, []);
 
@@ -27,8 +34,8 @@ export const PopupModalProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const value = useMemo<PopupModalContextValue>(
-    () => ({ isOpen, open, close }),
-    [isOpen, open, close],
+    () => ({ isOpen, trackId, open, close }),
+    [isOpen, trackId, open, close],
   );
 
   return (

@@ -1,10 +1,14 @@
 import { useUpdatePlaylistInteraction } from "@/api/interactions/mutations";
-import { useCreatePlaylist } from "@/api/playlists/mutations";
+import {
+  useAddTrackToPlaylist,
+  useCreatePlaylist,
+} from "@/api/playlists/mutations";
 import { ThemeColors } from "@/constants/theme";
+import { usePlayerModal } from "@/contexts/playerModalContext";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { useBackHandler } from "@/utils/useBackHandler";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { FC, useCallback, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -13,13 +17,20 @@ import { runOnJS } from "react-native-worklets";
 
 const PopupModal: FC = () => {
   const { colors } = useTheme();
-  const { isOpen, close } = usePopupModal();
+  const { isOpen, trackId, close } = usePopupModal();
+  const { close: closePlayer } = usePlayerModal();
+  const pathname = usePathname();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { mutate: createPlaylist } = useCreatePlaylist();
+  const { mutate: addPlaylistTrack } = useAddTrackToPlaylist();
   const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
   const [playlistName, setPlaylistName] = useState<string>("");
+
+  const inHome = pathname.startsWith("/home");
+  const inLibrary = pathname.startsWith("/library");
+  const location = inHome ? "home" : inLibrary ? "library" : "search";
 
   const dismiss = useCallback(() => {
     setPlaylistName("");
@@ -39,8 +50,20 @@ const PopupModal: FC = () => {
     createPlaylist(name, {
       onSuccess: (newPlaylist) => {
         dismiss();
-        router.push(`/library/playlists/${newPlaylist.id}`);
         playlistInteraction(newPlaylist.id);
+        closePlayer();
+
+        const goToPlaylist = () =>
+          router.push(`/(tabs)/${location}/playlists/${newPlaylist.id}`);
+
+        if (trackId) {
+          addPlaylistTrack(
+            { playlistId: newPlaylist.id, trackId, playlistName: name },
+            { onSuccess: goToPlaylist },
+          );
+        } else {
+          goToPlaylist();
+        }
       },
     });
   };

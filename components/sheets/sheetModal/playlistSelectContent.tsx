@@ -1,5 +1,7 @@
 import { useAddTrackToPlaylist } from "@/api/playlists/mutations";
 import { usePlaylists } from "@/api/playlists/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { usePopupModal } from "@/contexts/popupModalContext";
 import { useSheetModal } from "@/contexts/sheetModalContext";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
@@ -14,6 +16,7 @@ interface PlaylistSelectContentProps {
 
 const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   const { close } = useSheetModal();
+  const { open: openCreatePlaylist } = usePopupModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
 
   const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
@@ -30,8 +33,21 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
     close();
   };
 
+  const onCreatePlaylistPress = () => {
+    close();
+    openCreatePlaylist({ trackId });
+  };
+
   return (
     <View style={styles.container}>
+      <Pressable style={styles.spacing} onPress={onCreatePlaylistPress}>
+        <View style={styles.createIcon}>
+          <IconSymbol size={28} name={"plus"} color={colors.primary} />
+        </View>
+        <View style={styles.trackLeftInfo}>
+          <Text style={styles.trackTitle}>Create new playlist</Text>
+        </View>
+      </Pressable>
       {playlists.map((playlist) => {
         const tiles = buildPlaylistCover(playlist?.albumCoverUrls);
 
@@ -98,6 +114,14 @@ const makeStyles = (colors: ThemeColors) =>
       flexDirection: "row",
       flexWrap: "wrap",
       overflow: "hidden",
+    },
+    createIcon: {
+      width: 60,
+      height: 60,
+      borderRadius: 16,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: colors.secondary,
     },
     playlistFullArt: {
       width: "100%",
