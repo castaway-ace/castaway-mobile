@@ -22,6 +22,8 @@ import {
   useRef,
   useState,
 } from "react";
+import type { ImageColorsResult } from "react-native-image-colors";
+import { getColors } from "react-native-image-colors";
 
 export type RepeatMode = "off" | "all" | "one";
 
@@ -30,6 +32,7 @@ export type PlayableTrack = TrackSummary | AlbumTrack | PlaylistTrack;
 interface AudioPlayerContextValue {
   currentTrack: PlayableTrack | null;
   coverArtUrl: string | undefined;
+  coverColor: string | undefined;
   queue: PlayableTrack[];
   upNext: PlayableTrack[];
   position: number;
@@ -181,6 +184,17 @@ const queueReducer = (state: QueueState, action: QueueAction): QueueState => {
   }
 };
 
+const pickCoverColor = (result: ImageColorsResult): string => {
+  switch (result.platform) {
+    case "android":
+      return result.vibrant || result.dominant || result.muted;
+    case "ios":
+      return result.primary || result.background;
+    default:
+      return result.vibrant || result.darkVibrant || result.dominant;
+  }
+};
+
 const toTrackSummary = (track: Track): TrackSummary => ({
   id: track.id,
   title: track.title,
@@ -231,6 +245,34 @@ export const AudioPlayerProvider = ({
   }, [queue, order, position]);
 
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
+
+  const [extractedColor, setExtractedColor] = useState<{
+    url: string;
+    color: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!albumArtUrl) return;
+    let cancelled = false;
+    getColors(albumArtUrl, { cache: true, key: albumArtUrl })
+      .then((result) => {
+        if (!cancelled) {
+          setExtractedColor({
+            url: albumArtUrl,
+            color: pickCoverColor(result),
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [albumArtUrl]);
+
+  const coverColor =
+    extractedColor && extractedColor.url === albumArtUrl
+      ? extractedColor.color
+      : undefined;
 
   useEffect(() => {
     setAudioModeAsync({
@@ -404,6 +446,7 @@ export const AudioPlayerProvider = ({
   const value: AudioPlayerContextValue = {
     currentTrack,
     coverArtUrl: albumArtUrl,
+    coverColor,
     queue,
     upNext,
     position,

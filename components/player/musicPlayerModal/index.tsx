@@ -9,14 +9,18 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
+import { useAnimatedBackground } from "../useAnimatedBackground";
 import MusicPlayerModalContent from "./content";
 
 const MusicPlayerModal: FC = () => {
   const { colors } = useTheme();
   const { isOpen, close } = usePlayerModal();
+  const { coverColor } = useAudioPlayerContext();
 
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
 
   const [rendered, setRendered] = useState(false);
 
@@ -67,11 +71,7 @@ const MusicPlayerModal: FC = () => {
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <GestureDetector gesture={pan}>
         <Animated.View
-          style={[
-            styles.sheet,
-            { backgroundColor: colors.background },
-            animatedStyle,
-          ]}
+          style={[styles.sheet, animatedStyle, backgroundStyle]}
         >
           <MusicPlayerModalContent />
         </Animated.View>

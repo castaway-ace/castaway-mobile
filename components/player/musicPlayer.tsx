@@ -15,6 +15,8 @@ import { useTrackStar } from "@/api/tracks/mutations";
 import { useTrack } from "@/api/tracks/queries";
 import { blurHash } from "@/constants/blur";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import Animated from "react-native-reanimated";
+import { useAnimatedBackground } from "./useAnimatedBackground";
 
 const MusicPlayer = () => {
   const {
@@ -24,6 +26,7 @@ const MusicPlayer = () => {
     play,
     currentTrack,
     coverArtUrl,
+    coverColor,
     currentTime,
     duration,
   } = useAudioPlayerContext();
@@ -37,6 +40,7 @@ const MusicPlayer = () => {
     : undefined;
   const { data: trackDetail } = useTrack(activeTrackId);
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
 
   const progress =
     duration > 0 ? Math.min(Math.max(currentTime / duration, 0), 1) : 0;
@@ -62,7 +66,7 @@ const MusicPlayer = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.secondaryContainer}>
+      <Animated.View style={[styles.secondaryContainer, backgroundStyle]}>
         <View style={styles.contentContainer}>
           <Pressable style={styles.leftContainer} onPress={open}>
             <Image
@@ -113,7 +117,7 @@ const MusicPlayer = () => {
             <View style={[styles.fill, { width: `${progress * 100}%` }]} />
           </View>
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 };
