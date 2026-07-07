@@ -1,5 +1,5 @@
+import { useToast } from "@/contexts/toastContext";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
 
 interface StarVariables {
   id: string;
@@ -25,6 +25,7 @@ export const useStarMutation = ({
   invalidateKeys,
 }: StarMutationConfig) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: async ({ id, starred }: StarVariables) => {
       if (starred) {
@@ -34,10 +35,7 @@ export const useStarMutation = ({
       }
     },
     onSuccess: (_data, { id, starred }) => {
-      Toast.show({
-        type: "success",
-        text1: starred ? messages.removed : messages.added,
-      });
+      showToast(starred ? messages.removed : messages.added);
       for (const key of invalidateKeys(id)) {
         queryClient.invalidateQueries({ queryKey: key });
       }

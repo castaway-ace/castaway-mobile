@@ -25,8 +25,8 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
 
   if (!playlists) return;
 
-  const onPlaylistPress = (id: string) => {
-    addPlaylistTrack({ playlistId: id, trackId: trackId });
+  const onPlaylistPress = (id: string, name: string) => {
+    addPlaylistTrack({ playlistId: id, trackId, playlistName: name });
     close();
   };
 
@@ -41,7 +41,7 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
           <Pressable
             key={playlist.id}
             style={styles.spacing}
-            onPress={() => onPlaylistPress(playlist.id)}
+            onPress={() => onPlaylistPress(playlist.id, playlist.name)}
           >
             {!areTilesPresent && (
               <Image

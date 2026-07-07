@@ -1,6 +1,4 @@
 import { Tabs } from "expo-router";
-import { useMemo } from "react";
-import Toast, { BaseToast, ToastConfig } from "react-native-toast-message";
 
 import CustomTabBar from "@/components/navigation/customTabBar";
 import { HapticTab } from "@/components/navigation/hapticTab";
@@ -15,27 +13,6 @@ const TabLayout = () => {
   const { currentTrack } = useAudioPlayerContext();
 
   const { colors } = useTheme();
-
-  const toastConfig: ToastConfig = useMemo(
-    () => ({
-      success: (props) => (
-        <BaseToast
-          {...props}
-          style={{
-            borderLeftColor: colors.accent,
-            backgroundColor: colors.primary,
-          }}
-          contentContainerStyle={{ paddingHorizontal: 12 }}
-          text1Style={{
-            fontSize: 16,
-            fontWeight: "400",
-            color: colors.background,
-          }}
-        />
-      ),
-    }),
-    [colors],
-  );
 
   return (
     <>
@@ -117,7 +94,6 @@ const TabLayout = () => {
       {currentTrack && <MusicPlayerModal />}
       <SheetModal />
       <PopupModal />
-      <Toast config={toastConfig} />
     </>
   );
 };
