@@ -5,6 +5,7 @@ import {
   useSheetModal,
 } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { useBackHandler } from "@/utils/useBackHandler";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
@@ -30,6 +31,8 @@ const SheetModal: FC = () => {
   const { colors } = useTheme();
   const { active, close } = useSheetModal();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  useBackHandler(active !== null, close);
 
   const { height } = useWindowDimensions();
   const sheetHeight = useSharedValue(0);

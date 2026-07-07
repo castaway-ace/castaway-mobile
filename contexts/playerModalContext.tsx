@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 interface PlayerModalContextValue {
   isOpen: boolean;
@@ -10,11 +17,16 @@ const PlayerModalContext = createContext<PlayerModalContextValue | null>(null);
 
 export const PlayerModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const open = useCallback(() => setIsOpen(true), []);
+  const close = useCallback(() => setIsOpen(false), []);
+
+  const value = useMemo<PlayerModalContextValue>(
+    () => ({ isOpen, open, close }),
+    [isOpen, open, close],
+  );
 
   return (
-    <PlayerModalContext.Provider value={{ isOpen, open, close }}>
+    <PlayerModalContext.Provider value={value}>
       {children}
     </PlayerModalContext.Provider>
   );

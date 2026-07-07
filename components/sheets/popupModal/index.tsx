@@ -3,8 +3,9 @@ import { useCreatePlaylist } from "@/api/playlists/mutations";
 import { ThemeColors } from "@/constants/theme";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { useBackHandler } from "@/utils/useBackHandler";
 import { router } from "expo-router";
-import { FC, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
@@ -20,10 +21,12 @@ const PopupModal: FC = () => {
 
   const [playlistName, setPlaylistName] = useState<string>("");
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setPlaylistName("");
     close();
-  };
+  }, [close]);
+
+  useBackHandler(isOpen, dismiss);
 
   const tapBackdrop = Gesture.Tap().onEnd(() => {
     runOnJS(dismiss)();

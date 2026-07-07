@@ -11,6 +11,7 @@ import Animated, {
 import { runOnJS } from "react-native-worklets";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
+import { useBackHandler } from "@/utils/useBackHandler";
 import { useAnimatedBackground } from "../useAnimatedBackground";
 import MusicPlayerModalContent from "./content";
 
@@ -62,6 +63,8 @@ const MusicPlayerModal: FC = () => {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
+
+  useBackHandler(isOpen, close);
 
   if (!rendered) {
     return null;
