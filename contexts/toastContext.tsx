@@ -5,12 +5,14 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 
 interface ToastContextValue {
   showToast: (message: string) => void;
+  setBottomInset: (height: number) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
@@ -20,6 +22,7 @@ const TOAST_DURATION = 2200;
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState("");
   const [visible, setVisible] = useState(false);
+  const [bottomInset, setBottomInset] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback((next: string) => {
@@ -35,10 +38,15 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const value = useMemo<ToastContextValue>(
+    () => ({ showToast, setBottomInset }),
+    [showToast],
+  );
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={value}>
       {children}
-      <Toast message={message} visible={visible} />
+      <Toast message={message} visible={visible} bottomInset={bottomInset} />
     </ToastContext.Provider>
   );
 };

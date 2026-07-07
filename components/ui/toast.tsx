@@ -1,4 +1,3 @@
-import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import Animated, {
@@ -6,21 +5,16 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const TAB_BAR_HEIGHT = 72;
-const MINI_PLAYER_HEIGHT = 84;
 const GAP = 12;
 
 interface ToastProps {
   message: string;
   visible: boolean;
+  bottomInset: number;
 }
 
-const Toast = ({ message, visible }: ToastProps) => {
-  const insets = useSafeAreaInsets();
-  const { currentTrack } = useAudioPlayerContext();
-
+const Toast = ({ message, visible, bottomInset }: ToastProps) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(16);
 
@@ -35,16 +29,10 @@ const Toast = ({ message, visible }: ToastProps) => {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const bottom =
-    insets.bottom +
-    TAB_BAR_HEIGHT +
-    (currentTrack ? MINI_PLAYER_HEIGHT : 0) +
-    GAP;
-
   return (
     <Animated.View
       pointerEvents="none"
-      style={[styles.container, { bottom }, animatedStyle]}
+      style={[styles.container, { bottom: bottomInset + GAP }, animatedStyle]}
     >
       <Text style={styles.text} numberOfLines={2}>
         {message}
