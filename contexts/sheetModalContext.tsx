@@ -12,7 +12,12 @@ export enum SheetType {
   PLAYLIST_TRACK = "playlist-track",
   PLAYLIST_SELECT = "playlist-select",
   ALBUM_TRACK = "album-track",
+  NOW_PLAYING = "now-playing",
 }
+
+export type SheetNowPlaying = {
+  type: SheetType.NOW_PLAYING;
+};
 
 export type SheetAlbumTrack = {
   type: SheetType.ALBUM_TRACK;
@@ -40,7 +45,8 @@ export type SheetContent =
   | SheetAlbumTrack
   | SheetPlaylistTrack
   | SheetPlaylistSelect
-  | SheetPlaylist;
+  | SheetPlaylist
+  | SheetNowPlaying;
 
 interface SheetModalContextValue {
   active: SheetContent | null;

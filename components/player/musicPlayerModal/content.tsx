@@ -2,6 +2,7 @@ import { useAlbumCover } from "@/api/albums/queries";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
+import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
@@ -28,6 +29,7 @@ const MusicPlayerModalContent: FC = () => {
     repeatMode,
   } = useAudioPlayerContext();
   const { close } = usePlayerModal();
+  const { open: openOptions } = useSheetModal();
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
@@ -65,7 +67,9 @@ const MusicPlayerModalContent: FC = () => {
           <IconSymbol size={32} name={"chevron.down"} color={colors.primary} />
         </Pressable>
         <Text style={styles.headerText}>Playing Now</Text>
-        <IconSymbol size={32} name={"ellipsis"} color={colors.primary} />
+        <Pressable onPress={() => openOptions({ type: SheetType.NOW_PLAYING })}>
+          <IconSymbol size={32} name={"ellipsis"} color={colors.primary} />
+        </Pressable>
       </View>
       <View style={styles.albumArtContainer}>
         <Image
