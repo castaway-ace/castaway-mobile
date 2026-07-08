@@ -176,9 +176,6 @@ const makeStyles = (colors: ThemeColors) =>
       backgroundColor: colors.background,
       paddingTop: 16,
     },
-    containerContent: {
-      paddingBottom: 48,
-    },
     itemsContainer: {
       display: "flex",
       flexDirection: "column",
@@ -190,22 +187,10 @@ const makeStyles = (colors: ThemeColors) =>
       paddingHorizontal: 16,
       color: colors.primary,
     },
-    trackListContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 16,
-      paddingHorizontal: 16,
-    },
     itemContainerWrapper: {
       display: "flex",
       flexDirection: "column",
       gap: 32,
-    },
-    unavailableText: {
-      fontSize: 16,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: colors.primary,
     },
     albumScrollContent: {
       display: "flex",
