@@ -3,20 +3,26 @@ import { Artist, ArtistSummary } from "@/types/artists";
 import apiClient from "../client";
 
 export enum ArtistOrder {
-  NAME = 'name',
+  NAME = "name",
 }
 
 interface ArtistParams {
-  limit: number
-  offset: number
-  order: ArtistOrder
-  orderBy: OrderBy
-  starred: boolean
+  limit: number;
+  offset: number;
+  order: ArtistOrder;
+  orderBy: OrderBy;
+  starred: boolean;
 }
 
 export const artistApi = {
-  getAll: async ({ limit, offset, order, orderBy, starred }: ArtistParams): Promise<ArtistSummary[]> => {
-    const { data } = await apiClient.get<ArtistSummary[]>('/artists', {
+  getAll: async ({
+    limit,
+    offset,
+    order,
+    orderBy,
+    starred,
+  }: ArtistParams): Promise<ArtistSummary[]> => {
+    const { data } = await apiClient.get<ArtistSummary[]>("/artists", {
       params: { limit, offset, order, orderBy, starred },
     });
     return data;

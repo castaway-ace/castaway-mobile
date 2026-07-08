@@ -1,24 +1,35 @@
 import { OrderBy } from "@/constants/api";
-import { Playlist, PlaylistRef, PlaylistSummary, PlaylistTrack } from "@/types/playlist";
+import {
+  Playlist,
+  PlaylistRef,
+  PlaylistSummary,
+  PlaylistTrack,
+} from "@/types/playlist";
 import apiClient from "../client";
 
 export enum PlaylistOrder {
-  NAME = 'name',
-  ADDED = 'added',
+  NAME = "name",
+  ADDED = "added",
 }
 
 interface PlaylistParams {
-  limit: number
-  offset: number
-  order: PlaylistOrder
-  orderBy: OrderBy
-  onlyUser: boolean
+  limit: number;
+  offset: number;
+  order: PlaylistOrder;
+  orderBy: OrderBy;
+  onlyUser: boolean;
 }
 
 export const playlistApi = {
-  getAll: async ({ limit, offset, order, orderBy, onlyUser }: PlaylistParams): Promise<PlaylistSummary[]> => {
-    const { data } = await apiClient.get<PlaylistSummary[]>('/playlists', {
-      params: { limit, offset, order, orderBy, onlyUser }
+  getAll: async ({
+    limit,
+    offset,
+    order,
+    orderBy,
+    onlyUser,
+  }: PlaylistParams): Promise<PlaylistSummary[]> => {
+    const { data } = await apiClient.get<PlaylistSummary[]>("/playlists", {
+      params: { limit, offset, order, orderBy, onlyUser },
     });
     return data;
   },
@@ -44,12 +55,19 @@ export const playlistApi = {
   },
 
   getAllTracks: async (playlistId: string): Promise<PlaylistTrack[]> => {
-    const { data } = await apiClient.get<PlaylistTrack[]>(`/playlists/${playlistId}/tracks`);
+    const { data } = await apiClient.get<PlaylistTrack[]>(
+      `/playlists/${playlistId}/tracks`,
+    );
     return data;
   },
 
-  getTrack: async (playlistId: string, trackId: string): Promise<PlaylistTrack> => {
-    const { data } = await apiClient.get<PlaylistTrack>(`/playlists/${playlistId}/tracks/${trackId}`);
+  getTrack: async (
+    playlistId: string,
+    trackId: string,
+  ): Promise<PlaylistTrack> => {
+    const { data } = await apiClient.get<PlaylistTrack>(
+      `/playlists/${playlistId}/tracks/${trackId}`,
+    );
     return data;
   },
 

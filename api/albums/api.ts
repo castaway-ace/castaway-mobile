@@ -3,22 +3,28 @@ import { Album, AlbumSummary } from "@/types/albums";
 import apiClient from "../client";
 
 export enum AlbumOrder {
-  TITLE = 'title',
-  YEAR = 'year',
-  ADDED = 'added',
+  TITLE = "title",
+  YEAR = "year",
+  ADDED = "added",
 }
 
 interface AlbumParams {
-  limit: number
-  offset: number
-  order: AlbumOrder
-  orderBy: OrderBy
-  starred: boolean
+  limit: number;
+  offset: number;
+  order: AlbumOrder;
+  orderBy: OrderBy;
+  starred: boolean;
 }
 
 export const albumApi = {
-  getAll: async ({ limit, offset, order, orderBy, starred }: AlbumParams): Promise<AlbumSummary[]> => {
-    const { data } = await apiClient.get<AlbumSummary[]>('/albums', {
+  getAll: async ({
+    limit,
+    offset,
+    order,
+    orderBy,
+    starred,
+  }: AlbumParams): Promise<AlbumSummary[]> => {
+    const { data } = await apiClient.get<AlbumSummary[]>("/albums", {
       params: { limit, offset, order, orderBy, starred },
     });
     return data;

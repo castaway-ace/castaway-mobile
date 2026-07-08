@@ -47,6 +47,7 @@ export const usePlaylistTracks = (playlistId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.playlists.tracks(playlistId),
     queryFn: playlistId ? () => playlistApi.getAllTracks(playlistId) : skipToken,
+    staleTime: STALE_TIME.LONG,
   });
 }
 
@@ -54,5 +55,6 @@ export const usePlaylistTrack = (playlistId: string | undefined, trackId: string
   return useQuery({
     queryKey: queryKeys.playlists.track(playlistId, trackId),
     queryFn: playlistId && trackId ? () => playlistApi.getTrack(playlistId, trackId) : skipToken,
+    staleTime: STALE_TIME.LONG,
   });
 }

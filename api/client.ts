@@ -1,19 +1,26 @@
-import type { components } from '@/api/schema';
-import axios, { AxiosError, isAxiosError } from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import type { components } from "@/api/schema";
+import axios, { AxiosError, isAxiosError } from "axios";
+import * as SecureStore from "expo-secure-store";
 
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-declare module 'axios' {
+declare module "axios" {
   export interface AxiosRequestConfig {
     _retry?: boolean;
   }
 }
 
-type RefreshResponse = components['schemas']['AuthTokensEntity'];
+type RefreshResponse = components["schemas"]["AuthTokensEntity"];
+
+class SessionExpiredError extends Error {
+  constructor(message = "Session expired") {
+    super(message);
+    this.name = "SessionExpiredError";
+  }
+}
 
 const apiClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  baseURL: BASE_URL,
   timeout: 10000,
 });
 
@@ -26,9 +33,9 @@ export function setAuthFailureHandler(handler: (() => void) | null) {
 }
 
 export const refreshTokens = async (): Promise<string> => {
-  const refreshToken = await SecureStore.getItemAsync('refreshToken');
+  const refreshToken = await SecureStore.getItemAsync("refreshToken");
   if (!refreshToken) {
-    throw new Error('No refresh token available');
+    throw new SessionExpiredError("No refresh token available");
   }
 
   const { data } = await axios.post<RefreshResponse>(
@@ -37,23 +44,23 @@ export const refreshTokens = async (): Promise<string> => {
   );
 
   if (!data?.accessToken || !data?.refreshToken) {
-    throw new Error('Malformed refresh response');
+    throw new Error("Malformed refresh response");
   }
 
-  await SecureStore.setItemAsync('accessToken', data.accessToken);
-  await SecureStore.setItemAsync('refreshToken', data.refreshToken);
+  await SecureStore.setItemAsync("accessToken", data.accessToken);
+  await SecureStore.setItemAsync("refreshToken", data.refreshToken);
   return data.accessToken;
-}
+};
 
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await SecureStore.getItemAsync("accessToken")
+    const token = await SecureStore.getItemAsync("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
@@ -61,7 +68,11 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
       try {
         if (!refreshPromise) {
@@ -76,16 +87,16 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        let isAuthRejection = false;
-        
+        let isAuthRejection = refreshError instanceof SessionExpiredError;
+
         if (isAxiosError(refreshError)) {
           const status = refreshError.response?.status;
           isAuthRejection = status === 401 || status === 403;
         }
 
         if (isAuthRejection) {
-          await SecureStore.deleteItemAsync('accessToken').catch(() => {});
-          await SecureStore.deleteItemAsync('refreshToken').catch(() => {});
+          await SecureStore.deleteItemAsync("accessToken").catch(() => {});
+          await SecureStore.deleteItemAsync("refreshToken").catch(() => {});
           onAuthFailure?.();
         }
 
@@ -93,7 +104,7 @@ apiClient.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
-export default apiClient
+export default apiClient;
