@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import apiClient, { setAuthFailureHandler } from "@/api/client";
@@ -81,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.clear();
     });
     return () => setAuthFailureHandler(null);
-  }, []);
+  }, [queryClient]);
 
   const establishSession = useCallback(
     async (accessToken: string, refreshToken: string): Promise<void> => {
@@ -104,19 +105,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
   }, [queryClient]);
 
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      isAuthenticated: user !== null,
+      isLoading,
+      logIn,
+      signUp,
+      logOut,
+    }),
+    [user, isLoading, logIn, signUp, logOut],
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: user !== null,
-        isLoading,
-        logIn,
-        signUp,
-        logOut,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
 }
 
