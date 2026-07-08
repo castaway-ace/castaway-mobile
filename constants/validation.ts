@@ -1,5 +1,13 @@
 import * as z from "zod";
 
+export const zodErrorMap = (error: z.ZodError): Record<string, string> => {
+  const map: Record<string, string> = {};
+  for (const issue of error.issues) {
+    map[issue.path.join(".")] = issue.message;
+  }
+  return map;
+};
+
 export const PASSWORD_RULES: {
   label: string;
   test: (value: string) => boolean;

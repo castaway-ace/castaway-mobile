@@ -12,8 +12,7 @@ import { Interaction, InteractionType } from "@/types/interactions";
 import { useRouter } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InteractionItem from "@/components/media/interactionItem";
 

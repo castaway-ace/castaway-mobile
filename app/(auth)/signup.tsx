@@ -1,25 +1,25 @@
 import { useSignUp } from "@/api/auth/mutations";
 import AuthField from "@/components/auth/authField";
+import { makeAuthFormStyles } from "@/components/auth/authFormStyles";
+import AuthHeader from "@/components/auth/authHeader";
 import AuthScreen from "@/components/auth/authScreen";
 import PasswordRequirements from "@/components/auth/passwordRequirements";
-import { ThemeColors } from "@/constants/theme";
+import { useAuthForm } from "@/components/auth/useAuthForm";
 import { SignUpSchema } from "@/constants/validation";
 import { useTheme } from "@/contexts/themeContext";
-import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 const Signup = () => {
   const { colors } = useTheme();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const styles = useMemo(() => makeAuthFormStyles(colors), [colors]);
 
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [zodErrors, setZodErrors] = useState<
-    Record<string, string | undefined>
-  >({});
+
+  const { errors, clearError, validate } = useAuthForm(SignUpSchema);
 
   const userNameRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -30,35 +30,15 @@ const Signup = () => {
     error: signUpError,
   } = useSignUp();
 
-  const validation = useMemo(
-    () => SignUpSchema.safeParse({ email, userName, password }),
-    [email, userName, password],
-  );
-
-  const clearError = (field: string) =>
-    setZodErrors((prev) => ({ ...prev, [field]: undefined }));
-
   const onSignupPress = async () => {
-    if (!validation.success) {
-      const errorMap: Record<string, string> = {};
-      validation.error.issues.forEach((i) => {
-        errorMap[i.path.join(".")] = i.message;
-      });
-      setZodErrors(errorMap);
-      return;
-    }
-    await signup(validation.data);
+    const data = validate({ email, userName, password });
+    if (!data) return;
+    await signup(data);
   };
 
   return (
     <AuthScreen>
-      <View style={styles.logoContainer}>
-        <Image
-          style={styles.logo}
-          source={require("../../assets/images/castaway.png")}
-        />
-        <Text style={styles.logoText}>Castaway</Text>
-      </View>
+      <AuthHeader />
 
       <AuthField
         label="Email"
@@ -68,7 +48,7 @@ const Signup = () => {
           clearError("email");
           setEmail(text);
         }}
-        error={zodErrors.email}
+        error={errors.email}
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
@@ -88,7 +68,7 @@ const Signup = () => {
           clearError("userName");
           setUserName(text);
         }}
-        error={zodErrors.userName}
+        error={errors.userName}
         autoCapitalize="none"
         autoCorrect={false}
         textContentType="username"
@@ -135,42 +115,5 @@ const Signup = () => {
     </AuthScreen>
   );
 };
-
-const makeStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    logoContainer: {
-      alignItems: "center",
-      gap: 8,
-    },
-    logo: { width: 72, height: 72, borderRadius: 12 },
-    logoText: { color: colors.primary, fontSize: 48, textAlign: "center" },
-    button: {
-      backgroundColor: colors.accent,
-      padding: 16,
-      borderRadius: 8,
-    },
-    buttonDisabled: {
-      backgroundColor: "gray",
-      opacity: 0.6,
-    },
-    buttonText: { color: "white", textAlign: "center", fontSize: 18 },
-    formError: {
-      color: colors.error,
-      textAlign: "center",
-      fontSize: 14,
-    },
-    signupSection: {
-      alignItems: "center",
-      gap: 8,
-    },
-    signupText: {
-      fontSize: 18,
-      color: colors.primary,
-    },
-    signupLink: {
-      fontSize: 18,
-      color: colors.accent,
-    },
-  });
 
 export default Signup;
