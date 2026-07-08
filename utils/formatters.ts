@@ -1,9 +1,3 @@
-export const formatDuration = (duration: number) => {
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
-
 export const formatTime = (seconds: number) => {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return "0:00";
@@ -15,7 +9,7 @@ export const formatTime = (seconds: number) => {
 
 export const formatDate = (date: string | undefined): string => {
   if (!date) {
-    return ""
+    return "";
   }
 
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -25,4 +19,4 @@ export const formatDate = (date: string | undefined): string => {
   });
 
   return formatter.format(new Date(date));
-}
+};
