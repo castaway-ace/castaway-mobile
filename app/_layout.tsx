@@ -42,7 +42,7 @@ const RootNavigator = () => {
     } else if (isAuthenticated && inAuthGroup) {
       router.replace("/(tabs)/home");
     }
-  }, [isAuthenticated, isLoading, router, segments]);
+  }, [isAuthenticated, isLoading, router, inAuthGroup]);
 
   if (isLoading || redirectPending) {
     return <LoadingScreen />;
