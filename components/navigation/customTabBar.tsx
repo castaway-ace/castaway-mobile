@@ -1,10 +1,11 @@
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useToast } from "@/contexts/toastContext";
 import { BottomTabBar } from "expo-router/js-tabs";
+import { ComponentProps } from "react";
 import { StyleSheet, View } from "react-native";
 import MusicPlayer from "@/components/player/musicPlayer";
 
-const CustomTabBar = (props: any) => {
+const CustomTabBar = (props: ComponentProps<typeof BottomTabBar>) => {
   const { currentTrack } = useAudioPlayerContext();
   const { setBottomInset } = useToast();
 

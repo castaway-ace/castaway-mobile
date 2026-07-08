@@ -1,12 +1,15 @@
 import { ThemeColors, ThemeName, Themes } from "@/constants/theme";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
+import { ColorSchemeName, useColorScheme } from "react-native";
 
 interface ThemeContextProps {
   theme: ThemeName;
   colors: ThemeColors;
   changeTheme: (value: ThemeName) => void;
 }
+
+const normalizeScheme = (scheme: ColorSchemeName): ThemeName =>
+  scheme === "dark" ? "dark" : "light";
 
 export const ThemeContext = createContext<ThemeContextProps>({
   theme: "light",
@@ -16,11 +19,11 @@ export const ThemeContext = createContext<ThemeContextProps>({
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const systemTheme = useColorScheme();
-  const [theme, setTheme] = useState<ThemeName>(systemTheme || "light");
+  const [theme, setTheme] = useState<ThemeName>(normalizeScheme(systemTheme));
 
   useEffect(() => {
     if (systemTheme) {
-      setTheme(systemTheme);
+      setTheme(normalizeScheme(systemTheme));
     }
   }, [systemTheme]);
 

@@ -1,13 +1,9 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { SymbolViewProps, SymbolWeight } from "expo-symbols";
+import { SymbolWeight } from "expo-symbols";
 import { ComponentProps } from "react";
 import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
 
-type IconMapping = Record<
-  SymbolViewProps["name"],
-  ComponentProps<typeof Ionicons>["name"]
->;
-type IconSymbolName = keyof typeof MAPPING;
+type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -38,6 +34,7 @@ const MAPPING = {
   "heart.fill": "heart",
   shuffle: "shuffle",
   repeat: "repeat",
+  "repeat.1": "repeat",
   "forward.end": "play-skip-forward-outline",
   "backward.end": "play-skip-back-outline",
   "circle.badge.plus": "add-circle-outline",
@@ -47,7 +44,9 @@ const MAPPING = {
   "gearshape.fill": "settings",
   gearshape: "settings-outline",
   "opticaldisc.fill": "disc-sharp",
-} as IconMapping;
+} satisfies Record<string, IoniconName>;
+
+type IconSymbolName = keyof typeof MAPPING;
 
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
