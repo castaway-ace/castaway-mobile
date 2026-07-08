@@ -13,11 +13,6 @@ interface StarMutationConfig {
   invalidateKeys: (id: string) => QueryKey[];
 }
 
-/**
- * Shared star/un-star toggle used by tracks, albums, and artists. Handles the
- * toggle, success toast, and cache invalidation so each domain only supplies
- * its endpoints, copy, and keys.
- */
 export const useStarMutation = ({
   star,
   unStar,

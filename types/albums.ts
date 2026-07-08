@@ -1,6 +1,5 @@
 import type { components } from "@/api/schema";
 
-export type AlbumArtist = components["schemas"]["ArtistRef"];
 export type AlbumTrack = components["schemas"]["AlbumTrackEntity"];
 
 export type Album = components["schemas"]["AlbumEntity"];
