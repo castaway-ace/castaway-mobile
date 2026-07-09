@@ -1,6 +1,11 @@
 import { OrderBy } from "@/constants/api";
 import { GC_TIME, STALE_TIME } from "@/constants/query";
-import { skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  skipToken,
+  useInfiniteQuery,
+  useQueries,
+  useQuery,
+} from "@tanstack/react-query";
 import { queryKeys } from "../queryKeys";
 import { playlistApi, PlaylistOrder } from "./api";
 
@@ -58,3 +63,27 @@ export const usePlaylistTrack = (playlistId: string | undefined, trackId: string
     staleTime: STALE_TIME.LONG,
   });
 }
+
+export const usePlaylistsContainingTrack = (
+  playlistIds: string[],
+  trackId: string | undefined,
+): Set<string> => {
+  return useQueries({
+    queries: playlistIds.map((playlistId) => ({
+      queryKey: queryKeys.playlists.tracks(playlistId),
+      queryFn: () => playlistApi.getAllTracks(playlistId),
+      staleTime: STALE_TIME.LONG,
+      gcTime: GC_TIME,
+    })),
+    combine: (results) => {
+      const containing = new Set<string>();
+      if (!trackId) return containing;
+      results.forEach((result, index) => {
+        if (result.data?.some((track) => track.trackId === trackId)) {
+          containing.add(playlistIds[index]);
+        }
+      });
+      return containing;
+    },
+  });
+};

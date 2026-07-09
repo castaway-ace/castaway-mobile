@@ -1,5 +1,8 @@
 import { useAddTrackToPlaylist } from "@/api/playlists/mutations";
-import { usePlaylists } from "@/api/playlists/queries";
+import {
+  usePlaylists,
+  usePlaylistsContainingTrack,
+} from "@/api/playlists/queries";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import PlaylistCover from "@/components/media/playlistCover";
 import { usePopupModal } from "@/contexts/popupModalContext";
@@ -15,19 +18,41 @@ interface PlaylistSelectContentProps {
 
 const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   const { close } = useSheetModal();
-  const { open: openCreatePlaylist } = usePopupModal();
+  const { openCreatePlaylist, openConfirm } = usePopupModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
 
-  const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
+  const playlists = useMemo(
+    () => playlistData?.pages.flatMap((page) => page) ?? [],
+    [playlistData],
+  );
+
+  const playlistsWithTrack = usePlaylistsContainingTrack(
+    playlists.map((playlist) => playlist.id),
+    trackId,
+  );
 
   const { mutate: addPlaylistTrack } = useAddTrackToPlaylist();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const onPlaylistPress = (id: string, name: string) => {
+  const addTrack = (id: string, name: string) => {
     addPlaylistTrack({ playlistId: id, trackId, playlistName: name });
+  };
+
+  const onPlaylistPress = (id: string, name: string) => {
     close();
+    if (playlistsWithTrack.has(id)) {
+      openConfirm({
+        title: "Already added",
+        message: `"${name}" already contains this song. Add it again?`,
+        confirmLabel: "Add anyway",
+        cancelLabel: "Cancel",
+        onConfirm: () => addTrack(id, name),
+      });
+      return;
+    }
+    addTrack(id, name);
   };
 
   const onCreatePlaylistPress = () => {
@@ -45,21 +70,33 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
           <Text style={styles.trackTitle}>Create new playlist</Text>
         </View>
       </Pressable>
-      {playlists.map((playlist) => (
-        <Pressable
-          key={playlist.id}
-          style={styles.spacing}
-          onPress={() => onPlaylistPress(playlist.id, playlist.name)}
-        >
-          <PlaylistCover
-            urls={playlist.albumCoverUrls}
-            style={styles.albumArt}
-          />
-          <View style={styles.trackLeftInfo}>
-            <Text style={styles.trackTitle}>{playlist.name}</Text>
-          </View>
-        </Pressable>
-      ))}
+      {playlists.map((playlist) => {
+        const alreadyAdded = playlistsWithTrack.has(playlist.id);
+        return (
+          <Pressable
+            key={playlist.id}
+            style={styles.spacing}
+            onPress={() => onPlaylistPress(playlist.id, playlist.name)}
+          >
+            <PlaylistCover
+              urls={playlist.albumCoverUrls}
+              style={styles.albumArt}
+            />
+            <View style={styles.trackLeftInfo}>
+              <Text style={styles.trackTitle}>{playlist.name}</Text>
+              {alreadyAdded && <Text style={styles.addedLabel}>Added</Text>}
+            </View>
+            {alreadyAdded && (
+              <IconSymbol
+                size={24}
+                name={"checkmark"}
+                color={colors.accent}
+                style={styles.check}
+              />
+            )}
+          </Pressable>
+        );
+      })}
     </View>
   );
 };
@@ -89,12 +126,19 @@ const makeStyles = (colors: ThemeColors) =>
       backgroundColor: colors.secondary,
     },
     trackLeftInfo: {
-      display: "flex",
+      flex: 1,
       gap: 4,
     },
     trackTitle: {
       color: colors.primary,
       fontSize: 18,
+    },
+    addedLabel: {
+      color: colors.secondary,
+      fontSize: 14,
+    },
+    check: {
+      marginLeft: "auto",
     },
   });
 

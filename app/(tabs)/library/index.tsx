@@ -26,7 +26,7 @@ const Library = () => {
 
   const { data: interactions } = useInteractions();
 
-  const { open } = usePopupModal();
+  const { openCreatePlaylist } = usePopupModal();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
@@ -60,7 +60,7 @@ const Library = () => {
   };
 
   const onPlaylistCreatePress = () => {
-    open();
+    openCreatePlaylist();
   };
 
   return (

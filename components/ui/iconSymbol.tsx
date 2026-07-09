@@ -25,6 +25,7 @@ const MAPPING = {
   ellipsis: "ellipsis-vertical",
   "plus.circle": "add-circle-outline",
   plus: "add-outline",
+  checkmark: "checkmark",
   "minus.circle": "remove-circle-outline",
   "pause.fill": "pause",
   "play.fill": "play",

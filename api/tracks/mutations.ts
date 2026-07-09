@@ -13,6 +13,7 @@ export const useTrackStar = () =>
     invalidateKeys: (id) => [
       queryKeys.tracks.detail(id),
       queryKeys.tracks.all,
-      queryKeys.playlists.tracksAll,
+      queryKeys.playlists.all,
+      queryKeys.interactions,
     ],
   });

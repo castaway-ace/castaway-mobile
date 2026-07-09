@@ -73,6 +73,7 @@ export const useAddTrackToPlaylist = () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
         },
     });
 };
@@ -89,6 +90,7 @@ export const useRemoveTrackFromPlaylist = () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
         },
     });
 };
