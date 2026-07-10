@@ -73,7 +73,7 @@ const Library = () => {
       </View>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
+        contentContainerStyle={{ paddingBottom: tabBarHeight + 84 }}
         showsVerticalScrollIndicator={false}
       >
         {interactionsAvailable && (
