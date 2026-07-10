@@ -10,6 +10,7 @@ export const useTrackStar = () =>
       added: "Added to Liked Songs",
       removed: "Removed from Liked Songs",
     },
+    detailKey: (id) => queryKeys.tracks.detail(id),
     invalidateKeys: (id) => [
       queryKeys.tracks.detail(id),
       queryKeys.tracks.all,

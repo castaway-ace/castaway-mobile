@@ -10,6 +10,7 @@ export const useArtistStar = () =>
       added: "Added to Your Library",
       removed: "Removed from Your Library",
     },
+    detailKey: (id) => queryKeys.artists.detail(id),
     invalidateKeys: (id) => [
       queryKeys.artists.detail(id),
       queryKeys.artists.all,

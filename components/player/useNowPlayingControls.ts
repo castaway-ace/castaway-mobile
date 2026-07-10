@@ -1,11 +1,12 @@
 import { useTrackStar } from "@/api/tracks/mutations";
 import { useTrack } from "@/api/tracks/queries";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 export function useActiveTrackStar() {
   const { currentTrack } = useAudioPlayerContext();
   const { mutate: trackStar } = useTrackStar();
+  const inFlight = useRef(false);
 
   const activeTrackId = currentTrack
     ? "trackId" in currentTrack
@@ -17,8 +18,16 @@ export function useActiveTrackStar() {
   const starred = !!trackDetail?.starred;
 
   const toggleStar = useCallback(() => {
-    if (!activeTrackId) return;
-    trackStar({ id: activeTrackId, starred });
+    if (!activeTrackId || inFlight.current) return;
+    inFlight.current = true;
+    trackStar(
+      { id: activeTrackId, starred },
+      {
+        onSettled: () => {
+          inFlight.current = false;
+        },
+      },
+    );
   }, [activeTrackId, starred, trackStar]);
 
   return { starred, toggleStar };

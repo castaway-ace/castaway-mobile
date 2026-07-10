@@ -10,5 +10,6 @@ export const useAlbumStar = () =>
       added: "Added to Your Library",
       removed: "Removed from Your Library",
     },
+    detailKey: (id) => queryKeys.albums.detail(id),
     invalidateKeys: (id) => [queryKeys.albums.detail(id), queryKeys.albums.all],
   });
