@@ -2,7 +2,7 @@
   "expo": {
     "name": "castaway",
     "slug": "castaway",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/castaway.png",
     "scheme": "castaway",
