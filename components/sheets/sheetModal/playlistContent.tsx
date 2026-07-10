@@ -1,5 +1,6 @@
 import { useDeletePlaylist } from "@/api/playlists/mutations";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { usePopupModal } from "@/contexts/popupModalContext";
 import { SheetPlaylist, useSheetModal } from "@/contexts/sheetModalContext";
 import { router, usePathname } from "expo-router";
 import { FC, useMemo } from "react";
@@ -13,6 +14,7 @@ interface PlaylistContentProps {
 
 const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
   const { close } = useSheetModal();
+  const { openConfirm } = usePopupModal();
   const pathname = usePathname();
 
   const { mutate: deletePlaylist } = useDeletePlaylist();
@@ -25,10 +27,19 @@ const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
   const location = inLibrary ? "library" : "home";
 
   const onPlaylistDeletePress = () => {
-    deletePlaylist(content.id, {
-      onSuccess: () => {
-        close();
-        router.replace(`/${location}`);
+    openConfirm({
+      title: "Delete Playlist",
+      message:
+        "Are you sure you want to delete this playlist? This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deletePlaylist(content.id, {
+          onSuccess: () => {
+            close();
+            router.replace(`/${location}`);
+          },
+        });
       },
     });
   };

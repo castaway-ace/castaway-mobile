@@ -1,6 +1,7 @@
 import { useRemoveTrackFromPlaylist } from "@/api/playlists/mutations";
 import { usePlaylist } from "@/api/playlists/queries";
 import { useTrackStar } from "@/api/tracks/mutations";
+import { usePopupModal } from "@/contexts/popupModalContext";
 import {
     SheetPlaylistTrack,
     SheetType,
@@ -29,6 +30,7 @@ interface PlaylistTrackContentProps {
 
 const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
   const { open, close } = useSheetModal();
+  const { openConfirm } = usePopupModal();
   const { data: track } = useTrack(content.trackId);
   const { data: playlist } = usePlaylist(content.id);
   const location = useTabLocation();
@@ -53,8 +55,16 @@ const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
 
   const onRemoveFromPlaylistPress = () => {
     if (!playlist?.id) return;
-    removePlaylistTrack({ playlistId: playlist.id, trackId: track.id });
-    close();
+    openConfirm({
+      title: "Remove Track",
+      message: "Are you sure you want to remove this track from the playlist?",
+      confirmLabel: "Remove",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        removePlaylistTrack({ playlistId: playlist.id, trackId: track.id });
+        close();
+      },
+    });
   };
 
   const onLikedSongPress = () => {
