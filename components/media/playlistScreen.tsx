@@ -31,7 +31,11 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const onTrackPress = (index: number) => {
     if (!playlistTracks) return;
-    playQueue(playlistTracks, index);
+    playQueue(
+      playlistTracks,
+      index,
+      playlist ? { type: "playlist", name: playlist.name } : null,
+    );
   };
 
   const onOptionPress = () => {

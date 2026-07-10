@@ -1,3 +1,5 @@
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
@@ -5,12 +7,12 @@ import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { blurHash } from "@/constants/blur";
-import { IconSymbol } from "@/components/ui/iconSymbol";
-import ProgressBar from "./progressBar";
 import { useActiveTrackStar, usePlayPause } from "../useNowPlayingControls";
+import { usePlayerForeground } from "../usePlayerForeground";
+import ProgressBar from "./progressBar";
 
 const MusicPlayerModalContent: FC = () => {
   const { colors } = useTheme();
@@ -20,6 +22,8 @@ const MusicPlayerModalContent: FC = () => {
     previous,
     currentTrack,
     coverArtUrl,
+    coverColor,
+    source,
     toggleShuffle,
     isShuffled,
     cycleRepeat,
@@ -29,6 +33,11 @@ const MusicPlayerModalContent: FC = () => {
   const { open: openOptions } = useSheetModal();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
+  const { palette, primaryTextStyle, secondaryTextStyle } = usePlayerForeground(
+    coverColor,
+    colors,
+  );
+
   const { starred, toggleStar } = useActiveTrackStar();
   const handlePlayTrack = usePlayPause();
 
@@ -36,15 +45,44 @@ const MusicPlayerModalContent: FC = () => {
     return null;
   }
 
+  const sourceLabel = source
+    ? `Playing from ${source.type === "album" ? "Album" : "Playlist"}`
+    : null;
+
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={close}>
-          <IconSymbol size={32} name={"chevron.down"} color={colors.primary} />
+          <IconSymbol
+            size={32}
+            name={"chevron.down"}
+            color={palette.primary}
+          />
         </Pressable>
-        <Text style={styles.headerText}>Playing Now</Text>
+        <View style={styles.headerCenter}>
+          {source ? (
+            <>
+              <Animated.Text
+                style={[styles.headerLabel, secondaryTextStyle]}
+                numberOfLines={1}
+              >
+                {sourceLabel}
+              </Animated.Text>
+              <Animated.Text
+                style={[styles.headerTitle, primaryTextStyle]}
+                numberOfLines={1}
+              >
+                {source.name}
+              </Animated.Text>
+            </>
+          ) : (
+            <Animated.Text style={[styles.headerTitle, primaryTextStyle]}>
+              Playing Now
+            </Animated.Text>
+          )}
+        </View>
         <Pressable onPress={() => openOptions({ type: SheetType.NOW_PLAYING })}>
-          <IconSymbol size={32} name={"ellipsis"} color={colors.primary} />
+          <IconSymbol size={32} name={"ellipsis"} color={palette.primary} />
         </Pressable>
       </View>
       <View style={styles.albumArtContainer}>
@@ -59,18 +97,24 @@ const MusicPlayerModalContent: FC = () => {
       <View style={styles.bottomContainer}>
         <View style={styles.middle}>
           <View style={styles.trackInfoContainer}>
-            <Text style={styles.titleText} numberOfLines={1}>
+            <Animated.Text
+              style={[styles.titleText, primaryTextStyle]}
+              numberOfLines={1}
+            >
               {currentTrack.title}
-            </Text>
-            <Text style={styles.artistText} numberOfLines={1}>
+            </Animated.Text>
+            <Animated.Text
+              style={[styles.artistText, secondaryTextStyle]}
+              numberOfLines={1}
+            >
               {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
-            </Text>
+            </Animated.Text>
           </View>
           <Pressable onPress={toggleStar}>
             <IconSymbol
               name={starred ? "heart.fill" : "heart"}
               size={40}
-              color={colors.primary}
+              color={palette.primary}
             />
           </Pressable>
         </View>
@@ -81,25 +125,29 @@ const MusicPlayerModalContent: FC = () => {
               size={40}
               name={"shuffle"}
               style={{ opacity: isShuffled ? 1 : 0.4 }}
-              color={colors.primary}
+              color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={previous}>
             <IconSymbol
               size={40}
               name={"backward.end"}
-              color={colors.primary}
+              color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={handlePlayTrack}>
             <IconSymbol
               size={80}
               name={isPlaying ? "pause.circle.fill" : "play.circle.fill"}
-              color={colors.primary}
+              color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={next}>
-            <IconSymbol size={40} name={"forward.end"} color={colors.primary} />
+            <IconSymbol
+              size={40}
+              name={"forward.end"}
+              color={palette.primary}
+            />
           </Pressable>
           <Pressable onPress={cycleRepeat}>
             <IconSymbol
@@ -110,7 +158,7 @@ const MusicPlayerModalContent: FC = () => {
                   ? "repeat"
                   : "repeat.1"
               }
-              color={colors.primary}
+              color={palette.primary}
             />
           </Pressable>
         </View>
@@ -131,10 +179,22 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: "space-between",
       alignItems: "center",
     },
-    headerText: {
+    headerCenter: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 8,
+    },
+    headerLabel: {
+      color: colors.secondary,
+      fontSize: 12,
+      fontWeight: 600,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
+    },
+    headerTitle: {
       color: colors.primary,
       fontWeight: 500,
-      fontSize: 20,
+      fontSize: 16,
     },
     albumArtContainer: {
       flex: 1,

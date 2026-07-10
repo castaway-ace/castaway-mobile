@@ -3,20 +3,24 @@ import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useTheme } from "@/contexts/themeContext";
 import { formatTime } from "@/utils/formatters";
 import { FC, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
+import { usePlayerForeground } from "../usePlayerForeground";
 
 const ProgressBar: FC = () => {
   const [barWidth, setBarWidth] = useState(0);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubTime, setScrubTime] = useState(0);
 
-  const { currentTime, duration, moveTarget, play, isPlaying } =
+  const { currentTime, duration, moveTarget, play, isPlaying, coverColor } =
     useAudioPlayerContext();
 
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { primaryTextStyle, primaryBgStyle, secondaryBgStyle } =
+    usePlayerForeground(coverColor, colors);
 
   const xToTime = (x: number) => {
     if (barWidth <= 0 || duration <= 0) {
@@ -70,18 +74,26 @@ const ProgressBar: FC = () => {
     <View>
       <GestureDetector gesture={composed}>
         <View style={styles.barTouchArea}>
-          <View
-            style={styles.bar}
+          <Animated.View
+            style={[styles.bar, secondaryBgStyle]}
             onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
           >
-            <View style={[styles.fill, { width: `${progress * 100}%` }]} />
-            <View style={[styles.thumb, { left: `${progress * 100}%` }]} />
-          </View>
+            <Animated.View
+              style={[styles.fill, primaryBgStyle, { width: `${progress * 100}%` }]}
+            />
+            <Animated.View
+              style={[styles.thumb, primaryBgStyle, { left: `${progress * 100}%` }]}
+            />
+          </Animated.View>
         </View>
       </GestureDetector>
       <View style={styles.scrollBarInfo}>
-        <Text style={{ color: colors.primary }}>{formatTime(displayTime)}</Text>
-        <Text style={{ color: colors.primary }}>{formatTime(duration)}</Text>
+        <Animated.Text style={primaryTextStyle}>
+          {formatTime(displayTime)}
+        </Animated.Text>
+        <Animated.Text style={primaryTextStyle}>
+          {formatTime(duration)}
+        </Animated.Text>
       </View>
     </View>
   );

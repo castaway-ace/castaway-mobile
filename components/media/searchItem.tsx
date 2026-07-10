@@ -65,7 +65,10 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
           );
         }
 
-        playQueue(album.tracks, startIndex);
+        playQueue(album.tracks, startIndex, {
+          type: "album",
+          name: album.title,
+        });
       } catch (error) {
         console.error("Failed to start album queue from search", error);
       } finally {

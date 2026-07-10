@@ -4,17 +4,12 @@ import { usePlayerModal } from "@/contexts/playerModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { useMemo } from "react";
-import {
-    ActivityIndicator,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { blurHash } from "@/constants/blur";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import Animated from "react-native-reanimated";
 import { useAnimatedBackground } from "./useAnimatedBackground";
+import { usePlayerForeground } from "./usePlayerForeground";
 import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
 
 const MusicPlayer = () => {
@@ -33,6 +28,13 @@ const MusicPlayer = () => {
   const handlePlayTrack = usePlayPause();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
+  const {
+    palette,
+    primaryTextStyle,
+    secondaryTextStyle,
+    primaryBgStyle,
+    secondaryBgStyle,
+  } = usePlayerForeground(coverColor, colors);
 
   const progress =
     duration > 0 ? Math.min(Math.max(currentTime / duration, 0), 1) : 0;
@@ -54,12 +56,18 @@ const MusicPlayer = () => {
               style={styles.albumArt}
             />
             <View style={styles.info}>
-              <Text style={styles.title} numberOfLines={1}>
+              <Animated.Text
+                style={[styles.title, primaryTextStyle]}
+                numberOfLines={1}
+              >
                 {currentTrack.title}
-              </Text>
-              <Text style={styles.artist} numberOfLines={1}>
+              </Animated.Text>
+              <Animated.Text
+                style={[styles.artist, secondaryTextStyle]}
+                numberOfLines={1}
+              >
                 {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
-              </Text>
+              </Animated.Text>
             </View>
           </Pressable>
           <View style={styles.buttonContainer}>
@@ -67,30 +75,32 @@ const MusicPlayer = () => {
               <IconSymbol
                 name={starred ? "heart.fill" : "heart"}
                 size={32}
-                color={colors.primary}
+                color={palette.primary}
               />
             </Pressable>
             <Pressable onPress={handlePlayTrack} disabled={isLoading}>
               {isLoading ? (
                 <ActivityIndicator
                   size="small"
-                  color={colors.primary}
+                  color={palette.primary}
                   style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
                 />
               ) : (
                 <IconSymbol
                   size={28}
                   name={isPlaying ? "pause.fill" : "play.fill"}
-                  color={colors.primary}
+                  color={palette.primary}
                 />
               )}
             </Pressable>
           </View>
         </View>
         <View style={styles.barArea}>
-          <View style={styles.bar}>
-            <View style={[styles.fill, { width: `${progress * 100}%` }]} />
-          </View>
+          <Animated.View style={[styles.bar, secondaryBgStyle]}>
+            <Animated.View
+              style={[styles.fill, primaryBgStyle, { width: `${progress * 100}%` }]}
+            />
+          </Animated.View>
         </View>
       </Animated.View>
     </View>

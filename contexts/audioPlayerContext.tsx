@@ -29,6 +29,13 @@ export type RepeatMode = "off" | "all" | "one";
 
 export type PlayableTrack = TrackSummary | AlbumTrack | PlaylistTrack;
 
+export type PlaybackSourceType = "album" | "playlist";
+
+export interface PlaybackSource {
+  type: PlaybackSourceType;
+  name: string;
+}
+
 interface AudioPlayerContextValue {
   currentTrack: PlayableTrack | null;
   coverArtUrl: string | undefined;
@@ -36,6 +43,7 @@ interface AudioPlayerContextValue {
   queue: PlayableTrack[];
   upNext: PlayableTrack[];
   position: number;
+  source: PlaybackSource | null;
   isShuffled: boolean;
   repeatMode: RepeatMode;
   isPlaying: boolean;
@@ -44,7 +52,11 @@ interface AudioPlayerContextValue {
   currentTime: number;
   duration: number;
   loadTrack: (trackId: string) => Promise<void>;
-  playQueue: (tracks: PlayableTrack[], startIndex?: number) => void;
+  playQueue: (
+    tracks: PlayableTrack[],
+    startIndex?: number,
+    source?: PlaybackSource | null,
+  ) => void;
   addToQueue: (track: PlayableTrack) => void;
   clearQueue: () => void;
   play: () => void;
@@ -63,12 +75,18 @@ interface QueueState {
   queue: PlayableTrack[];
   order: number[];
   position: number;
+  source: PlaybackSource | null;
   isShuffled: boolean;
   repeatMode: RepeatMode;
 }
 
 type QueueAction =
-  | { type: "SET_QUEUE"; tracks: PlayableTrack[]; startIndex: number }
+  | {
+      type: "SET_QUEUE";
+      tracks: PlayableTrack[];
+      startIndex: number;
+      source: PlaybackSource | null;
+    }
   | { type: "NEXT"; naturalEnd: boolean }
   | { type: "PREVIOUS" }
   | { type: "ENQUEUE"; track: PlayableTrack }
@@ -81,6 +99,7 @@ const initialQueueState: QueueState = {
   queue: [],
   order: [],
   position: -1,
+  source: null,
   isShuffled: false,
   repeatMode: "off",
 };
@@ -108,9 +127,9 @@ const shuffleIndices = (length: number, keepFirst?: number): number[] => {
 const queueReducer = (state: QueueState, action: QueueAction): QueueState => {
   switch (action.type) {
     case "SET_QUEUE": {
-      const { tracks, startIndex } = action;
+      const { tracks, startIndex, source } = action;
       if (tracks.length === 0) {
-        return { ...state, queue: [], order: [], position: -1 };
+        return { ...state, queue: [], order: [], position: -1, source: null };
       }
       const order = state.isShuffled
         ? shuffleIndices(tracks.length, startIndex)
@@ -120,6 +139,7 @@ const queueReducer = (state: QueueState, action: QueueAction): QueueState => {
         queue: tracks,
         order,
         position: order.indexOf(startIndex),
+        source,
       };
     }
 
@@ -177,7 +197,7 @@ const queueReducer = (state: QueueState, action: QueueAction): QueueState => {
       return { ...state, repeatMode: action.mode };
 
     case "CLEAR":
-      return { ...state, queue: [], order: [], position: -1 };
+      return { ...state, queue: [], order: [], position: -1, source: null };
 
     default:
       return state;
@@ -217,7 +237,7 @@ export const AudioPlayerProvider = ({
   children: ReactNode;
 }): ReactElement => {
   const [queueState, dispatch] = useReducer(queueReducer, initialQueueState);
-  const { queue, order, position, isShuffled, repeatMode } = queueState;
+  const { queue, order, position, source, isShuffled, repeatMode } = queueState;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -361,6 +381,7 @@ export const AudioPlayerProvider = ({
         type: "SET_QUEUE",
         tracks: [toTrackSummary(track)],
         startIndex: 0,
+        source: null,
       });
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load track"));
@@ -369,8 +390,12 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const playQueue = useCallback(
-    (tracks: PlayableTrack[], startIndex = 0): void => {
-      dispatch({ type: "SET_QUEUE", tracks, startIndex });
+    (
+      tracks: PlayableTrack[],
+      startIndex = 0,
+      source: PlaybackSource | null = null,
+    ): void => {
+      dispatch({ type: "SET_QUEUE", tracks, startIndex, source });
     },
     [],
   );
@@ -450,6 +475,7 @@ export const AudioPlayerProvider = ({
     queue,
     upNext,
     position,
+    source,
     isShuffled,
     repeatMode,
     isPlaying: status.playing,
