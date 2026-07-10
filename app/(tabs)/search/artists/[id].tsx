@@ -1,3 +1,1 @@
-import { createArtistPage } from "@/components/pages/artistPage";
-
-export default createArtistPage("search");
+export { default } from "@/components/pages/artistPage";

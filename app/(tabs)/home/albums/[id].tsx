@@ -1,3 +1,1 @@
-import { createAlbumPage } from "@/components/pages/albumPage";
-
-export default createAlbumPage("home");
+export { default } from "@/components/pages/albumPage";

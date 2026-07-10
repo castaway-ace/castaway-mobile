@@ -1,17 +1,16 @@
 import ArtistScreen from "@/components/media/artistScreen";
-import type { TabRoute } from "@/components/pages/albumPage";
-import { router, useLocalSearchParams } from "expo-router";
+import type { TabRoute } from "@/types/navigation";
+import { router, useLocalSearchParams, useSegments } from "expo-router";
 
-export const createArtistPage = (tab: TabRoute) => {
-  const ArtistPage = () => {
-    const { id } = useLocalSearchParams<{ id: string }>();
+const ArtistPage = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [, tab] = useSegments() as [string, TabRoute];
 
-    const onAlbumPress = (albumId: string) => {
-      router.navigate(`/(tabs)/${tab}/albums/${albumId}`);
-    };
-
-    return <ArtistScreen id={id} onAlbumPress={onAlbumPress} />;
+  const onAlbumPress = (albumId: string) => {
+    router.navigate(`/(tabs)/${tab}/albums/${albumId}`);
   };
 
-  return ArtistPage;
+  return <ArtistScreen id={id} onAlbumPress={onAlbumPress} />;
 };
+
+export default ArtistPage;
