@@ -23,6 +23,7 @@ module.exports = defineConfig([
     rules: {
       "react-hooks/refs": "off",
       "@typescript-eslint/no-require-imports": "off",
+      "react/display-name": "off",
     },
   },
 ]);

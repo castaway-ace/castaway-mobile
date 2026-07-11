@@ -1,11 +1,8 @@
 import { notifyManager } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 
 process.env.EXPO_PUBLIC_API_URL = "http://api.test";
 
-// Flush React Query cache notifications synchronously. By default they are
-// batched onto a setTimeout(0) tick, so post-mutation cache updates land after
-// the test's act() scope has closed ("not wrapped in act(...)" warnings) and
-// leave a dangling timer that keeps the jest worker alive.
 notifyManager.setScheduler((cb) => cb());
 
 jest.mock("expo-secure-store", () => {
@@ -85,6 +82,68 @@ jest.mock("react-native-worklets", () => ({
     (...args: unknown[]) =>
       fn(...args),
 }));
+
+jest.mock("react-native-safe-area-context", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const insets = { top: 0, bottom: 0, left: 0, right: 0 };
+  return {
+    SafeAreaProvider: ({ children }: { children?: ReactNode }) => children,
+    SafeAreaView: ({
+      children,
+      edges,
+      ...props
+    }: {
+      children?: ReactNode;
+      edges?: unknown;
+    }) => React.createElement(View, props, children),
+    useSafeAreaInsets: () => insets,
+    useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+    SafeAreaInsetsContext: React.createContext(insets),
+  };
+});
+
+jest.mock("react-native-keyboard-controller", () =>
+  require("react-native-keyboard-controller/jest"),
+);
+
+jest.mock("expo-router/js-tabs", () => ({ useBottomTabBarHeight: () => 0 }));
+
+jest.mock("@/components/ui/iconSymbol", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    IconSymbol: ({ name }: { name?: string }) =>
+      React.createElement(Text, null, name),
+  };
+});
+
+jest.mock("expo-router", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  const router = {
+    navigate: jest.fn(),
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    dismiss: jest.fn(),
+    setParams: jest.fn(),
+  };
+  const Stack = ({ children }: { children?: ReactNode }) => children;
+  Stack.Screen = () => null;
+  return {
+    router,
+    useRouter: () => router,
+    useSegments: jest.fn(() => []),
+    useLocalSearchParams: jest.fn(() => ({})),
+    usePathname: jest.fn(() => "/"),
+    // Links usually wrap text, so render children inside <Text> to satisfy RN.
+    Link: ({ children }: { children?: ReactNode }) =>
+      React.createElement(Text, null, children),
+    Stack,
+    Redirect: () => null,
+  };
+});
 
 afterEach(() => {
   const SecureStore = require("expo-secure-store");
