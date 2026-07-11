@@ -8,6 +8,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "test": "jest --runInBand --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --runInBand --forceExit",
+    "test:handles": "jest --detectOpenHandles --runInBand --forceExit",
     "generate:types": "openapi-typescript ./api/schema.yaml -o ./api/schema.d.ts"
   },
   "dependencies": {
@@ -50,10 +54,16 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.2.14",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~56.0.4",
+    "jest": "~29.7.0",
+    "jest-expo": "~56.0.5",
     "openapi-typescript": "^7.13.0",
+    "react-test-renderer": "19.2.3",
     "typescript": "~6.0.3"
   },
   "private": true

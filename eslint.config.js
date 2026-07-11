@@ -13,4 +13,16 @@ module.exports = defineConfig([
       "react-hooks/set-state-in-effect": "off",
     },
   },
+  {
+    files: [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "test-utils/**/*.ts",
+      "test-utils/**/*.tsx",
+    ],
+    rules: {
+      "react-hooks/refs": "off",
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
