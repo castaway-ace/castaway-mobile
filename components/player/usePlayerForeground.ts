@@ -2,58 +2,43 @@ import { ThemeColors } from "@/constants/theme";
 import { getContrastPalette } from "@/utils/contrast";
 import { useEffect } from "react";
 import {
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { COLOR_TRANSITION_DURATION } from "@/constants/player";
 
 export const usePlayerForeground = (
   coverColor: string | undefined,
   colors: ThemeColors,
-  duration = 300,
+  duration = COLOR_TRANSITION_DURATION,
 ) => {
-  const progress = useSharedValue(coverColor ? 1 : 0);
-
   const palette = coverColor
     ? getContrastPalette(coverColor)
     : { primary: colors.primary, secondary: colors.secondary };
 
-  const fromPrimary = colors.primary;
-  const toPrimary = palette.primary;
-  const fromSecondary = colors.secondary;
-  const toSecondary = palette.secondary;
+  const primary = useSharedValue(palette.primary);
+  const secondary = useSharedValue(palette.secondary);
 
   useEffect(() => {
-    progress.value = coverColor ? withTiming(1, { duration }) : 0;
-  }, [coverColor, duration, progress]);
+    primary.value = withTiming(palette.primary, { duration });
+    secondary.value = withTiming(palette.secondary, { duration });
+  }, [palette.primary, palette.secondary, duration, primary, secondary]);
 
   const primaryTextStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(progress.value, [0, 1], [fromPrimary, toPrimary]),
+    color: primary.value,
   }));
 
   const secondaryTextStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      progress.value,
-      [0, 1],
-      [fromSecondary, toSecondary],
-    ),
+    color: secondary.value,
   }));
 
   const primaryBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 1],
-      [fromPrimary, toPrimary],
-    ),
+    backgroundColor: primary.value,
   }));
 
   const secondaryBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 1],
-      [fromSecondary, toSecondary],
-    ),
+    backgroundColor: secondary.value,
   }));
 
   return {

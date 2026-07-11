@@ -1,0 +1,1 @@
+export const COLOR_TRANSITION_DURATION = 300;

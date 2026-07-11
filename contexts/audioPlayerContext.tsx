@@ -266,10 +266,7 @@ export const AudioPlayerProvider = ({
 
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
 
-  const [extractedColor, setExtractedColor] = useState<{
-    url: string;
-    color: string;
-  } | null>(null);
+  const [coverColor, setCoverColor] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!albumArtUrl) return;
@@ -277,10 +274,7 @@ export const AudioPlayerProvider = ({
     getColors(albumArtUrl, { cache: true, key: albumArtUrl })
       .then((result) => {
         if (!cancelled) {
-          setExtractedColor({
-            url: albumArtUrl,
-            color: pickCoverColor(result),
-          });
+          setCoverColor(pickCoverColor(result));
         }
       })
       .catch(() => {});
@@ -288,11 +282,6 @@ export const AudioPlayerProvider = ({
       cancelled = true;
     };
   }, [albumArtUrl]);
-
-  const coverColor =
-    extractedColor && extractedColor.url === albumArtUrl
-      ? extractedColor.color
-      : undefined;
 
   useEffect(() => {
     setAudioModeAsync({

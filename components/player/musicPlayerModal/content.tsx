@@ -1,4 +1,4 @@
-import { IconSymbol } from "@/components/ui/iconSymbol";
+import { CrossfadeIcon } from "../crossfadeIcon";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
@@ -53,7 +53,7 @@ const MusicPlayerModalContent: FC = () => {
     <SafeAreaView edges={["top"]} style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={close}>
-          <IconSymbol
+          <CrossfadeIcon
             size={32}
             name={"chevron.down"}
             color={palette.primary}
@@ -82,7 +82,7 @@ const MusicPlayerModalContent: FC = () => {
           )}
         </View>
         <Pressable onPress={() => openOptions({ type: SheetType.NOW_PLAYING })}>
-          <IconSymbol size={32} name={"ellipsis"} color={palette.primary} />
+          <CrossfadeIcon size={32} name={"ellipsis"} color={palette.primary} />
         </Pressable>
       </View>
       <View style={styles.albumArtContainer}>
@@ -111,7 +111,7 @@ const MusicPlayerModalContent: FC = () => {
             </Animated.Text>
           </View>
           <Pressable onPress={toggleStar}>
-            <IconSymbol
+            <CrossfadeIcon
               name={starred ? "heart.fill" : "heart"}
               size={40}
               color={palette.primary}
@@ -121,7 +121,7 @@ const MusicPlayerModalContent: FC = () => {
         <ProgressBar />
         <View style={styles.musicPlayerButtonContainer}>
           <Pressable onPress={toggleShuffle}>
-            <IconSymbol
+            <CrossfadeIcon
               size={40}
               name={"shuffle"}
               style={{ opacity: isShuffled ? 1 : 0.4 }}
@@ -129,28 +129,28 @@ const MusicPlayerModalContent: FC = () => {
             />
           </Pressable>
           <Pressable onPress={previous}>
-            <IconSymbol
+            <CrossfadeIcon
               size={40}
               name={"backward.end"}
               color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={handlePlayTrack}>
-            <IconSymbol
+            <CrossfadeIcon
               size={80}
               name={isPlaying ? "pause.circle.fill" : "play.circle.fill"}
               color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={next}>
-            <IconSymbol
+            <CrossfadeIcon
               size={40}
               name={"forward.end"}
               color={palette.primary}
             />
           </Pressable>
           <Pressable onPress={cycleRepeat}>
-            <IconSymbol
+            <CrossfadeIcon
               size={40}
               style={{ opacity: repeatMode === "off" ? 0.4 : 1 }}
               name={

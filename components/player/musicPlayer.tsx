@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { blurHash } from "@/constants/blur";
-import { IconSymbol } from "@/components/ui/iconSymbol";
+import { CrossfadeIcon } from "./crossfadeIcon";
 import Animated from "react-native-reanimated";
 import { useAnimatedBackground } from "./useAnimatedBackground";
 import { usePlayerForeground } from "./usePlayerForeground";
@@ -72,7 +72,7 @@ const MusicPlayer = () => {
           </Pressable>
           <View style={styles.buttonContainer}>
             <Pressable onPress={toggleStar}>
-              <IconSymbol
+              <CrossfadeIcon
                 name={starred ? "heart.fill" : "heart"}
                 size={32}
                 color={palette.primary}
@@ -86,7 +86,7 @@ const MusicPlayer = () => {
                   style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
                 />
               ) : (
-                <IconSymbol
+                <CrossfadeIcon
                   size={28}
                   name={isPlaying ? "pause.fill" : "play.fill"}
                   color={palette.primary}
