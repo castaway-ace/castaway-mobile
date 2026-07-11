@@ -2,7 +2,7 @@ import { zodErrorMap } from "@/constants/validation";
 import { useState } from "react";
 import * as z from "zod";
 
-export function useAuthForm<Schema extends z.ZodType>(schema: Schema) {
+export const useAuthForm = <Schema extends z.ZodType>(schema: Schema) => {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
 
   const clearError = (field: string) =>
@@ -18,4 +18,4 @@ export function useAuthForm<Schema extends z.ZodType>(schema: Schema) {
   };
 
   return { errors, clearError, validate };
-}
+};

@@ -33,17 +33,17 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-async function storeTokens(tokens: AuthTokens): Promise<void> {
+const storeTokens = async (tokens: AuthTokens): Promise<void> => {
   await SecureStore.setItemAsync("accessToken", tokens.accessToken);
   await SecureStore.setItemAsync("refreshToken", tokens.refreshToken);
-}
+};
 
-async function clearTokens(): Promise<void> {
+const clearTokens = async (): Promise<void> => {
   await SecureStore.deleteItemAsync("accessToken").catch(() => {});
   await SecureStore.deleteItemAsync("refreshToken").catch(() => {});
-}
+};
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    async function bootstrap() {
+    const bootstrap = async () => {
       try {
         const token = await SecureStore.getItemAsync("accessToken");
         if (!token) {
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
         }
       }
-    }
+    };
 
     bootstrap();
 
@@ -120,12 +120,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};

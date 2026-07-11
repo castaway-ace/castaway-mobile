@@ -10,11 +10,11 @@ import {
  * (white/black) base whenever there's no cover color yet — e.g. right when a new
  * song loads — and then quickly fades to `color` once it's been extracted.
  */
-export function useAnimatedBackground(
+export const useAnimatedBackground = (
   color: string | undefined,
   muteColor: string,
   duration = 300,
-) {
+) => {
   const background = useSharedValue(color ?? muteColor);
 
   useEffect(() => {
@@ -29,4 +29,4 @@ export function useAnimatedBackground(
   return useAnimatedStyle(() => ({
     backgroundColor: background.value,
   }));
-}
+};

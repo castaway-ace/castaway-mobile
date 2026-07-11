@@ -3,7 +3,7 @@ import { useTrack } from "@/api/tracks/queries";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useCallback, useRef } from "react";
 
-export function useActiveTrackStar() {
+export const useActiveTrackStar = () => {
   const { currentTrack } = useAudioPlayerContext();
   const { mutate: trackStar } = useTrackStar();
   const inFlight = useRef(false);
@@ -31,9 +31,9 @@ export function useActiveTrackStar() {
   }, [activeTrackId, starred, trackStar]);
 
   return { starred, toggleStar };
-}
+};
 
-export function usePlayPause() {
+export const usePlayPause = () => {
   const { isPlaying, play, pause } = useAudioPlayerContext();
 
   return useCallback(() => {
@@ -43,4 +43,4 @@ export function usePlayPause() {
       play();
     }
   }, [isPlaying, play, pause]);
-}
+};

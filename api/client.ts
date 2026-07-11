@@ -28,9 +28,9 @@ let refreshPromise: Promise<string> | null = null;
 
 let onAuthFailure: (() => void) | null = null;
 
-export function setAuthFailureHandler(handler: (() => void) | null) {
+export const setAuthFailureHandler = (handler: (() => void) | null) => {
   onAuthFailure = handler;
-}
+};
 
 export const refreshTokens = async (): Promise<string> => {
   const refreshToken = await SecureStore.getItemAsync("refreshToken");

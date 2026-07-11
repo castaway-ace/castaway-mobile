@@ -11,18 +11,18 @@ import { getOrCreateClientId } from "../utils";
 
 type DeviceInfo = components["schemas"]["DeviceDto"];
 
-async function buildDeviceInfo(): Promise<DeviceInfo> {
+const buildDeviceInfo = async (): Promise<DeviceInfo> => {
   return {
     clientId: await getOrCreateClientId(),
     name: Device.deviceName ?? undefined,
     model: Device.modelName ?? undefined,
   };
-}
+};
 
-async function authenticate(
+const authenticate = async (
   path: "/auth/login" | "/auth/signup",
   credentials: LoginSchemaType | SignUpSchemaType,
-): Promise<AuthResponseType> {
+): Promise<AuthResponseType> => {
   const response = await apiClient.post(path, {
     ...credentials,
     deviceInfo: await buildDeviceInfo(),
@@ -33,7 +33,7 @@ async function authenticate(
     throw new Error("Server returned an invalid auth response");
   }
   return parsed.data;
-}
+};
 
 export const authApi = {
   login: (credentials: LoginSchemaType) =>

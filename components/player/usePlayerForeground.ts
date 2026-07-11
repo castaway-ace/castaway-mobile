@@ -8,11 +8,11 @@ import {
   withTiming,
 } from "react-native-reanimated";
 
-export function usePlayerForeground(
+export const usePlayerForeground = (
   coverColor: string | undefined,
   colors: ThemeColors,
   duration = 300,
-) {
+) => {
   const progress = useSharedValue(coverColor ? 1 : 0);
 
   const palette = coverColor
@@ -63,4 +63,4 @@ export function usePlayerForeground(
     primaryBgStyle,
     secondaryBgStyle,
   };
-}
+};

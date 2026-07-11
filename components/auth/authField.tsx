@@ -17,7 +17,7 @@ export interface AuthFieldProps extends TextInputProps {
   footer?: ReactNode;
 }
 
-const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
+const AuthField = forwardRef<TextInput, AuthFieldProps>((
   {
     label,
     error,
@@ -30,7 +30,7 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
     ...inputProps
   },
   ref,
-) {
+) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const [isFocused, setIsFocused] = useState(false);
@@ -99,6 +99,8 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>(function AuthField(
     </View>
   );
 });
+
+AuthField.displayName = "AuthField";
 
 export default AuthField;
 

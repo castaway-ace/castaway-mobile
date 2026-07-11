@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { BackHandler } from "react-native";
 
-export function useBackHandler(enabled: boolean, onBack: () => void) {
+export const useBackHandler = (enabled: boolean, onBack: () => void) => {
   useEffect(() => {
     if (!enabled) return;
     const subscription = BackHandler.addEventListener(
@@ -13,4 +13,4 @@ export function useBackHandler(enabled: boolean, onBack: () => void) {
     );
     return () => subscription.remove();
   }, [enabled, onBack]);
-}
+};
