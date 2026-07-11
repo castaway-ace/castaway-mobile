@@ -49,8 +49,28 @@ jest.mock("expo-haptics", () => ({
 }));
 
 jest.mock("expo-image", () => {
+  const React = require("react");
   const { View } = require("react-native");
-  return { Image: View };
+  const Image = ({
+    source,
+    ...props
+  }: {
+    source?: unknown;
+    [key: string]: unknown;
+  }) => {
+    const uri =
+      typeof source === "string"
+        ? source
+        : source && typeof source === "object" && "uri" in source
+          ? (source as { uri?: string }).uri
+          : undefined;
+    return React.createElement(View, {
+      testID: "expo-image",
+      accessibilityLabel: uri,
+      ...props,
+    });
+  };
+  return { Image };
 });
 
 jest.mock("react-native-reanimated", () => require("./mocks/reanimated"));
