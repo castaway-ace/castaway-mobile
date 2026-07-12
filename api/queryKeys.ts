@@ -1,6 +1,19 @@
 type Filters = Record<string, unknown>;
 type Id = string | undefined;
 
+/**
+ * Single source of truth for every React Query cache key.
+ *
+ * @remarks
+ * Centralizing the keys keeps reads and their invalidations in agreement — a
+ * mutation and the query it should refresh reference the exact same factory, so
+ * they can never drift apart into a typo'd string. The keys are deliberately
+ * hierarchical (e.g. `["playlists", "tracks", id]` nests under
+ * `["playlists"]`): React Query matches by prefix, so invalidating a broad key
+ * like `playlists.all` cascades to every list, detail, and track query beneath
+ * it in one call. `as const` preserves the literal tuple types for that
+ * matching.
+ */
 export const queryKeys = {
   tracks: {
     all: ["tracks"] as const,

@@ -4,6 +4,7 @@ import { queryOptions, skipToken, useInfiniteQuery, useQuery } from "@tanstack/r
 import { queryKeys } from "../queryKeys";
 import { ArtistOrder, artistApi } from "./api";
 
+/** Caller-tunable knobs for {@link useArtists}; omitted fields fall back to {@link DEFAULT_ARTIST_OPTIONS}. */
 interface ArtistOptions {
     order: ArtistOrder,
     orderBy: OrderBy,
@@ -18,6 +19,13 @@ const DEFAULT_ARTIST_OPTIONS: ArtistOptions = {
     starred: false,
 };
 
+/**
+ * Infinite, paginated list of artists. `SHORT` stale time so library changes
+ * show quickly; pagination ends on a short page. Pass `{ starred: true }` for
+ * the library view.
+ *
+ * @param options - Partial overrides merged over {@link DEFAULT_ARTIST_OPTIONS}.
+ */
 export const useArtists = (options: Partial<ArtistOptions> = {}) => {
     const { limit, orderBy, order, starred } = { ...DEFAULT_ARTIST_OPTIONS, ...options };
     return useInfiniteQuery({
@@ -35,6 +43,7 @@ export const useArtists = (options: Partial<ArtistOptions> = {}) => {
     });
 }
 
+/** A single artist with their discography; idles until `id` resolves. `LONG` stale. */
 export const useArtist = (id: string | undefined) => {
     return useQuery({
         queryKey: queryKeys.artists.detail(id),
@@ -43,6 +52,14 @@ export const useArtist = (id: string | undefined) => {
     });
 };
 
+/**
+ * Shared query definition for an artist's image URL.
+ *
+ * @remarks
+ * Exposed as `queryOptions` (mirroring {@link albumCoverQueryOptions}) so the
+ * image can be read both from list components and imperatively off the same
+ * cache entry. `LONG` stale time because the URL rarely changes.
+ */
 export const artistImageQueryOptions = (id: string | undefined) =>
     queryOptions({
         queryKey: queryKeys.artists.image(id),
@@ -50,5 +67,6 @@ export const artistImageQueryOptions = (id: string | undefined) =>
         staleTime: STALE_TIME.LONG,
     });
 
+/** Hook form of {@link artistImageQueryOptions}. */
 export const useArtistImage = (id: string | undefined) =>
     useQuery(artistImageQueryOptions(id));

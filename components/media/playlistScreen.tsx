@@ -13,9 +13,24 @@ import { IconSymbol } from "@/components/ui/iconSymbol";
 import PlaylistCover from "./playlistCover";
 
 interface PlaylistScreenProps {
+  /** Playlist id, supplied by the page factory from the route param. */
   id: string;
 }
 
+/**
+ * Full-screen playlist detail: cover art, title, and a tappable track list.
+ *
+ * @remarks
+ * Presentational and router-free — it receives `id` as a prop and pulls all of
+ * its data through the playlist query hooks. Tapping a track starts playback of
+ * the whole list from that index, tagging the queue with a `playlist` source so
+ * the player can show where playback came from. The overflow menus route to the
+ * sheet modal rather than handling actions inline, and the edit affordance is
+ * shown only for {@link PlaylistType.USER} playlists (system playlists such as
+ * Liked Songs aren't user-editable).
+ *
+ * @param props - See {@link PlaylistScreenProps}.
+ */
 const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   const { data: playlist } = usePlaylist(id);
   const { data: playlistTracks } = usePlaylistTracks(id);
@@ -53,6 +68,8 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 16,
+          // Clear both the tab bar and the mini-player that floats above it, so
+          // the last track isn't hidden behind them when scrolled to the end.
           paddingBottom: tabBarHeight + 84,
         }}
       >
