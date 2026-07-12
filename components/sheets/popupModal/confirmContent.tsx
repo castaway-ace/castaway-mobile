@@ -8,12 +8,24 @@ interface ConfirmContentProps {
   content: ConfirmPopup;
 }
 
+/**
+ * The generic confirmation dialog — title, message, and a cancel/confirm pair,
+ * all supplied by the caller via {@link ConfirmPopup}.
+ *
+ * @remarks
+ * One reusable dialog backs every destructive action in the app (delete
+ * playlist, remove track, re-add duplicate).
+ * It just renders the passed copy and invokes `onConfirm`, closing first so the
+ * callback runs after the popup is gone.
+ */
 const ConfirmContent: FC<ConfirmContentProps> = ({ content }) => {
   const { colors } = useTheme();
   const { close } = usePopupModal();
   const styles = useMemo(() => makePopupStyles(colors), [colors]);
 
   const onConfirmPress = () => {
+    // Dismiss before running the action so any navigation it triggers doesn't
+    // happen behind a still-open popup.
     close();
     content.onConfirm();
   };

@@ -1,6 +1,11 @@
 import { ThemeColors } from "@/constants/theme";
 import { StyleSheet } from "react-native";
 
+/**
+ * Shared styles for the center-popup family (the create-playlist and confirm
+ * dialogs plus their host). Kept in one theme-aware factory so both dialog
+ * variants and the router share one backdrop, card, and button treatment.
+ */
 export const makePopupStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {

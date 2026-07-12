@@ -28,6 +28,17 @@ interface PlaylistTrackContentProps {
   content: SheetPlaylistTrack;
 }
 
+/**
+ * Options sheet for a track opened from within a playlist: add to another
+ * playlist, remove from this one, like/unlike, or jump to its album or artist.
+ *
+ * @remarks
+ * "Remove from this playlist" is shown only for {@link PlaylistType.USER}
+ * playlists — system playlists (e.g. Liked Songs) aren't hand-editable. Each
+ * navigation records an interaction with the destination first so recency-based
+ * rows reflect the visit, and closes the sheet before routing so it doesn't
+ * linger over the new screen.
+ */
 const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
   const { open, close } = useSheetModal();
   const { openConfirm } = usePopupModal();
@@ -75,6 +86,7 @@ const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
   const onAlbumPress = () => {
     if (!track?.album) return;
     const albumId = track.album.id;
+    // Close first, record the visit, then route within the current tab.
     close();
     albumInteraction(albumId);
     router.navigate(`/(tabs)/${location}/albums/${albumId}`);

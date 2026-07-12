@@ -21,6 +21,16 @@ interface AlbumTrackContentProps {
   content: SheetAlbumTrack;
 }
 
+/**
+ * Options sheet for a track opened from an album: add to a playlist, like/unlike,
+ * or jump to the artist.
+ *
+ * @remarks
+ * The album-context sibling of {@link PlaylistTrackContent}. It omits the
+ * "remove from playlist" action (there's no playlist here) and the "go to album"
+ * jump (already on the album). Same pattern otherwise: record the artist
+ * interaction and close before navigating.
+ */
 const AlbumTrackContent: FC<AlbumTrackContentProps> = ({ content }) => {
   const { open, close } = useSheetModal();
   const { data: track } = useTrack(content.trackId);

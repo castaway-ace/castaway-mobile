@@ -10,6 +10,15 @@ import ConfirmContent from "./confirmContent";
 import CreatePlaylistContent from "./createPlaylistContent";
 import { makePopupStyles } from "./popupStyles";
 
+/**
+ * Host for the app's single centered popup — renders the active
+ * {@link PopupContent} variant over a dismiss-on-tap backdrop.
+ *
+ * @remarks
+ * The centered counterpart to {@link SheetModal}. It's simpler because these
+ * dialogs don't slide or measure: it just shows/hides. Tapping the backdrop or
+ * pressing Android back closes it; the inner content owns its own buttons.
+ */
 const PopupModal: FC = () => {
   const { colors } = useTheme();
   const { content, close } = usePopupModal();
@@ -28,6 +37,7 @@ const PopupModal: FC = () => {
       <GestureDetector gesture={tapBackdrop}>
         <Animated.View style={styles.backdrop} />
       </GestureDetector>
+      {/* Render the matching variant; the union narrows `content` for each child. */}
       {content.variant === "createPlaylist" && (
         <CreatePlaylistContent trackId={content.trackId} />
       )}

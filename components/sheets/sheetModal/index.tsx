@@ -28,6 +28,17 @@ import PlaylistContent from "./playlistContent";
 import PlaylistSelectContent from "./playlistSelectContent";
 import PlaylistTrackContent from "./playlistTrackContent";
 
+/**
+ * Host for the app's single bottom sheet — the animated container and gesture
+ * layer around whichever {@link SheetContent} variant is active.
+ *
+ * @remarks
+ * The sheet's height is content-driven and unknown until it lays out, so opening
+ * is a two-step dance: mount the content, then in `onLayout` learn its height and
+ * slide it up from exactly that far. `displayed` deliberately lags `active` so
+ * the sheet stays mounted through its slide-out, and swapping between two sheet
+ * types animates the old one out before the new one in rather than cutting.
+ */
 const SheetModal: FC = () => {
   const { colors } = useTheme();
   const { active, close } = useSheetModal();
@@ -36,11 +47,16 @@ const SheetModal: FC = () => {
   useBackHandler(active !== null, close);
 
   const { height } = useWindowDimensions();
+  // Measured content height; the slide distance. Starts 0 until first layout.
   const sheetHeight = useSharedValue(0);
   const translateY = useSharedValue(height);
 
+  // Trails `active`: stays set during the close
+  // animation so content doesn't vanish before the sheet finishes sliding away.
   const [displayed, setDisplayed] = useState<SheetContent | null>(null);
 
+  // Marks content mounted but not yet animated in — the entrance is deferred to
+  // `onSheetLayout` because we can't slide up until we know how tall it is.
   const pendingOpenRef = useRef(false);
 
   const beginOpen = useCallback((next: SheetContent): void => {
@@ -57,6 +73,9 @@ const SheetModal: FC = () => {
 
       sheetHeight.value = measured;
 
+      // First layout after a `beginOpen`: park the sheet just off-screen at its
+      // real height, then animate it up. Doing this here (not on mount) avoids a
+      // flash where the sheet jumps from a guessed height to its true one.
       if (pendingOpenRef.current) {
         pendingOpenRef.current = false;
         translateY.value = measured;
@@ -67,6 +86,8 @@ const SheetModal: FC = () => {
   );
 
   useEffect(() => {
+    // Closing: slide down (using the last known height, falling back to screen
+    // height) and only then drop the content from the tree.
     if (active === null) {
       if (displayed !== null) {
         translateY.value = withTiming(
@@ -82,6 +103,7 @@ const SheetModal: FC = () => {
       return;
     }
 
+    // Re-opening the same variant is a no-op — don't re-animate.
     const sameContent = displayed !== null && displayed.type === active.type;
 
     if (sameContent) {
@@ -89,8 +111,11 @@ const SheetModal: FC = () => {
     }
 
     if (displayed === null) {
+      // Nothing showing: mount and let `onSheetLayout` animate it in.
       beginOpen(active);
     } else {
+      // Switching variants: slide the current sheet out first, then open the new
+      // one on completion so the two transitions don't overlap.
       const next = active;
       translateY.value = withTiming(
         sheetHeight.value || height,
@@ -106,11 +131,13 @@ const SheetModal: FC = () => {
 
   const pan = Gesture.Pan()
     .onUpdate((event) => {
+      // Follow the finger downward only — the sheet can't be dragged past open.
       if (event.translationY > 0) {
         translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
+      // Commit the dismiss on a far-enough drag or a fast flick; else spring back.
       const shouldClose =
         event.translationY > height * 0.2 || event.velocityY > 900;
       if (shouldClose) {
@@ -120,6 +147,7 @@ const SheetModal: FC = () => {
       }
     });
 
+  // Tapping the dimmed backdrop slides the sheet away, then closes.
   const tapBackdrop = Gesture.Tap().onEnd(() => {
     translateY.value = withTiming(
       sheetHeight.value || height,
@@ -136,6 +164,8 @@ const SheetModal: FC = () => {
     transform: [{ translateY: translateY.value }],
   }));
 
+  // Fade the backdrop in lockstep with the slide: fully dark when open
+  // (translateY 0), fully clear when the sheet has travelled its own height.
   const backdropStyle = useAnimatedStyle(() => {
     const span = sheetHeight.value > 0 ? sheetHeight.value : 1;
     return {
@@ -163,6 +193,9 @@ const SheetModal: FC = () => {
           onLayout={onSheetLayout}
         >
           <View style={styles.handle} />
+          {/* Render the content variant that matches the active sheet type. The
+              discriminated union narrows `displayed` so each child receives its
+              exact content shape. */}
           {displayed.type === SheetType.PLAYLIST && (
             <PlaylistContent content={displayed} />
           )}

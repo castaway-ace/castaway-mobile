@@ -12,6 +12,16 @@ interface PlaylistContentProps {
   content: SheetPlaylist;
 }
 
+/**
+ * Options sheet for a playlist itself (opened from the playlist screen's overflow
+ * menu). Currently a single destructive action: delete.
+ *
+ * @remarks
+ * Delete is gated behind the shared confirm popup, and only navigates away on
+ * success — the sheet hands off to {@link usePopupModal}, then this screen is
+ * displaying the deleted playlist, so it `replace`s back to the owning tab root
+ * rather than leaving the user on a dead detail page.
+ */
 const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
   const { close } = useSheetModal();
   const { openConfirm } = usePopupModal();
@@ -22,6 +32,8 @@ const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
+  // Return to whichever tab the playlist was opened under so we land on that
+  // tab's root, not always Home.
   const inLibrary = pathname.startsWith("/library");
 
   const location = inLibrary ? "library" : "home";
@@ -35,6 +47,8 @@ const PlaylistContent: FC<PlaylistContentProps> = ({ content }) => {
       cancelLabel: "Cancel",
       onConfirm: () => {
         deletePlaylist(content.id, {
+          // Only leave the page once the delete lands, so a failed request keeps
+          // the user where they are.
           onSuccess: () => {
             close();
             router.replace(`/${location}`);

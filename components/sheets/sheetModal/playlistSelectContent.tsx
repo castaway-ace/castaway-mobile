@@ -16,11 +16,22 @@ interface PlaylistSelectContentProps {
   trackId: string;
 }
 
+/**
+ * "Add to playlist" picker: lists the user's playlists (with a checkmark on any
+ * that already contain the track) plus a shortcut to create a new one.
+ *
+ * @remarks
+ * Scoped to `onlyUser` playlists since you can only add to your own. Membership
+ * is resolved by {@link usePlaylistsContainingTrack}, which powers both the
+ * checkmarks and the duplicate guard: tapping a playlist that already has the
+ * track asks for confirmation instead of silently adding a second copy.
+ */
 const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   const { close } = useSheetModal();
   const { openCreatePlaylist, openConfirm } = usePopupModal();
   const { data: playlistData } = usePlaylists({ onlyUser: true });
 
+  // Flatten the infinite-query pages into a single list for rendering.
   const playlists = useMemo(
     () => playlistData?.pages.flatMap((page) => page) ?? [],
     [playlistData],
@@ -41,7 +52,10 @@ const PlaylistSelectContent: FC<PlaylistSelectContentProps> = ({ trackId }) => {
   };
 
   const onPlaylistPress = (id: string, name: string) => {
+    // Close the sheet up front; if we need confirmation, the popup takes over.
     close();
+    // Adding a track that's already present is allowed, but confirm first so it
+    // isn't an accidental duplicate.
     if (playlistsWithTrack.has(id)) {
       openConfirm({
         title: "Already added",

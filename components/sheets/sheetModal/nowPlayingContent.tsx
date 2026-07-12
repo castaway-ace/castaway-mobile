@@ -13,6 +13,16 @@ import { Pressable, Text, View } from "react-native";
 import { useTabLocation } from "@/utils/useTabLocation";
 import { makeTrackSheetStyles } from "./sheetStyles";
 
+/**
+ * Options sheet for the currently-playing track, opened from the full-screen
+ * player's overflow menu: add to a playlist, or jump to its album or artist.
+ *
+ * @remarks
+ * Because it's launched from over the player modal, navigating has to dismiss
+ * *two* layers — this sheet and the player itself (`closePlayer`) — so the
+ * destination isn't left buried underneath them. Reads the active track from the
+ * audio context and resolves its id across the queue's differing shapes.
+ */
 const NowPlayingContent: FC = () => {
   const { open, close } = useSheetModal();
   const { close: closePlayer } = usePlayerModal();
@@ -27,6 +37,7 @@ const NowPlayingContent: FC = () => {
 
   if (!currentTrack) return null;
 
+  // Playlist entries expose `trackId`; other queue shapes use `id`.
   const trackId =
     "trackId" in currentTrack ? currentTrack.trackId : currentTrack.id;
 
