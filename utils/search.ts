@@ -4,12 +4,14 @@ import { Search } from "@/types/search";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+/** Discriminant for the {@link SearchItemElement} union. */
 export enum SearchItemType {
   TRACK = 'track',
   ALBUM = 'album',
   ARTIST = 'artist',
 }
 
+/** Fields common to every search result row (id, artwork, and two lines of text). */
 export interface SearchItem {
   id: string
   imageUrl: string | undefined;
@@ -32,11 +34,24 @@ export interface TrackSearchItem extends SearchItem {
 
 export type SearchItemElement = AlbumSearchItem | ArtistSearchItem | TrackSearchItem;
 
+/**
+ * Flattens a raw search response into a single, render-ready list of typed rows
+ * with their artwork resolved.
+ *
+ * @remarks
+ * The API returns albums, artists, and tracks separately and without cover URLs,
+ * so this hook fetches the artwork and merges everything into one list the search
+ * screen can map over directly. Album cover ids are gathered from both albums and
+ * the tracks' albums and de-duplicated into a Set, so a shared album is fetched
+ * once; `coverById` then gives O(1) lookup when building each row.
+ */
 export const useOrganizedSearch = (search: Search | undefined): SearchItemElement[] => {
   const albums = useMemo(() => search?.albums ?? [], [search]);
   const artists = useMemo(() => search?.artists ?? [], [search]);
   const tracks = useMemo(() => search?.tracks ?? [], [search]);
 
+  // Every distinct album whose cover we need — from album hits and from the
+  // albums behind track hits — deduped so each cover is fetched only once.
   const albumIds = useMemo(() => {
     const ids = new Set<string>();
     albums.forEach((a) => a.id && ids.add(a.id));
@@ -48,6 +63,8 @@ export const useOrganizedSearch = (search: Search | undefined): SearchItemElemen
     queries: albumIds.map((id) => albumCoverQueryOptions(id)),
   });
 
+  // Index the parallel query results back by album id for lookups below. Results
+  // align with `albumIds` by position.
   const coverById = useMemo(() => {
     const map = new Map<string, string | undefined>();
     albumIds.forEach((id, i) => map.set(id, albumCoverResults[i]?.data));

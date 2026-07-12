@@ -4,16 +4,22 @@ interface Rgb {
   b: number;
 }
 
+/** A legible text color pair (title + subtitle) for a given background. */
 export interface ContrastPalette {
   primary: string;
   secondary: string;
 }
 
+// The two palettes we choose between: near-white text for dark backgrounds,
+// near-black for light ones. Secondaries are the same hue at reduced alpha.
 const LIGHT_PRIMARY = "#FFFFFF";
 const LIGHT_SECONDARY = "rgba(255, 255, 255, 0.72)";
 const DARK_PRIMARY = "#111111";
 const DARK_SECONDARY = "rgba(17, 17, 17, 0.64)";
 
+// Accepts the color-string shapes react-native-image-colors can return: #rgb,
+// #rrggbb, #rrggbbaa, and rgb()/rgba(). Returns null on anything unparseable so
+// the caller can fall back rather than crash on a surprise format.
 const parseColor = (input: string): Rgb | null => {
   const value = input.trim();
 
@@ -43,6 +49,8 @@ const parseColor = (input: string): Rgb | null => {
   return null;
 };
 
+// WCAG relative luminance: linearize each sRGB channel (undo gamma), then weight
+// by human sensitivity (green ≫ red ≫ blue). Output 0 (black) to 1 (white).
 const relativeLuminance = ({ r, g, b }: Rgb): number => {
   const channel = (v: number) => {
     const c = v / 255;
@@ -51,6 +59,19 @@ const relativeLuminance = ({ r, g, b }: Rgb): number => {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 };
 
+/**
+ * Picks the more legible text palette (dark or light) for an arbitrary
+ * background color — used to keep the player's text readable over any album's
+ * cover color.
+ *
+ * @remarks
+ * Compares the WCAG contrast ratio of the background against white vs against
+ * black text and returns whichever wins. An unparseable background falls back to
+ * luminance 0 (treated as dark), yielding light text. The `+ 0.05` terms and
+ * `1.05` numerator are the WCAG contrast-ratio formula's constants.
+ *
+ * @param background - Any CSS-style color string (see `parseColor`).
+ */
 export const getContrastPalette = (background: string): ContrastPalette => {
   const rgb = parseColor(background);
   const luminance = rgb ? relativeLuminance(rgb) : 0;
