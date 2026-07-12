@@ -107,6 +107,21 @@ jest.mock("react-native-keyboard-controller", () =>
   require("react-native-keyboard-controller/jest"),
 );
 
+jest.mock("react-native-gesture-handler", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const chain: unknown = new Proxy(() => chain, { get: () => () => chain });
+  const Gesture = new Proxy({}, { get: () => () => chain });
+  return {
+    GestureDetector: ({ children }: { children?: ReactNode }) => children,
+    GestureHandlerRootView: ({ children }: { children?: ReactNode }) =>
+      React.createElement(View, null, children),
+    Gesture,
+    State: {},
+    Directions: {},
+  };
+});
+
 jest.mock("expo-router/js-tabs", () => ({ useBottomTabBarHeight: () => 0 }));
 
 jest.mock("@/components/ui/iconSymbol", () => {
@@ -137,7 +152,6 @@ jest.mock("expo-router", () => {
     useSegments: jest.fn(() => []),
     useLocalSearchParams: jest.fn(() => ({})),
     usePathname: jest.fn(() => "/"),
-    // Links usually wrap text, so render children inside <Text> to satisfy RN.
     Link: ({ children }: { children?: ReactNode }) =>
       React.createElement(Text, null, children),
     Stack,
