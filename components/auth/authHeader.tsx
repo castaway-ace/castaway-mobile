@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+/** App logo and wordmark shown atop the login and signup screens. */
 const AuthHeader = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);

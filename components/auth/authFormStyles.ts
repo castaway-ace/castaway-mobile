@@ -1,6 +1,11 @@
 import { ThemeColors } from "@/constants/theme";
 import { StyleSheet } from "react-native";
 
+/**
+ * Shared styles for the login and signup forms (submit button, form-level error,
+ * and the "switch to signup/login" link row). One theme-aware factory so both
+ * screens' shared chrome stays identical.
+ */
 export const makeAuthFormStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     button: {

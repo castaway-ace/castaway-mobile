@@ -13,10 +13,21 @@ import {
 export interface AuthFieldProps extends TextInputProps {
   label: string;
   error?: string;
+  /** Renders as a password field with a show/hide toggle. */
   secure?: boolean;
+  /** Extra content below the field (e.g. the password-requirements checklist). */
   footer?: ReactNode;
 }
 
+/**
+ * Labeled text input for the auth forms: focus/error border states and, for
+ * passwords, a show/hide toggle.
+ *
+ * @remarks
+ * `forwardRef`s to the underlying `TextInput` so a form can focus the next field
+ * on submit. The border color encodes state (error → focused → idle). See
+ * `handleChangeText` for the toggle-clear workaround it guards against.
+ */
 const AuthField = forwardRef<TextInput, AuthFieldProps>((
   {
     label,
@@ -36,6 +47,8 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>((
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Timestamp of the last show/hide toggle, and a live mirror of `value`, both
+  // used by the toggle-clear workaround below.
   const toggledAt = useRef(0);
   const valueRef = useRef(value);
   valueRef.current = value;
@@ -46,6 +59,10 @@ const AuthField = forwardRef<TextInput, AuthFieldProps>((
   };
 
   const handleChangeText = (text: string) => {
+    // Some keyboards/OSes emit a spurious empty-string change right after
+    // toggling secureTextEntry, wiping the password. If we see an empty value
+    // land within 500ms of a toggle while the field was non-empty, treat it as
+    // that glitch and restore the prior value instead of clearing.
     if (
       secure &&
       text.length === 0 &&

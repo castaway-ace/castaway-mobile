@@ -8,6 +8,15 @@ interface PasswordRequirementsProps {
   value: string;
 }
 
+/**
+ * Live checklist that ticks off each password rule as the user types.
+ *
+ * @remarks
+ * Reads from the shared {@link PASSWORD_RULES} so the on-screen requirements and
+ * the schema that actually validates the password can't drift apart. Each row
+ * carries an accessibility label announcing met/not-met state, since the ✓/○
+ * glyph alone isn't conveyed to screen readers.
+ */
 const PasswordRequirements = ({ value }: PasswordRequirementsProps) => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
