@@ -1,10 +1,11 @@
 import { useAlbum, useAlbumCover } from "@/api/albums/queries";
+import { Skeleton } from "@/components/ui/skeleton";
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { blurHash } from "@/constants/blur";
 
 interface AlbumProps {
   id: string;
@@ -21,9 +22,11 @@ interface AlbumProps {
  */
 const AlbumItem: FC<AlbumProps> = ({ id }) => {
   const { colors } = useTheme();
-  const { data: album } = useAlbum(id);
+  const { data: album, isLoading } = useAlbum(id);
   const { data: albumArtUrl } = useAlbumCover(id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  if (isLoading) return <AlbumItemSkeleton />;
 
   return (
     <View style={styles.albumContainer}>
@@ -68,5 +71,19 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.secondary,
     },
   });
+
+/**
+ * Loading placeholder for {@link AlbumItem}. Dimensions mirror the real card
+ * (160-wide, square cover, two text lines) so swapping in the content doesn't
+ * shift layout. Exported so shelves can render a row of these while their list
+ * query loads.
+ */
+export const AlbumItemSkeleton = () => (
+  <View style={{ width: 160, gap: 8 }}>
+    <Skeleton width="100%" height={160} borderRadius={12} />
+    <Skeleton width="80%" height={16} borderRadius={4} />
+    <Skeleton width="55%" height={14} borderRadius={4} />
+  </View>
+);
 
 export default AlbumItem;

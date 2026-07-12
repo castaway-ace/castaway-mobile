@@ -1,4 +1,5 @@
 import { useArtist, useArtistImage } from "@/api/artists/queries";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
@@ -19,9 +20,11 @@ interface ArtistItemProps {
  */
 const ArtistItem: FC<ArtistItemProps> = ({ id }) => {
   const { colors } = useTheme();
-  const { data: artist } = useArtist(id);
+  const { data: artist, isLoading } = useArtist(id);
   const { data: artistImageUrl } = useArtistImage(id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  if (isLoading) return <ArtistItemSkeleton />;
 
   const imageSource = artistImageUrl
     ? {
@@ -59,5 +62,16 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.primary,
     },
   });
+
+/**
+ * Loading placeholder for {@link ArtistItem}: a 120px circle over one centered
+ * name line, matching the real card. Exported for shelf-level loading rows.
+ */
+export const ArtistItemSkeleton = () => (
+  <View style={{ alignItems: "center", gap: 8 }}>
+    <Skeleton width={120} height={120} borderRadius={60} />
+    <Skeleton width={90} height={16} borderRadius={4} />
+  </View>
+);
 
 export default ArtistItem;

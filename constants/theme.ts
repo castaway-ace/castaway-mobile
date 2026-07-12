@@ -34,11 +34,12 @@ export interface ThemeColors {
   /**
    * A surface that intentionally contrasts with the active theme — dark in light
    * mode, light in dark mode.
-   *
    */
   inverseSurface: string;
   /** Foreground (text/icons) placed on `inverseSurface`. */
   onInverse: string;
+  /** Muted fill for loading skeleton placeholders. */
+  skeleton: string;
 }
 
 export type ThemeName = 'light' | 'dark';
@@ -56,6 +57,7 @@ const Light: ThemeColors = {
   overlay: "rgba(0, 0, 0, 0.5)",
   inverseSurface: "#2E2629",
   onInverse: "#F7F0ED",
+  skeleton: "#E7E1DC",
 };
 
 const Dark: ThemeColors = {
@@ -71,6 +73,7 @@ const Dark: ThemeColors = {
   overlay: "rgba(0, 0, 0, 0.5)",
   inverseSurface: "#F1EAE7",
   onInverse: "#241C1F",
+  skeleton: "#332A2E",
 };
 
 export const Themes: Record<ThemeName, ThemeColors> = {

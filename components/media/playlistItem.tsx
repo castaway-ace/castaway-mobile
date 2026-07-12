@@ -1,4 +1,5 @@
 import { usePlaylist } from "@/api/playlists/queries";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { FC, useMemo } from "react";
@@ -19,8 +20,10 @@ interface PlaylistItemProps {
  */
 const PlaylistItem: FC<PlaylistItemProps> = ({ id }) => {
   const { colors } = useTheme();
-  const { data: playlist } = usePlaylist(id);
+  const { data: playlist, isLoading } = usePlaylist(id);
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  if (isLoading) return <PlaylistItemSkeleton />;
 
   return (
     <View style={styles.playlistContainer}>
@@ -48,5 +51,16 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.primary,
     },
   });
+
+/**
+ * Loading placeholder for {@link PlaylistItem}: a 160px square cover over one
+ * name line, matching the real card. Exported for shelf-level loading rows.
+ */
+export const PlaylistItemSkeleton = () => (
+  <View style={{ gap: 8 }}>
+    <Skeleton width={160} height={160} borderRadius={12} />
+    <Skeleton width={120} height={16} borderRadius={4} />
+  </View>
+);
 
 export default PlaylistItem;

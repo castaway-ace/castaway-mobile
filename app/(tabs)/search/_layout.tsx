@@ -7,7 +7,6 @@ const SearchLayout = () => {
       screenOptions={{
         headerShown: false,
         animation: "fade",
-        animationDuration: 300,
       }}
     />
   );
