@@ -14,10 +14,10 @@ export const makeAuthFormStyles = (colors: ThemeColors) =>
       borderRadius: 8,
     },
     buttonDisabled: {
-      backgroundColor: "gray",
+      backgroundColor: colors.disabled,
       opacity: 0.6,
     },
-    buttonText: { color: "white", textAlign: "center", fontSize: 18 },
+    buttonText: { color: colors.onAccent, textAlign: "center", fontSize: 18 },
     formError: {
       color: colors.error,
       textAlign: "center",

@@ -15,7 +15,7 @@ export const makePopupStyles = (colors: ThemeColors) =>
     },
     backdrop: {
       ...StyleSheet.absoluteFill,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: colors.overlay,
     },
     sheet: {
       width: "80%",
@@ -81,6 +81,6 @@ export const makePopupStyles = (colors: ThemeColors) =>
     },
     primaryButtonText: {
       fontSize: 16,
-      color: "#FFFFFF",
+      color: colors.onAccent,
     },
   });

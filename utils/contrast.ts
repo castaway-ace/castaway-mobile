@@ -12,6 +12,10 @@ export interface ContrastPalette {
 
 // The two palettes we choose between: near-white text for dark backgrounds,
 // near-black for light ones. Secondaries are the same hue at reduced alpha.
+//
+// Deliberately hardcoded rather than pulled from the app theme: these are chosen
+// for contrast against an arbitrary album-cover color, not against the UI, so
+// they must not shift with light/dark mode.
 const LIGHT_PRIMARY = "#FFFFFF";
 const LIGHT_SECONDARY = "rgba(255, 255, 255, 0.72)";
 const DARK_PRIMARY = "#111111";

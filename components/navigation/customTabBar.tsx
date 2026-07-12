@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
+    // Structural, not themed: the wrapper must be see-through so the screen
+    // shows through the gap beside the mini-player; the bar supplies its own fill.
     backgroundColor: "transparent",
   },
 });

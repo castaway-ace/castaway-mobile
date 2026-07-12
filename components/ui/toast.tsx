@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { ThemeColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/themeContext";
+import { useEffect, useMemo } from "react";
 import { StyleSheet, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -26,6 +28,9 @@ interface ToastProps {
  * tab bar and mini-player rather than overlapping them.
  */
 const Toast = ({ message, visible, bottomInset }: ToastProps) => {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(16);
 
@@ -53,28 +58,31 @@ const Toast = ({ message, visible, bottomInset }: ToastProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    left: 12,
-    right: 12,
-    backgroundColor: "#282828",
-    borderRadius: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  text: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      left: 12,
+      right: 12,
+      // Inverse surface so the toast contrasts with the app in both themes.
+      backgroundColor: colors.inverseSurface,
+      borderRadius: 8,
+      paddingVertical: 16,
+      paddingHorizontal: 16,
+      alignItems: "center",
+      // Shadows are cast as black regardless of theme (opacity does the work)
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+    text: {
+      color: colors.onInverse,
+      fontSize: 15,
+      fontWeight: "600",
+      textAlign: "center",
+    },
+  });
 
 export default Toast;
