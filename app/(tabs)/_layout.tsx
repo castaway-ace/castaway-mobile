@@ -9,6 +9,16 @@ import { IconSymbol } from "@/components/ui/iconSymbol";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useTheme } from "@/contexts/themeContext";
 
+/**
+ * The signed-in shell: the bottom tab navigator plus the app-wide overlays.
+ *
+ * @remarks
+ * Uses {@link CustomTabBar} (which docks the mini-player above the bar) and
+ * {@link HapticTab} buttons. The player modal, sheet, and popup are rendered as
+ * siblings of `Tabs` rather than inside a screen, so they float above every tab
+ * and survive tab switches. The player modal mounts only when something is
+ * playing.
+ */
 const TabLayout = () => {
   const { currentTrack } = useAudioPlayerContext();
 
@@ -34,6 +44,7 @@ const TabLayout = () => {
           },
         }}
       >
+        {/* Redirect-only entry point; href:null keeps it out of the tab bar. */}
         <Tabs.Screen
           name="index"
           options={{

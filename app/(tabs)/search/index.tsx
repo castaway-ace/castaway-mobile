@@ -20,8 +20,20 @@ import { useAlbums } from "@/api/albums/queries";
 import { useUpdateAlbumInteraction } from "@/api/interactions/mutations";
 import AlbumItem from "@/components/media/albumItem";
 
+/**
+ * Search tab: a query box that shows discovery content when empty and live
+ * results as the user types.
+ *
+ * @remarks
+ * The input is debounced by 300ms before it drives the query, so a request fires
+ * only once the user pauses rather than on every keystroke. Two modes swap on
+ * whether the box has text: empty shows a "Discover Albums" shelf, non-empty
+ * shows the flattened results from {@link useOrganizedSearch}.
+ */
 const Search = () => {
   const [searchInput, setSearchInput] = useState<string>("");
+  // Debounce so typing doesn't fire a request per keystroke; the query runs
+  // ~300ms after the user stops.
   const debouncedSearch = useDebouncedValue(searchInput, 300);
 
   const { data: searchData } = useSearch(debouncedSearch);

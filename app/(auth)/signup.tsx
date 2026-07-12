@@ -11,6 +11,15 @@ import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+/**
+ * Signup screen.
+ *
+ * @remarks
+ * Mirrors {@link Login} but validates against {@link SignUpSchema} and adds a
+ * username field and a live {@link PasswordRequirements} checklist (fed the
+ * password value) so strength feedback is visible as the user types. Fields chain
+ * focus email → username → password via refs.
+ */
 const Signup = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeAuthFormStyles(colors), [colors]);

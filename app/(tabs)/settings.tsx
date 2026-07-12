@@ -6,6 +6,14 @@ import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * Settings tab. Currently just the logout action.
+ *
+ * @remarks
+ * Logout clears the play queue before signing out so audio stops and the
+ * mini-player disappears — otherwise playback would continue after the session
+ * ends. {@link useAuth}'s `logOut` handles token/cache teardown.
+ */
 const Settings = () => {
   const { logOut } = useAuth();
   const { clearQueue } = useAudioPlayerContext();

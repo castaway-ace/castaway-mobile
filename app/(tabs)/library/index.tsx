@@ -16,6 +16,15 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InteractionItem from "@/components/media/interactionItem";
 
+/**
+ * Library tab: a vertical list of the user's recent items plus a create-playlist
+ * action.
+ *
+ * @remarks
+ * Renders the same interaction feed as Home but in the full-width `row` variant.
+ * The header's "+" opens the create-playlist popup. Like Home, it records an
+ * interaction before navigating and keeps routes under `/library`.
+ */
 const Library = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);

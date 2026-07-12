@@ -10,6 +10,16 @@ import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+/**
+ * Login screen.
+ *
+ * @remarks
+ * Validates locally against {@link LoginSchema} before calling the login
+ * mutation, so obvious mistakes are caught without a round trip; the mutation's
+ * own `error` surfaces server failures. Each field clears its error as the user
+ * edits it, and the email field's submit focuses the password field
+ * (`passwordRef`) for a keyboard-driven flow.
+ */
 const Login = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeAuthFormStyles(colors), [colors]);
@@ -19,6 +29,7 @@ const Login = () => {
 
   const { errors, clearError, validate } = useAuthForm(LoginSchema);
 
+  // Lets the email field's "next" key jump focus to the password field.
   const passwordRef = useRef<TextInput>(null);
 
   const {

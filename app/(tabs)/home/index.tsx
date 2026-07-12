@@ -20,6 +20,16 @@ import {
 } from "@/api/interactions/mutations";
 import { useInteractions } from "@/api/interactions/queries";
 
+/**
+ * Home tab: horizontally-scrolling shelves of favorite albums, playlists,
+ * recently played, and favorite artists.
+ *
+ * @remarks
+ * Each shelf is conditionally rendered only when it has content, so empty
+ * sections don't leave gaps. Tapping any item records an interaction before
+ * navigating (keeping recency fresh), and routes are built under `/home` so
+ * detail screens stay in this tab's stack.
+ */
 const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -62,6 +72,7 @@ const HomeScreen = () => {
     router.navigate(`/(tabs)/home/playlists/${playlistId}`);
   };
 
+  // Route a recently-played tile to the matching detail screen based on its type.
   const onInteractionPress = (interaction: Interaction) => {
     if (interaction.type === InteractionType.ALBUM) {
       onAlbumPress(interaction.album.id);
