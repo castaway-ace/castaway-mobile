@@ -7,11 +7,20 @@ import {
     useState,
 } from "react";
 
+/** New-playlist dialog. An optional `trackId` seeds the playlist with that track on creation. */
 interface CreatePlaylistPopup {
   variant: "createPlaylist";
   trackId?: string;
 }
 
+/**
+ * Generic confirmation dialog.
+ *
+ * @remarks
+ * Caller-supplied copy plus an `onConfirm` callback, so one reusable dialog backs
+ * every destructive/irreversible action (delete playlist, etc.) instead of each
+ * screen building its own.
+ */
 export interface ConfirmPopup {
   variant: "confirm";
   title: string;
@@ -21,6 +30,7 @@ export interface ConfirmPopup {
   onConfirm: () => void;
 }
 
+/** The active popup, discriminated by `variant`. */
 export type PopupContent = CreatePlaylistPopup | ConfirmPopup;
 
 interface PopupModalContextValue {
@@ -32,6 +42,15 @@ interface PopupModalContextValue {
 
 const PopupModalContext = createContext<PopupModalContextValue | null>(null);
 
+/**
+ * Coordinates the app's single center popup (create-playlist and confirm
+ * dialogs).
+ *
+ * @remarks
+ * Parallels {@link SheetModalProvider} but for centered modals: it holds which
+ * popup is open and offers one typed opener per variant, so callers pick a
+ * dialog by intent rather than assembling {@link PopupContent} themselves.
+ */
 export const PopupModalProvider = ({ children }: { children: ReactNode }) => {
   const [content, setContent] = useState<PopupContent | null>(null);
 
@@ -42,6 +61,7 @@ export const PopupModalProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
+  // Stamp the `variant` here so callers pass only the human-facing config.
   const openConfirm = useCallback(
     (options: Omit<ConfirmPopup, "variant">): void => {
       setContent({ variant: "confirm", ...options });
@@ -65,6 +85,11 @@ export const PopupModalProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/**
+ * Accessor for opening/closing the shared center popup.
+ *
+ * @throws {Error} When used outside {@link PopupModalProvider}.
+ */
 export const usePopupModal = (): PopupModalContextValue => {
   const context = useContext(PopupModalContext);
   if (!context) {

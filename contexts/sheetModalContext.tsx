@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 
+/** Which bottom-sheet variant is showing. Discriminant for the {@link SheetContent} union. */
 export enum SheetType {
   PLAYLIST = "playlist",
   PLAYLIST_TRACK = "playlist-track",
@@ -41,6 +42,14 @@ export type SheetPlaylistSelect = {
   trackId: string;
 };
 
+/**
+ * Everything needed to render the active sheet, tagged by {@link SheetType}.
+ *
+ * @remarks
+ * A discriminated union rather than a bag of optional fields, so each variant
+ * declares exactly the ids it needs (e.g. a track sheet requires a `trackId`)
+ * and the consumer gets exhaustive, type-safe narrowing when switching on `type`.
+ */
 export type SheetContent =
   | SheetAlbumTrack
   | SheetPlaylistTrack
@@ -49,6 +58,7 @@ export type SheetContent =
   | SheetNowPlaying;
 
 interface SheetModalContextValue {
+  /** The open sheet's content, or `null` when none is showing. */
   active: SheetContent | null;
   open: (content: SheetContent) => void;
   close: () => void;
@@ -56,6 +66,15 @@ interface SheetModalContextValue {
 
 const SheetModalContext = createContext<SheetModalContextValue | null>(null);
 
+/**
+ * Coordinates the app's single bottom sheet.
+ *
+ * @remarks
+ * Holds only *which* sheet is open ({@link SheetContent}); the sheet component
+ * subscribes to `active` and renders the matching variant. Centralizing this in
+ * one host means only one sheet can be open at a time and any screen can open
+ * one by describing its content, without owning sheet markup itself.
+ */
 export const SheetModalProvider = ({ children }: { children: ReactNode }) => {
   const [active, setActive] = useState<SheetContent | null>(null);
 
@@ -79,6 +98,11 @@ export const SheetModalProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/**
+ * Accessor for opening/closing the shared bottom sheet.
+ *
+ * @throws {Error} When used outside {@link SheetModalProvider}.
+ */
 export const useSheetModal = (): SheetModalContextValue => {
   const context = useContext(SheetModalContext);
   if (!context) {
