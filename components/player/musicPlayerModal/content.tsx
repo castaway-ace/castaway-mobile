@@ -14,6 +14,17 @@ import { useActiveTrackStar, usePlayPause } from "../useNowPlayingControls";
 import { usePlayerForeground } from "../usePlayerForeground";
 import ProgressBar from "./progressBar";
 
+/**
+ * The full-screen player's inner layout: header, artwork, track info, seek bar,
+ * and transport controls.
+ *
+ * @remarks
+ * Split out from the modal container ({@link MusicPlayerModal}) so that file owns
+ * only presentation/animation while this owns the controls wired to the audio
+ * player context. Every icon is a {@link CrossfadeIcon} so the whole control
+ * cluster re-tints with the artwork. Renders nothing if the queue empties out
+ * from under it.
+ */
 const MusicPlayerModalContent: FC = () => {
   const { colors } = useTheme();
   const {
@@ -120,6 +131,8 @@ const MusicPlayerModalContent: FC = () => {
         </View>
         <ProgressBar />
         <View style={styles.musicPlayerButtonContainer}>
+          {/* Dim shuffle/repeat when inactive so the icon itself doubles as its
+              on/off state without needing a separate indicator. */}
           <Pressable onPress={toggleShuffle}>
             <CrossfadeIcon
               size={40}
@@ -149,6 +162,8 @@ const MusicPlayerModalContent: FC = () => {
               color={palette.primary}
             />
           </Pressable>
+          {/* Dimmed when off; the "1" badge icon distinguishes repeat-one from
+              repeat-all, which otherwise share the plain repeat glyph. */}
           <Pressable onPress={cycleRepeat}>
             <CrossfadeIcon
               size={40}

@@ -12,6 +12,17 @@ import { useAnimatedBackground } from "./useAnimatedBackground";
 import { usePlayerForeground } from "./usePlayerForeground";
 import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
 
+/**
+ * The persistent mini-player docked above the tab bar.
+ *
+ * @remarks
+ * Renders nothing when the queue is empty, so it only occupies space while
+ * something is loaded. Tapping the track info expands the full-screen player
+ * modal; the star and play/pause controls act inline without expanding. Its
+ * colors are driven by the cover art via {@link useAnimatedBackground} /
+ * {@link usePlayerForeground}, and icons crossfade through {@link CrossfadeIcon},
+ * so the whole bar re-tints smoothly as tracks change.
+ */
 const MusicPlayer = () => {
   const {
     isPlaying,
@@ -36,9 +47,12 @@ const MusicPlayer = () => {
     secondaryBgStyle,
   } = usePlayerForeground(coverColor, colors);
 
+  // Clamp to [0, 1] and guard divide-by-zero before duration is known, so the
+  // progress fill can't overflow the bar or NaN out on the first frames.
   const progress =
     duration > 0 ? Math.min(Math.max(currentTime / duration, 0), 1) : 0;
 
+  // Nothing playing: hide the bar entirely.
   if (!currentTrack) {
     return null;
   }

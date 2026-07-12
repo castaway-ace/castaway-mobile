@@ -8,6 +8,23 @@ import {
 } from "react-native-reanimated";
 import { COLOR_TRANSITION_DURATION } from "@/constants/player";
 
+/**
+ * Derives the player's foreground colors (text and controls) from the cover
+ * color and returns animated styles that ease between them as tracks change.
+ *
+ * @remarks
+ * The backdrop is the cover color (see {@link useAnimatedBackground}), so
+ * foreground colors can't be fixed theme values or they'd wash out against some
+ * covers. {@link getContrastPalette} picks primary/secondary tones that stay
+ * legible on that backdrop; when no cover color is known yet it falls back to the
+ * theme's own text colors. Both the raw `palette` (for non-animated consumers
+ * like plain icon colors) and pre-built animated text/background styles are
+ * returned so callers don't each re-wire the same shared values.
+ *
+ * @param coverColor - Extracted cover color, or `undefined` before extraction.
+ * @param colors - Active theme palette, used as the fallback.
+ * @param duration - Transition length in ms.
+ */
 export const usePlayerForeground = (
   coverColor: string | undefined,
   colors: ThemeColors,
@@ -20,6 +37,7 @@ export const usePlayerForeground = (
   const primary = useSharedValue(palette.primary);
   const secondary = useSharedValue(palette.secondary);
 
+  // Ease to the new contrast colors whenever the cover (and thus palette) changes.
   useEffect(() => {
     primary.value = withTiming(palette.primary, { duration });
     secondary.value = withTiming(palette.secondary, { duration });
