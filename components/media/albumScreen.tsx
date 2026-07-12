@@ -17,9 +17,19 @@ import { IconSymbol } from "@/components/ui/iconSymbol";
 
 interface AlbumScreenProps {
   album: Album;
+  /** Navigate to an artist; supplied by the page factory so this screen stays router-free. */
   onArtistPress: (artistId: string) => void;
 }
 
+/**
+ * Album detail screen: cover, title, artists, like toggle, and the track list.
+ *
+ * @remarks
+ * Presentational — it receives the already-loaded `album` and delegates artist
+ * navigation via `onArtistPress`, so the same screen backs the home, library, and
+ * search album routes. Tapping a track plays the whole album from that index,
+ * tagged with an `album` source; per-track overflow opens the album-track sheet.
+ */
 const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { mutate: albumStar } = useAlbumStar();
 
@@ -53,6 +63,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 16,
+          // Clear the tab bar and the mini-player floating above it.
           paddingBottom: tabBarHeight + 84,
         }}
       >

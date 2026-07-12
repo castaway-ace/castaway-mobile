@@ -6,6 +6,7 @@ import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import PlaylistCover from "./playlistCover";
 
+/** Layout: `grid` for fixed-width shelf cards, `row` for full-width list rows. */
 type InteractionVariant = "grid" | "row";
 
 interface InteractionItemProps {
@@ -16,6 +17,18 @@ interface InteractionItemProps {
 const ARTIST_PLACEHOLDER = require("../../assets/placeholders/artist-placeholder.png");
 const ALBUM_PLACEHOLDER = require("../../assets/placeholders/album-placeholder.png");
 
+/**
+ * Renders one entry from the recent-interactions feed, which mixes albums,
+ * artists, and playlists in a single list.
+ *
+ * @remarks
+ * The interaction union carries a different payload per `type`, so title,
+ * subtitle, placeholder, and artwork are each resolved by branching on it —
+ * notably playlists use the tiled {@link PlaylistCover} while albums/artists use
+ * a single image. One component handles all three so the feed can render a
+ * heterogeneous list uniformly, in either the shelf (`grid`) or list (`row`)
+ * layout.
+ */
 const InteractionItem: FC<InteractionItemProps> = ({
   interaction,
   variant = "grid",

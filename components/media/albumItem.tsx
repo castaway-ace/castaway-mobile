@@ -10,6 +10,15 @@ interface AlbumProps {
   id: string;
 }
 
+/**
+ * Album card (cover, title, artists) for horizontal shelves and grids.
+ *
+ * @remarks
+ * Self-fetching: takes only an `id` and loads its own album and cover through the
+ * cached queries, so callers render lists from a list of ids without threading
+ * full album objects (or cover URLs) down. Cover art comes from a separate query
+ * than the metadata, so the two fill in independently.
+ */
 const AlbumItem: FC<AlbumProps> = ({ id }) => {
   const { colors } = useTheme();
   const { data: album } = useAlbum(id);

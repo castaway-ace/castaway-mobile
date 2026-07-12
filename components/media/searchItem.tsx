@@ -23,10 +23,22 @@ interface SearchItemProps {
 const albumPlaceholder = require("../../assets/placeholders/album-placeholder.png");
 const artistPlaceholder = require("../../assets/placeholders/artist-placeholder.png");
 
+/**
+ * A single search result row, polymorphic over albums, artists, and tracks.
+ *
+ * @remarks
+ * Albums and artists navigate to their detail screen; a track result instead
+ * starts playback. Because a search track carries no siblings, playing it means
+ * resolving its whole album first (to build a real queue with the rest of the
+ * album), so `onPress` fetches the album on demand rather than playing the track
+ * in isolation.
+ */
 const SearchItem: FC<SearchItemProps> = ({ item }) => {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  // Blocks re-entry while the album fetch below is in flight, so a double tap
+  // can't kick off two queue loads.
   const [isStarting, setIsStarting] = useState(false);
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
@@ -50,11 +62,14 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
       setIsStarting(true);
 
       try {
+        // fetchQuery (not a hook) so we can pull the album imperatively inside
+        // the handler; it reuses/populates the same cache entry as useAlbum.
         const album = await queryClient.fetchQuery({
           queryKey: queryKeys.albums.detail(albumId),
           queryFn: () => albumApi.getOne(albumId),
         });
 
+        // Start the queue at the tapped track's position within its album.
         const startIndex = album.tracks.findIndex(
           (track) => track.id === item.id,
         );
@@ -72,6 +87,8 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
       } catch (error) {
         console.error("Failed to start album queue from search", error);
       } finally {
+        // Record the interaction and release the guard whether or not playback
+        // succeeded.
         albumInteraction(albumId);
         setIsStarting(false);
       }

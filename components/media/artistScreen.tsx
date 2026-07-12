@@ -14,9 +14,19 @@ import AlbumItem from "./albumItem";
 
 interface ArtistScreenProps {
   id: string;
+  /** Navigate to an album; supplied by the page factory so this screen stays router-free. */
   onAlbumPress: (albumId: string) => void;
 }
 
+/**
+ * Artist detail screen: image, name, like toggle, and the artist's albums.
+ *
+ * @remarks
+ * Self-fetches from `id` (unlike {@link AlbumScreen}, which is handed its entity)
+ * and delegates album navigation via `onAlbumPress`, so it backs the artist
+ * routes across all three tabs. Each album reuses the shared {@link AlbumItem}
+ * card.
+ */
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist } = useArtist(id);
   const { data: artistImageUrl } = useArtistImage(id);
@@ -43,6 +53,7 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 16,
+          // Clear the tab bar and the mini-player floating above it.
           paddingBottom: tabBarHeight + 84,
         }}
       >

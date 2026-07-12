@@ -10,6 +10,13 @@ interface ArtistItemProps {
   id: string;
 }
 
+/**
+ * Circular artist card (image, name) for artist shelves.
+ *
+ * @remarks
+ * Self-fetching from `id`, mirroring {@link AlbumItem}. Falls back to a bundled
+ * placeholder when the artist has no image so the circle is never empty.
+ */
 const ArtistItem: FC<ArtistItemProps> = ({ id }) => {
   const { colors } = useTheme();
   const { data: artist } = useArtist(id);

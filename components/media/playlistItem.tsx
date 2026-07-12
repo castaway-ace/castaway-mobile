@@ -9,6 +9,14 @@ interface PlaylistItemProps {
   id: string;
 }
 
+/**
+ * Playlist card (tiled cover, name) for playlist shelves.
+ *
+ * @remarks
+ * Self-fetching from `id`, like the other media cards. Delegates artwork to
+ * {@link PlaylistCover}, which turns the playlist's album covers into a single
+ * image or 2x2 grid.
+ */
 const PlaylistItem: FC<PlaylistItemProps> = ({ id }) => {
   const { colors } = useTheme();
   const { data: playlist } = usePlaylist(id);
