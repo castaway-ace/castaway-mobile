@@ -5,6 +5,16 @@ import { ComponentProps } from "react";
 import { StyleSheet, View } from "react-native";
 import MusicPlayer from "@/components/player/musicPlayer";
 
+/**
+ * The app's tab bar, extended to stack the mini-player directly above the native
+ * bar.
+ *
+ * @remarks
+ * Wraps the default `BottomTabBar` with {@link MusicPlayer} (shown only when
+ * something is playing) so the two move as one docked unit. It also reports its
+ * measured height to {@link useToast}'s `setBottomInset`, so toasts float above
+ * the whole stack — bar plus mini-player — instead of being hidden behind it.
+ */
 const CustomTabBar = (props: ComponentProps<typeof BottomTabBar>) => {
   const { currentTrack } = useAudioPlayerContext();
   const { setBottomInset } = useToast();
@@ -12,6 +22,7 @@ const CustomTabBar = (props: ComponentProps<typeof BottomTabBar>) => {
   return (
     <View
       style={styles.container}
+      // Publish the combined height so the toast can clear it.
       onLayout={(e) => setBottomInset(e.nativeEvent.layout.height)}
     >
       {currentTrack && <MusicPlayer />}

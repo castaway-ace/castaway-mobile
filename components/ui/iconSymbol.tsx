@@ -6,9 +6,10 @@ import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 /**
- * Add your SF Symbols to Material Icons mappings here.
- * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
- * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
+ * SF Symbol name → Ionicons name. Call sites always use the SF Symbol vocabulary
+ * (so the iOS and non-iOS implementations share one API); this table translates
+ * each to its closest Ionicon for Android/web. Any name used in the app must have
+ * an entry here — `satisfies` makes a missing or misspelled Ionicon a type error.
  */
 const MAPPING = {
   "house.fill": "home",
@@ -50,9 +51,13 @@ const MAPPING = {
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
- * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
- * This ensures a consistent look across platforms, and optimal resource usage.
- * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
+ * Android/web implementation of the app's icon, rendering an Ionicon.
+ *
+ * @remarks
+ * This is the default of a platform-split pair: Metro resolves `iconSymbol.tsx`
+ * on Android/web and `iconSymbol.ios.tsx` (native SF Symbols) on iOS, so both
+ * platforms are driven by the same `name` prop from a single call site. `name`
+ * is an SF Symbol identifier, mapped to an Ionicon via {@link MAPPING}.
  */
 export const IconSymbol = ({
   name,

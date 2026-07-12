@@ -3,6 +3,7 @@ import { useTheme } from "@/contexts/themeContext";
 import { FC, useMemo } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+/** Full-screen centered spinner on a themed background, shown while a route or the session bootstraps. */
 const LoadingScreen: FC = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
