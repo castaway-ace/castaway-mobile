@@ -10,6 +10,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
 import PlaylistCover from "./playlistCover";
 
 interface PlaylistScreenProps {
@@ -32,7 +33,7 @@ interface PlaylistScreenProps {
  * @param props - See {@link PlaylistScreenProps}.
  */
 const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
-  const { data: playlist } = usePlaylist(id);
+  const { data: playlist, isLoading } = usePlaylist(id);
   const { data: playlistTracks } = usePlaylistTracks(id);
 
   const { colors } = useTheme();
@@ -43,6 +44,8 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   const { playQueue } = useAudioPlayerContext();
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  if (isLoading) return <PlaylistScreenSkeleton />;
 
   const onTrackPress = (index: number) => {
     if (!playlistTracks) return;
@@ -191,5 +194,42 @@ const makeStyles = (colors: ThemeColors) =>
       fontSize: 16,
     },
   });
+
+/** One placeholder track row: two stacked lines of text. */
+const PlaylistTrackRowSkeleton = () => (
+  <View style={{ gap: 6 }}>
+    <Skeleton width="65%" height={18} borderRadius={4} />
+    <Skeleton width="40%" height={14} borderRadius={4} />
+  </View>
+);
+
+/**
+ * Loading placeholder for {@link PlaylistScreen}: a large centered cover, the
+ * title row, a "Tracks" header, and a list of track rows — matching the screen's
+ * footprint while its queries load.
+ */
+export const PlaylistScreenSkeleton = () => {
+  const { colors } = useTheme();
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background, paddingTop: 16 }}
+      edges={["top"]}
+      testID="playlist-screen-skeleton"
+    >
+      <View style={{ paddingHorizontal: 16, gap: 24 }}>
+        <View style={{ alignItems: "center" }}>
+          <Skeleton width="60%" borderRadius={12} style={{ aspectRatio: 1 }} />
+        </View>
+        <Skeleton width="55%" height={22} borderRadius={4} />
+        <View style={{ gap: 16 }}>
+          <Skeleton width="25%" height={18} borderRadius={4} />
+          {[0, 1, 2, 3, 4, 5].map((row) => (
+            <PlaylistTrackRowSkeleton key={row} />
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default PlaylistScreen;

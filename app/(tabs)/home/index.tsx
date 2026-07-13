@@ -1,10 +1,17 @@
 import { useAlbums } from "@/api/albums/queries";
 import { useArtists } from "@/api/artists/queries";
 import { usePlaylists } from "@/api/playlists/queries";
-import InteractionItem from "@/components/media/interactionItem";
 import AlbumItem from "@/components/media/albumItem";
 import ArtistItem from "@/components/media/artistItem";
+import InteractionItem from "@/components/media/interactionItem";
 import PlaylistItem from "@/components/media/playlistItem";
+import {
+  AlbumItemSkeleton,
+  ArtistItemSkeleton,
+  InteractionItemSkeleton,
+  PlaylistItemSkeleton,
+  SkeletonShelf,
+} from "@/components/media/skeletons";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
@@ -34,10 +41,15 @@ const HomeScreen = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { data: playlistData } = usePlaylists();
-  const { data: favoriteAlbumsData } = useAlbums({ starred: true });
-  const { data: favoriteArtistsData } = useArtists({ starred: true });
-  const { data: interactions } = useInteractions();
+  const { data: playlistData, isLoading: playlistsLoading } = usePlaylists();
+  const { data: favoriteAlbumsData, isLoading: albumsLoading } = useAlbums({
+    starred: true,
+  });
+  const { data: favoriteArtistsData, isLoading: artistsLoading } = useArtists({
+    starred: true,
+  });
+  const { data: interactions, isLoading: interactionsLoading } =
+    useInteractions();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
@@ -90,6 +102,13 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.itemContainerWrapper}>
+          {albumsLoading && (
+            <SkeletonShelf>
+              {[0, 1, 2].map((i) => (
+                <AlbumItemSkeleton key={i} />
+              ))}
+            </SkeletonShelf>
+          )}
           {favoriteAlbumsAvailable && (
             <View style={styles.itemsContainer}>
               <Text style={[styles.itemsContainerTitle]}>Favorite Albums</Text>
@@ -111,6 +130,13 @@ const HomeScreen = () => {
               </ScrollView>
             </View>
           )}
+          {playlistsLoading && (
+            <SkeletonShelf>
+              {[0, 1, 2].map((i) => (
+                <PlaylistItemSkeleton key={i} />
+              ))}
+            </SkeletonShelf>
+          )}
           {playlistsAvailable && (
             <View style={styles.itemsContainer}>
               <Text style={[styles.itemsContainerTitle]}>Your Playlists</Text>
@@ -129,6 +155,13 @@ const HomeScreen = () => {
                 ))}
               </ScrollView>
             </View>
+          )}
+          {interactionsLoading && (
+            <SkeletonShelf>
+              {[0, 1, 2].map((i) => (
+                <InteractionItemSkeleton key={i} variant="grid" />
+              ))}
+            </SkeletonShelf>
           )}
           {interactionsAvailable && (
             <View style={styles.itemsContainer}>
@@ -150,6 +183,13 @@ const HomeScreen = () => {
                 })}
               </ScrollView>
             </View>
+          )}
+          {artistsLoading && (
+            <SkeletonShelf>
+              {[0, 1, 2].map((i) => (
+                <ArtistItemSkeleton key={i} />
+              ))}
+            </SkeletonShelf>
           )}
           {favoriteArtistsAvailable && (
             <View style={styles.itemsContainer}>

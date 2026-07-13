@@ -1,5 +1,5 @@
 import { useAlbum, useAlbumCover } from "@/api/albums/queries";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AlbumItemSkeleton } from "@/components/media/skeletons";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
@@ -71,19 +71,5 @@ const makeStyles = (colors: ThemeColors) =>
       color: colors.secondary,
     },
   });
-
-/**
- * Loading placeholder for {@link AlbumItem}. Dimensions mirror the real card
- * (160-wide, square cover, two text lines) so swapping in the content doesn't
- * shift layout. Exported so shelves can render a row of these while their list
- * query loads.
- */
-export const AlbumItemSkeleton = () => (
-  <View style={{ width: 160, gap: 8 }}>
-    <Skeleton width="100%" height={160} borderRadius={12} />
-    <Skeleton width="80%" height={16} borderRadius={4} />
-    <Skeleton width="55%" height={14} borderRadius={4} />
-  </View>
-);
 
 export default AlbumItem;

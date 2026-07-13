@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAlbumStar } from "@/api/albums/mutations";
 import { Album } from "@/types/albums";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AlbumScreenProps {
   album: Album;
@@ -218,5 +219,51 @@ const makeStyles = (colors: ThemeColors) =>
       fontSize: 16,
     },
   });
+
+/** One placeholder track row: a number block beside two lines of text. */
+const AlbumTrackRowSkeleton = () => (
+  <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+    <Skeleton width={20} height={18} borderRadius={4} />
+    <View style={{ flex: 1, gap: 6 }}>
+      <Skeleton width="70%" height={16} borderRadius={4} />
+      <Skeleton width="45%" height={14} borderRadius={4} />
+    </View>
+  </View>
+);
+
+/**
+ * Loading placeholder for {@link AlbumScreen}, mirroring its layout: a large
+ * centered cover, title/artist/meta lines, the like control, and a list of
+ * track rows. Rendered by the album page while the album query loads, so the
+ * screen doesn't pop in from blank.
+ */
+export const AlbumScreenSkeleton = () => {
+  const { colors } = useTheme();
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background, paddingTop: 16 }}
+      edges={["top"]}
+      testID="album-screen-skeleton"
+    >
+      <View style={{ paddingHorizontal: 16, gap: 24 }}>
+        <View style={{ alignItems: "center" }}>
+          <Skeleton width="60%" borderRadius={8} style={{ aspectRatio: 1 }} />
+        </View>
+        <View style={{ gap: 8 }}>
+          <Skeleton width="70%" height={24} borderRadius={4} />
+          <Skeleton width="45%" height={16} borderRadius={4} />
+          <Skeleton width="35%" height={16} borderRadius={4} />
+        </View>
+        <Skeleton width={32} height={32} borderRadius={16} />
+        <View style={{ gap: 16 }}>
+          <Skeleton width="30%" height={18} borderRadius={4} />
+          {[0, 1, 2, 3, 4, 5].map((row) => (
+            <AlbumTrackRowSkeleton key={row} />
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default AlbumScreen;

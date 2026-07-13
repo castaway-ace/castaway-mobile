@@ -10,6 +10,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useArtistStar } from "@/api/artists/mutations";
 import { blurHash } from "@/constants/blur";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlbumItemSkeleton } from "./skeletons";
 import AlbumItem from "./albumItem";
 
 interface ArtistScreenProps {
@@ -28,7 +30,7 @@ interface ArtistScreenProps {
  * card.
  */
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
-  const { data: artist } = useArtist(id);
+  const { data: artist, isLoading } = useArtist(id);
   const { data: artistImageUrl } = useArtistImage(id);
   const { mutate } = useArtistStar();
 
@@ -36,6 +38,8 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  if (isLoading) return <ArtistScreenSkeleton />;
 
   const onLikeButtonPress = () => {
     if (!artist) return;
@@ -146,5 +150,36 @@ const makeStyles = (colors: ThemeColors) =>
       height: 140,
     },
   });
+
+/**
+ * Loading placeholder for {@link ArtistScreen}: a large centered image, the name
+ * line and like control, an "Albums" header, and a couple of album-card
+ * placeholders. Reuses {@link AlbumItemSkeleton} so the album shelf matches.
+ */
+export const ArtistScreenSkeleton = () => {
+  const { colors } = useTheme();
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background, paddingTop: 16 }}
+      edges={["top"]}
+      testID="artist-screen-skeleton"
+    >
+      <View style={{ paddingHorizontal: 16, gap: 24 }}>
+        <View style={{ alignItems: "center" }}>
+          <Skeleton width="60%" borderRadius={8} style={{ aspectRatio: 1 }} />
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Skeleton width="50%" height={24} borderRadius={4} />
+        </View>
+        <View style={{ gap: 16 }}>
+          <Skeleton width="30%" height={24} borderRadius={4} />
+          {[0, 1].map((row) => (
+            <AlbumItemSkeleton key={row} />
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default ArtistScreen;

@@ -15,7 +15,6 @@ const HomeStackLayout = () => {
       screenOptions={{
         headerShown: false,
         animation: "fade",
-        animationDuration: 300,
       }}
     />
   );

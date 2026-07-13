@@ -1,5 +1,10 @@
 import { useSearch } from "@/api/search/queries";
 import SearchItem from "@/components/media/searchItem";
+import {
+  AlbumItemSkeleton,
+  SearchItemSkeleton,
+  SkeletonShelf,
+} from "@/components/media/skeletons";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { useDebouncedValue } from "@/utils/useDebouncedValue";
@@ -36,9 +41,12 @@ const Search = () => {
   // ~300ms after the user stops.
   const debouncedSearch = useDebouncedValue(searchInput, 300);
 
-  const { data: searchData } = useSearch(debouncedSearch);
+  const { data: searchData, isLoading: searchLoading } =
+    useSearch(debouncedSearch);
 
-  const { data: albumsData } = useAlbums({ starred: true });
+  const { data: albumsData, isLoading: albumsLoading } = useAlbums({
+    starred: true,
+  });
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
 
@@ -73,6 +81,13 @@ const Search = () => {
           />
         </View>
       </View>
+      {!isInputted && albumsLoading && (
+        <SkeletonShelf>
+          {[0, 1, 2].map((i) => (
+            <AlbumItemSkeleton key={i} />
+          ))}
+        </SkeletonShelf>
+      )}
       {!isInputted && albumsAvailable && (
         <View style={styles.itemsContainer}>
           <Text style={[styles.itemsContainerTitle]}>Discover Albums</Text>
@@ -98,9 +113,11 @@ const Search = () => {
           keyboardDismissMode="on-drag"
         >
           <View style={styles.searchItemContainer}>
-            {search.map((data) => {
-              return <SearchItem key={`${data.type}-${data.id}`} item={data} />;
-            })}
+            {searchLoading
+              ? [0, 1, 2, 3, 4, 5].map((i) => <SearchItemSkeleton key={i} />)
+              : search.map((data) => (
+                  <SearchItem key={`${data.type}-${data.id}`} item={data} />
+                ))}
           </View>
         </ScrollView>
       )}

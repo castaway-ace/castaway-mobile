@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InteractionItem from "@/components/media/interactionItem";
+import { InteractionItemSkeleton } from "@/components/media/skeletons";
 
 /**
  * Library tab: a vertical list of the user's recent items plus a create-playlist
@@ -33,7 +34,8 @@ const Library = () => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const { data: interactions } = useInteractions();
+  const { data: interactions, isLoading: interactionsLoading } =
+    useInteractions();
 
   const { openCreatePlaylist } = usePopupModal();
 
@@ -85,6 +87,13 @@ const Library = () => {
         contentContainerStyle={{ paddingBottom: tabBarHeight + 84 }}
         showsVerticalScrollIndicator={false}
       >
+        {interactionsLoading && (
+          <View style={styles.itemContainer}>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <InteractionItemSkeleton key={i} variant="row" />
+            ))}
+          </View>
+        )}
         {interactionsAvailable && (
           <View style={styles.itemContainer}>
             {interactions.map((interaction) => {
