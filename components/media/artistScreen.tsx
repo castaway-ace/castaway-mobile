@@ -9,8 +9,21 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, {
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollOffset,
+} from "react-native-reanimated";
 import AlbumItem from "./albumItem";
 import { AlbumItemSkeleton, SkeletonShelf } from "./skeletons";
 
@@ -48,6 +61,38 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const tabBarHeight = useBottomTabBarHeight();
   const insets = useSafeAreaInsets();
 
+  // Concrete pixel height for the hero (the 6:5 aspect ratio applied to the
+  // screen width), needed to drive the scroll interpolation below.
+  const { width } = useWindowDimensions();
+  const heroHeight = (width * 5) / 6;
+
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollOffset(scrollRef);
+
+  // Stretchy header: a pull-down (negative offset, iOS rubber-band) grows the
+  // image to fill the exposed gap with its top pinned to the screen edge; a
+  // scroll up drifts it away at 0.75× for a subtle parallax. The scale/translate
+  // pair is the standard reanimated stretchy-header formula — at full pull the
+  // −heroHeight/2 translate cancels the center-anchored scale so the top holds.
+  const heroAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          scrollOffset.value,
+          [-heroHeight, 0, heroHeight],
+          [-heroHeight / 2, 0, heroHeight * 0.75],
+        ),
+      },
+      {
+        scale: interpolate(
+          scrollOffset.value,
+          [-heroHeight, 0, heroHeight],
+          [2, 1, 1],
+        ),
+      },
+    ],
+  }));
+
   if (isLoading) return <ArtistScreenSkeleton />;
 
   const onLikeButtonPress = () => {
@@ -63,31 +108,22 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <Animated.ScrollView
+        ref={scrollRef}
         contentContainerStyle={{
           // Clear the tab bar and the mini-player floating above it.
           paddingBottom: tabBarHeight + 84,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.hero}>
+        <Animated.View style={[styles.hero, heroAnimatedStyle]}>
           <Image
             source={imageSource}
             placeholder={blurHash}
             contentFit="cover"
-            style={styles.artistImage}
+            style={[styles.artistImage, { height: heroHeight }]}
           />
-          <Pressable
-            style={[styles.backButton, { top: insets.top + 8 }]}
-            onPress={() => router.back()}
-          >
-            <IconSymbol
-              size={24}
-              name={"arrow.backward"}
-              color={ON_IMAGE_ICON}
-            />
-          </Pressable>
-        </View>
+        </Animated.View>
 
         <View style={styles.body}>
           <View style={styles.artistInfoContainer}>
@@ -118,7 +154,16 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
             ))}
           </ScrollView>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
+
+      {/* Fixed over the hero, outside the scroll view so it neither scales with
+          the stretch nor scrolls away with the content. */}
+      <Pressable
+        style={[styles.backButton, { top: insets.top + 8 }]}
+        onPress={() => router.back()}
+      >
+        <IconSymbol size={24} name={"arrow.backward"} color={ON_IMAGE_ICON} />
+      </Pressable>
     </View>
   );
 };
@@ -135,7 +180,6 @@ const makeStyles = (colors: ThemeColors) =>
     },
     artistImage: {
       width: "100%",
-      aspectRatio: 6 / 5,
     },
     backButton: {
       position: "absolute",

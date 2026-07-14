@@ -32,6 +32,11 @@ export const useAnimatedProps = <T,>(factory: () => T): T => factory();
 
 export const useAnimatedRef = <T,>() => React.useRef<T | null>(null);
 
+export const useScrollOffset = (): { value: number } => {
+  const ref = React.useRef({ value: 0 });
+  return ref.current;
+};
+
 export const useAnimatedReaction = (): void => {};
 
 export const useAnimatedScrollHandler = () => () => {};
