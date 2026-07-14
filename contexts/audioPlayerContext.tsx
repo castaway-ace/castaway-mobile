@@ -1,5 +1,5 @@
 import { useAlbumCover } from "@/api/albums/queries";
-import { BASE_URL } from "@/api/client";
+import { BASE_URL, getValidAccessToken } from "@/api/client";
 import { trackApi } from "@/api/tracks/api";
 import { AlbumTrack } from "@/types/albums";
 import { PlaylistTrack } from "@/types/playlist";
@@ -9,7 +9,6 @@ import {
   useAudioPlayer,
   useAudioPlayerStatus,
 } from "expo-audio";
-import * as SecureStore from "expo-secure-store";
 import {
   createContext,
   ReactElement,
@@ -404,7 +403,11 @@ export const AudioPlayerProvider = ({
         // The stream endpoint is authenticated, so the token is attached
         // directly to the media request here — the engine fetches the audio
         // itself and never passes through the Axios client's interceptors.
-        const token = await SecureStore.getItemAsync("accessToken");
+        // Because it bypasses those interceptors, it also bypasses their
+        // refresh-on-401, so use the token the client vouches is fresh: during
+        // long uninterrupted playback nothing else refreshes it, and a stale one
+        // would silently fail to load the next track when the queue advances.
+        const token = await getValidAccessToken();
         // Playlist entries expose the underlying track as `trackId`; other
         // shapes stream by their own `id`.
         const streamId = "trackId" in track ? track.trackId : track.id;

@@ -1,6 +1,7 @@
 import type { components } from "@/api/schema";
 import axios, { AxiosError, isAxiosError } from "axios";
 import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from "jwt-decode";
 
 /**
  * Shared Axios instance for every authenticated backend call.
@@ -101,6 +102,64 @@ export const refreshTokens = async (): Promise<string> => {
   await SecureStore.setItemAsync("accessToken", data.accessToken);
   await SecureStore.setItemAsync("refreshToken", data.refreshToken);
   return data.accessToken;
+};
+
+// Refresh slightly before the token's real expiry so a request that leaves on a
+// still-"valid" token doesn't cross the boundary in flight, and to absorb minor
+// clock skew between device and server.
+const TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
+/**
+ * Whether `token` is within {@link TOKEN_EXPIRY_BUFFER_SECONDS} of expiring
+ * (or already expired, or unreadable).
+ *
+ * @remarks
+ * A decode failure or a missing `exp` claim counts as "expiring" so a malformed
+ * token triggers a refresh attempt rather than being trusted blindly.
+ */
+const isExpiringSoon = (token: string): boolean => {
+  try {
+    const { exp } = jwtDecode(token);
+    if (typeof exp !== "number") return true;
+    return exp - Date.now() / 1000 <= TOKEN_EXPIRY_BUFFER_SECONDS;
+  } catch {
+    return true;
+  }
+};
+
+/**
+ * Returns an access token guaranteed valid for at least the next
+ * {@link TOKEN_EXPIRY_BUFFER_SECONDS}, refreshing first when the stored one has
+ * expired or is about to.
+ *
+ * @remarks
+ * Axios call sites don't need this — the response interceptor refreshes
+ * reactively on a `401`. It exists for requests that *bypass* this client, above
+ * all the authenticated audio stream the native player fetches itself: those
+ * never surface a `401` the interceptor can catch, so an access token that goes
+ * stale during uninterrupted playback would simply fail to load the next track.
+ * Checking expiry up front keeps that path alive. Shares the single-flight
+ * {@link refreshPromise} with the interceptor so a concurrent reactive refresh
+ * is never duplicated.
+ *
+ * @returns A fresh-enough access token, `null` when no session is stored, or —
+ * if a needed refresh fails — the stored token unchanged, leaving the request to
+ * fail exactly as it would have before rather than blocking playback outright.
+ */
+export const getValidAccessToken = async (): Promise<string | null> => {
+  const token = await SecureStore.getItemAsync("accessToken");
+  if (!token || !isExpiringSoon(token)) return token;
+
+  try {
+    if (!refreshPromise) {
+      refreshPromise = refreshTokens().finally(() => {
+        refreshPromise = null;
+      });
+    }
+    return await refreshPromise;
+  } catch {
+    return token;
+  }
 };
 
 // Attach the current access token to every outgoing request. Read from secure

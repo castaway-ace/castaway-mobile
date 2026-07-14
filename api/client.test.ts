@@ -1,4 +1,5 @@
 import apiClient, {
+  getValidAccessToken,
   refreshTokens,
   setAuthFailureHandler,
 } from "@/api/client";
@@ -15,6 +16,18 @@ let onAuthFailure: jest.Mock;
 const seedTokens = async (access: string | null, refresh: string | null) => {
   if (access) await SecureStore.setItemAsync("accessToken", access);
   if (refresh) await SecureStore.setItemAsync("refreshToken", refresh);
+};
+
+const nowSeconds = () => Math.floor(Date.now() / 1000);
+
+// Builds a JWT whose payload carries `exp` (seconds since epoch). Only the
+// payload segment matters here — jwtDecode never verifies the signature — so the
+// header and signature are placeholders.
+const makeJwt = (expSeconds: number): string => {
+  const payload = Buffer.from(JSON.stringify({ exp: expSeconds })).toString(
+    "base64url",
+  );
+  return `header.${payload}.signature`;
 };
 
 beforeEach(() => {
@@ -79,6 +92,62 @@ describe("refreshTokens", () => {
     axiosMock.onPost(REFRESH_URL).reply(200, { accessToken: "only-access" });
 
     await expect(refreshTokens()).rejects.toThrow("Malformed refresh response");
+  });
+});
+
+describe("getValidAccessToken", () => {
+  it("returns null when no token is stored, without attempting a refresh", async () => {
+    await expect(getValidAccessToken()).resolves.toBeNull();
+    expect(axiosMock.history.post).toHaveLength(0);
+  });
+
+  it("returns the stored token unchanged while it is still valid", async () => {
+    const token = makeJwt(nowSeconds() + 3600);
+    await seedTokens(token, "refresh-token");
+
+    await expect(getValidAccessToken()).resolves.toBe(token);
+    expect(axiosMock.history.post).toHaveLength(0);
+  });
+
+  it("refreshes and returns a new token when the stored one has expired", async () => {
+    await seedTokens(makeJwt(nowSeconds() - 10), "refresh-token");
+    axiosMock.onPost(REFRESH_URL).reply(200, {
+      accessToken: "fresh-access",
+      refreshToken: "fresh-refresh",
+    });
+
+    await expect(getValidAccessToken()).resolves.toBe("fresh-access");
+    expect(axiosMock.history.post).toHaveLength(1);
+  });
+
+  it("refreshes proactively when the token is within the expiry buffer", async () => {
+    // 30s of life left — inside the 60s buffer, so it should refresh ahead of
+    // the boundary rather than hand back an about-to-expire token.
+    await seedTokens(makeJwt(nowSeconds() + 30), "refresh-token");
+    axiosMock.onPost(REFRESH_URL).reply(200, {
+      accessToken: "fresh-access",
+      refreshToken: "fresh-refresh",
+    });
+
+    await expect(getValidAccessToken()).resolves.toBe("fresh-access");
+  });
+
+  it("treats an undecodable token as expiring and refreshes", async () => {
+    await seedTokens("not-a-jwt", "refresh-token");
+    axiosMock.onPost(REFRESH_URL).reply(200, {
+      accessToken: "fresh-access",
+      refreshToken: "fresh-refresh",
+    });
+
+    await expect(getValidAccessToken()).resolves.toBe("fresh-access");
+  });
+
+  it("falls back to the stored token when a needed refresh fails", async () => {
+    const stale = makeJwt(nowSeconds() - 10);
+    await seedTokens(stale, "refresh-token");
+    axiosMock.onPost(REFRESH_URL).reply(500);
+
+    await expect(getValidAccessToken()).resolves.toBe(stale);
   });
 });
 
