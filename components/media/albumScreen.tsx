@@ -12,15 +12,41 @@ import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
-import { FC, useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FC, useMemo, useState } from "react";
+import {
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollOffset,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface AlbumScreenProps {
   album: Album;
   /** Navigate to an artist; supplied by the page factory so this screen stays router-free. */
   onArtistPress: (artistId: string) => void;
 }
+
+/** Height of the sticky header's content row, below the status-bar inset. */
+const HEADER_CONTENT_HEIGHT = 48;
+
+/** Width reserved for the back button, mirrored as a spacer to center the title. */
+const HEADER_BUTTON_WIDTH = 32;
+
+/**
+ * Scroll distance over which the sticky header crossfades, ending the moment the
+ * album title is fully hidden. The fade tracks the title's approach rather than
+ * snapping at the threshold.
+ */
+const HEADER_FADE_DISTANCE = 64;
 
 /**
  * Album detail screen: cover, title, artists, like toggle, and the track list.
@@ -44,6 +70,52 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { playQueue } = useAudioPlayerContext();
 
   const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
+
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollOffset(scrollRef);
+
+  // Where the sticky header's bottom edge sits, and where scroll content starts.
+  const headerBottom = insets.top + HEADER_CONTENT_HEIGHT;
+
+  // The title's position is measured rather than hardcoded: a long album title
+  // wraps to a second line, which moves the point where it slips under the
+  // header. `headerRowY` is relative to the scroll content (it's a direct child
+  // of the content container) and `titleBottom` is relative to that row, so the
+  // two sum to the title's bottom edge in scroll-content coordinates.
+  const [headerRowY, setHeaderRowY] = useState(0);
+  const [titleBottom, setTitleBottom] = useState(0);
+
+  const onHeaderRowLayout = (event: LayoutChangeEvent) =>
+    setHeaderRowY(event.nativeEvent.layout.y);
+
+  const onAlbumTitleLayout = (event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    setTitleBottom(y + height);
+  };
+
+  // Scroll offset past which the album title is fully hidden behind the header.
+  // Stays negative until both layouts have reported, which reads as "not
+  // measured yet" and keeps the header hidden on first paint.
+  const revealOffset = headerRowY + titleBottom - headerBottom;
+
+  // Fade the background and title in as the album title nears the header, landing
+  // at full opacity exactly as it disappears behind it. Driving opacity straight
+  // from the scroll position (rather than a timed animation off a threshold) ties
+  // the crossfade to the user's finger and reverses it on the way back up.
+  const stickyHeaderStyle = useAnimatedStyle(() => {
+    // Negative until both onLayouts have reported; without this the clamp below
+    // would read a scroll of 0 as "past the threshold" and flash the header.
+    if (revealOffset <= 0) return { opacity: 0 };
+    return {
+      opacity: interpolate(
+        scrollOffset.value,
+        [revealOffset - HEADER_FADE_DISTANCE, revealOffset],
+        [0, 1],
+        Extrapolation.CLAMP,
+      ),
+    };
+  });
 
   const onTrackPress = (index: number) => {
     if (!album?.tracks) return;
@@ -60,21 +132,17 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView
+    <View style={styles.container}>
+      <Animated.ScrollView
+        ref={scrollRef}
         contentContainerStyle={{
           paddingHorizontal: 16,
+          // Start below the sticky header, which floats over the scroll view.
+          paddingTop: headerBottom,
           // Clear the tab bar and the mini-player floating above it.
           paddingBottom: tabBarHeight + 84,
         }}
       >
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol
-            size={32}
-            name={"arrow.backward"}
-            color={colors.primary}
-          />
-        </Pressable>
         <View style={styles.albumArtContainer}>
           <Image
             source={{
@@ -84,9 +152,11 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
             style={styles.albumArt}
           />
         </View>
-        <View style={styles.albumHeader}>
+        <View style={styles.albumHeader} onLayout={onHeaderRowLayout}>
           <View style={styles.albumInfoContainer}>
-            <Text style={styles.albumTitle}>{album?.title}</Text>
+            <Text style={styles.albumTitle} onLayout={onAlbumTitleLayout}>
+              {album?.title}
+            </Text>
             <View>
               {album?.artists.map((artist) => {
                 return (
@@ -138,8 +208,44 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
             );
           })}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </Animated.ScrollView>
+
+      {/* Fixed over the scroll view so the back button is always reachable. Only
+          the background and title fade in; box-none lets touches through the
+          header's empty space to the content underneath. */}
+      <View
+        style={[
+          styles.stickyHeader,
+          { paddingTop: insets.top, height: headerBottom },
+        ]}
+        pointerEvents="box-none"
+      >
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.stickyHeaderBackground,
+            stickyHeaderStyle,
+          ]}
+        />
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <IconSymbol
+            size={32}
+            name={"arrow.backward"}
+            color={colors.primary}
+          />
+        </Pressable>
+        <Animated.Text
+          style={[styles.stickyHeaderTitle, stickyHeaderStyle]}
+          numberOfLines={1}
+          testID="album-sticky-header-title"
+        >
+          {album?.title}
+        </Animated.Text>
+        {/* Mirrors the back button's width so the flexed title centers against
+            the screen rather than the space left over beside the button. */}
+        <View style={styles.headerSpacer} />
+      </View>
+    </View>
   );
 };
 
@@ -148,11 +254,33 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingTop: 16,
+    },
+    stickyHeader: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      gap: 12,
+    },
+    stickyHeaderBackground: {
+      backgroundColor: colors.surface,
+    },
+    stickyHeaderTitle: {
+      flex: 1,
+      textAlign: "center",
+      color: colors.primary,
+      fontSize: 18,
+      fontWeight: 600,
     },
     backButton: {
-      position: "absolute",
-      left: 16,
+      width: HEADER_BUTTON_WIDTH,
+      justifyContent: "center",
+    },
+    headerSpacer: {
+      width: HEADER_BUTTON_WIDTH,
     },
     albumArtContainer: {
       display: "flex",
@@ -248,10 +376,14 @@ const AlbumTrackRowSkeleton = () => (
  */
 export const AlbumScreenSkeleton = () => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background, paddingTop: 16 }}
-      edges={["top"]}
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        paddingTop: insets.top + HEADER_CONTENT_HEIGHT,
+      }}
       testID="album-screen-skeleton"
     >
       <View style={{ paddingHorizontal: 16, gap: 24 }}>
@@ -271,7 +403,7 @@ export const AlbumScreenSkeleton = () => {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

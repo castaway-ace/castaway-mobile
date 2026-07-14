@@ -13,6 +13,7 @@ import {
 } from "@/test-utils/renderWithProviders";
 import type { Album } from "@/types/albums";
 import type { QueryClient } from "@tanstack/react-query";
+import { StyleSheet } from "react-native";
 
 const mockAlbumStar = jest.fn();
 const mockPlayQueue = jest.fn();
@@ -72,13 +73,23 @@ const renderScreen = async (
 
 describe("AlbumScreen", () => {
   it("renders the album title, artist, release line, and tracks", async () => {
-    const { getByText } = await renderScreen(makeTestAlbum());
+    const { getByText, getAllByText } = await renderScreen(makeTestAlbum());
 
-    expect(getByText("OK Computer")).toBeTruthy();
+    // Twice: once in the body header, once in the sticky header.
+    expect(getAllByText("OK Computer")).toHaveLength(2);
     expect(getByText("Radiohead")).toBeTruthy();
     expect(getByText(/^Album • /)).toBeTruthy();
     expect(getByText("Airbag")).toBeTruthy();
     expect(getByText("Karma Police")).toBeTruthy();
+  });
+
+  it("keeps the sticky header title hidden at the top of the scroll", async () => {
+    const { getByTestId } = await renderScreen(makeTestAlbum());
+
+    const style = StyleSheet.flatten(
+      getByTestId("album-sticky-header-title").props.style,
+    );
+    expect(style.opacity).toBe(0);
   });
 
   it("calls onArtistPress when an artist is tapped", async () => {
