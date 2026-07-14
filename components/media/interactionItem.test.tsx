@@ -22,7 +22,7 @@ describe("InteractionItem", () => {
     );
 
     expect(getByText("Dark Side")).toBeTruthy();
-    expect(getByText("Pink Floyd")).toBeTruthy();
+    expect(getByText("Album • Pink Floyd")).toBeTruthy();
     expect(getByTestId("expo-image").props.accessibilityLabel).toBe(
       "https://cover/dsotm.jpg",
     );

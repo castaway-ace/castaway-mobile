@@ -340,6 +340,9 @@ export const AudioPlayerProvider = ({
   // Guards against `didJustFinish` firing repeatedly for one track end, which
   // would otherwise advance the queue several tracks at once.
   const finishHandledRef = useRef(false);
+  // Latches the last engine error already surfaced, so one failure is reported
+  // once even though status re-polls the same `error` across frames.
+  const streamErrorRef = useRef<string | null>(null);
 
   // Poll status four times a second — frequent enough for a smooth progress bar
   // without the overhead of the engine's default tighter interval.
@@ -486,6 +489,26 @@ export const AudioPlayerProvider = ({
       finishHandledRef.current = false;
     }
   }, [status.didJustFinish, repeatMode, order.length, player]);
+
+  // Surface a load/playback failure the engine reports. The stream is fetched by
+  // the native engine outside the Axios client, so a failure — a session whose
+  // refresh also failed, a dropped connection, an unplayable source — arrives as
+  // `status.error` rather than a thrown exception, and would otherwise be
+  // invisible: the next track simply never starts. Record it so the UI can react
+  // (see the toast bridge), and clear `isLoading`/`shouldPlay` so a track that
+  // will never load doesn't leave the play button spinning forever. The ref
+  // latches per message; it resets when `error` clears, which the engine does as
+  // soon as a new source loads.
+  useEffect(() => {
+    if (status.error && status.error !== streamErrorRef.current) {
+      streamErrorRef.current = status.error;
+      setError(new Error(status.error));
+      setIsLoading(false);
+      setShouldPlay(false);
+    } else if (!status.error) {
+      streamErrorRef.current = null;
+    }
+  }, [status.error]);
 
   const loadTrack = useCallback(async (trackId: string): Promise<void> => {
     setIsLoading(true);

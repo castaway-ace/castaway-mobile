@@ -3,7 +3,18 @@ import {
   useAudioPlayerContext,
 } from "@/contexts/audioPlayerContext";
 import { makeTrackSummary } from "@/test-utils/fixtures";
-import { act, renderHook } from "@/test-utils/renderWithProviders";
+import { act, renderHook, waitFor } from "@/test-utils/renderWithProviders";
+
+// Mutable so tests can drive the engine's reported status (e.g. a load error)
+// and re-render to exercise the effects that react to it.
+const mockStatus = {
+  isLoaded: false,
+  playing: false,
+  didJustFinish: false,
+  currentTime: 0,
+  duration: 0,
+  error: null as string | null,
+};
 
 jest.mock("expo-audio", () => {
   const player = {
@@ -17,13 +28,7 @@ jest.mock("expo-audio", () => {
   };
   return {
     useAudioPlayer: () => player,
-    useAudioPlayerStatus: () => ({
-      isLoaded: false,
-      playing: false,
-      didJustFinish: false,
-      currentTime: 0,
-      duration: 0,
-    }),
+    useAudioPlayerStatus: () => mockStatus,
     setAudioModeAsync: jest.fn(),
   };
 });
@@ -44,6 +49,15 @@ const tracks = [
 
 const renderPlayer = () =>
   renderHook(() => useAudioPlayerContext(), { wrapper: AudioPlayerProvider });
+
+beforeEach(() => {
+  mockStatus.isLoaded = false;
+  mockStatus.playing = false;
+  mockStatus.didJustFinish = false;
+  mockStatus.currentTime = 0;
+  mockStatus.duration = 0;
+  mockStatus.error = null;
+});
 
 describe("audioPlayerContext queue", () => {
   it("plays a queue starting at the given index", async () => {
@@ -123,5 +137,29 @@ describe("audioPlayerContext queue", () => {
 
     expect(result.current.currentTrack).toBeNull();
     expect(result.current.queue).toHaveLength(0);
+  });
+});
+
+describe("audioPlayerContext errors", () => {
+  it("surfaces an engine error and clears the stuck loading state", async () => {
+    const { result, rerender } = await renderPlayer();
+
+    // Starting a track flips isLoading on; the mock never reports `isLoaded`, so
+    // without the error effect it would spin forever once the load fails.
+    await act(async () => result.current.playQueue(tracks, 0));
+    await waitFor(() => expect(result.current.isLoading).toBe(true));
+    expect(result.current.error).toBeNull();
+
+    // The native engine reports the stream failed (e.g. a 401 it fetched itself).
+    await act(async () => {
+      mockStatus.error = "The operation couldn't be completed";
+      await rerender(undefined);
+    });
+
+    await waitFor(() => expect(result.current.error).not.toBeNull());
+    expect(result.current.error?.message).toBe(
+      "The operation couldn't be completed",
+    );
+    expect(result.current.isLoading).toBe(false);
   });
 });

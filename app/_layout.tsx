@@ -1,3 +1,4 @@
+import PlaybackErrorToaster from "@/components/player/playbackErrorToaster";
 import LoadingScreen from "@/components/ui/loadingScreen";
 import { AudioPlayerProvider } from "@/contexts/audioPlayerContext";
 import { AuthProvider, useAuth } from "@/contexts/authContext";
@@ -91,6 +92,9 @@ const RootLayout = () => {
             <GestureHandlerRootView style={{ flex: 1 }}>
               <KeyboardProvider>
                 <ToastProvider>
+                  {/* Inside ToastProvider so it can raise a toast; the audio
+                      provider above only records the error. */}
+                  <PlaybackErrorToaster />
                   <PlayerModalProvider>
                     <SheetModalProvider>
                       <PopupModalProvider>
