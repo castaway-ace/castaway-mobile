@@ -1,3 +1,4 @@
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
@@ -5,12 +6,11 @@ import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
-import { blurHash } from "@/constants/blur";
-import { CrossfadeIcon } from "./crossfadeIcon";
 import Animated from "react-native-reanimated";
+import { CrossfadeIcon } from "./crossfadeIcon";
 import { useAnimatedBackground } from "./useAnimatedBackground";
-import { usePlayerForeground } from "./usePlayerForeground";
 import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
+import { usePlayerForeground } from "./usePlayerForeground";
 
 /**
  * The persistent mini-player docked above the tab bar.
@@ -112,7 +112,11 @@ const MusicPlayer = () => {
         <View style={styles.barArea}>
           <Animated.View style={[styles.bar, secondaryBgStyle]}>
             <Animated.View
-              style={[styles.fill, primaryBgStyle, { width: `${progress * 100}%` }]}
+              style={[
+                styles.fill,
+                primaryBgStyle,
+                { width: `${progress * 100}%` },
+              ]}
             />
           </Animated.View>
         </View>
@@ -170,6 +174,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     barArea: {
       paddingHorizontal: 8,
+      paddingBottom: 1,
     },
     bar: {
       height: 4,

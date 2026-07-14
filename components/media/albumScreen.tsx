@@ -1,9 +1,13 @@
+import { useAlbumStar } from "@/api/albums/mutations";
 import { useAlbumCover } from "@/api/albums/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { Album } from "@/types/albums";
 import { formatDate } from "@/utils/formatters";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -11,10 +15,6 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbumStar } from "@/api/albums/mutations";
-import { Album } from "@/types/albums";
-import { IconSymbol } from "@/components/ui/iconSymbol";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface AlbumScreenProps {
   album: Album;
@@ -80,27 +80,27 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
             style={styles.albumArt}
           />
         </View>
-        <View style={styles.albumInfoContainer}>
-          <Text style={styles.albumTitle}>{album?.title}</Text>
-          <View>
-            {album?.artists.map((artist) => {
-              return (
-                <Pressable
-                  key={artist.id}
-                  onPress={() => onArtistPress(artist.id)}
-                >
-                  <Text style={styles.artistName}>{artist.name}</Text>
-                </Pressable>
-              );
-            })}
+        <View style={styles.albumHeader}>
+          <View style={styles.albumInfoContainer}>
+            <Text style={styles.albumTitle}>{album?.title}</Text>
+            <View>
+              {album?.artists.map((artist) => {
+                return (
+                  <Pressable
+                    key={artist.id}
+                    onPress={() => onArtistPress(artist.id)}
+                  >
+                    <Text style={styles.artistName}>{artist.name}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
           </View>
-          <Text style={styles.releaseDate}>Album • {releaseDate}</Text>
-        </View>
-        <View style={styles.albumLikeContainer}>
           <Pressable onPress={onLikeAlbumButtonPress}>
             <IconSymbol
               name={album?.starred ? "heart.fill" : "heart"}
-              size={32}
+              size={48}
               color={colors.primary}
             />
           </Pressable>
@@ -165,8 +165,9 @@ const makeStyles = (colors: ThemeColors) =>
       gap: 8,
       marginBottom: 24,
     },
-    albumLikeContainer: {
-      marginBottom: 24,
+    albumHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     albumTitle: {
       color: colors.primary,

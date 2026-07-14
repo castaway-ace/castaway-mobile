@@ -48,7 +48,7 @@ const InteractionItem: FC<InteractionItemProps> = ({
       : interaction.playlist.name;
 
   const subText = isAlbum
-    ? interaction.artists.map((artist) => artist.name).join(", ")
+    ? `Album • ${interaction.artists.map((artist) => artist.name).join(", ")}`
     : isArtist
       ? "Artist"
       : "Playlist";
