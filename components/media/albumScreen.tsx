@@ -119,8 +119,10 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
               >
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
-                    <Text style={styles.trackTitle}>{track.title}</Text>
-                    <Text style={styles.trackArtists}>
+                    <Text style={styles.trackTitle} numberOfLines={1}>
+                      {track.title}
+                    </Text>
+                    <Text style={styles.trackArtists} numberOfLines={1}>
                       {track?.artists?.map((artist) => artist.name)?.join(", ")}
                     </Text>
                   </View>
@@ -163,6 +165,7 @@ const makeStyles = (colors: ThemeColors) =>
       borderRadius: 8,
     },
     albumInfoContainer: {
+      flex: 1,
       display: "flex",
       gap: 8,
       marginBottom: 24,
@@ -170,6 +173,7 @@ const makeStyles = (colors: ThemeColors) =>
     albumHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
+      gap: 12,
     },
     albumTitle: {
       color: colors.primary,
@@ -208,8 +212,10 @@ const makeStyles = (colors: ThemeColors) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      gap: 12,
     },
     trackLeftInfo: {
+      flex: 1,
       display: "flex",
       gap: 4,
     },
