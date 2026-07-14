@@ -91,7 +91,7 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
   const tabBarHeight = useBottomTabBarHeight();
   const insets = useSafeAreaInsets();
 
-  // Concrete pixel height for the hero (the 6:5 aspect ratio applied to the
+  // Concrete pixel height for the hero (a 4:3 aspect ratio applied to the
   // screen width), needed to drive the scroll interpolation below.
   const { width } = useWindowDimensions();
   const heroHeight = (width * 3) / 4;
@@ -149,6 +149,11 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
             source={imageSource}
             placeholder={blurHash}
             contentFit="cover"
+            // Anchor to the top rather than cover's default center: artist photos
+            // are portraits framing the face in the upper half, so a center crop
+            // into the 4:3 hero eats into it. Pinning the top pushes the whole
+            // overflow to the bottom of the photo instead.
+            contentPosition="top"
             style={[styles.artistImage, { height: heroHeight }]}
           />
         </Animated.View>
