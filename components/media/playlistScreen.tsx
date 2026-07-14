@@ -1,3 +1,6 @@
+import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
@@ -8,9 +11,6 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
-import { IconSymbol } from "@/components/ui/iconSymbol";
-import { Skeleton } from "@/components/ui/skeleton";
 import PlaylistCover from "./playlistCover";
 
 interface PlaylistScreenProps {
@@ -77,7 +77,11 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
         }}
       >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
+          <IconSymbol
+            size={32}
+            name={"arrow.backward"}
+            color={colors.primary}
+          />
         </Pressable>
         <View style={styles.playlistArtContainer}>
           <PlaylistCover
@@ -94,7 +98,6 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
           )}
         </View>
         <View style={styles.trackContainer}>
-          <Text style={styles.trackHeader}>Tracks</Text>
           {playlistTracks?.map((playlistTrack, index) => {
             return (
               <Pressable
@@ -139,7 +142,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     backButton: {
       position: "absolute",
-      left: 4,
+      left: 16,
     },
     playlistArtContainer: {
       display: "flex",
@@ -163,7 +166,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     trackContainer: {
       display: "flex",
-      gap: 16,
+      gap: 24,
     },
     trackHeader: {
       color: colors.primary,

@@ -1,4 +1,8 @@
+import { useArtistStar } from "@/api/artists/mutations";
 import { useArtist, useArtistImage } from "@/api/artists/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { Skeleton } from "@/components/ui/skeleton";
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Image } from "expo-image";
@@ -7,12 +11,8 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useArtistStar } from "@/api/artists/mutations";
-import { blurHash } from "@/constants/blur";
-import { IconSymbol } from "@/components/ui/iconSymbol";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlbumItemSkeleton } from "./skeletons";
 import AlbumItem from "./albumItem";
+import { AlbumItemSkeleton } from "./skeletons";
 
 interface ArtistScreenProps {
   id: string;
@@ -62,7 +62,11 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
         }}
       >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
+          <IconSymbol
+            size={32}
+            name={"arrow.backward"}
+            color={colors.primary}
+          />
         </Pressable>
         <View style={styles.artistImageContainer}>
           <Image
@@ -110,7 +114,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     backButton: {
       position: "absolute",
-      left: 4,
+      left: 16,
     },
     artistImageContainer: {
       display: "flex",
@@ -131,7 +135,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     artistTitle: {
       color: colors.primary,
-      fontSize: 22,
+      fontSize: 32,
       fontWeight: 500,
     },
     albumContainer: {

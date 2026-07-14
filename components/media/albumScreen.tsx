@@ -69,7 +69,11 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
         }}
       >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol size={32} name={"chevron.left"} color={colors.primary} />
+          <IconSymbol
+            size={32}
+            name={"arrow.backward"}
+            color={colors.primary}
+          />
         </Pressable>
         <View style={styles.albumArtContainer}>
           <Image
@@ -106,7 +110,6 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
           </Pressable>
         </View>
         <View style={styles.trackContainer}>
-          <Text style={styles.trackHeader}>Tracks</Text>
           {album?.tracks?.map((track, index) => {
             return (
               <Pressable
@@ -114,7 +117,6 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
                 style={styles.trackItem}
                 onPress={() => onTrackPress(index)}
               >
-                <Text style={styles.trackNumber}>{track.trackNumber}</Text>
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
                     <Text style={styles.trackTitle}>{track.title}</Text>
@@ -148,7 +150,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     backButton: {
       position: "absolute",
-      left: 4,
+      left: 16,
     },
     albumArtContainer: {
       display: "flex",
@@ -184,7 +186,7 @@ const makeStyles = (colors: ThemeColors) =>
     },
     trackContainer: {
       display: "flex",
-      gap: 16,
+      gap: 24,
     },
     trackHeader: {
       color: colors.primary,
