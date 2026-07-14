@@ -24,6 +24,7 @@ import Animated, {
   useScrollOffset,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Artist } from "@/types/artists";
 import AlbumItem from "./albumItem";
 import { AlbumItemSkeleton, SkeletonShelf } from "./skeletons";
 
@@ -52,6 +53,35 @@ const ON_IMAGE_ICON = "#FFFFFF";
  */
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist, isLoading } = useArtist(id);
+
+  // Gate the content behind loading: `ArtistScreenContent` owns the scroll ref
+  // and `useScrollOffset`, so keeping it unmounted until the ScrollView actually
+  // renders avoids reanimated warning that the animated ref isn't yet attached.
+  if (isLoading) return <ArtistScreenSkeleton />;
+
+  return (
+    <ArtistScreenContent id={id} artist={artist} onAlbumPress={onAlbumPress} />
+  );
+};
+
+interface ArtistScreenContentProps extends ArtistScreenProps {
+  /** The loaded artist; may be `undefined` if the fetch resolved without data. */
+  artist: Artist | undefined;
+}
+
+/**
+ * The loaded artist screen: hero, name/like row, and album carousel.
+ *
+ * @remarks
+ * Split out from {@link ArtistScreen} so the stretchy-header machinery — the
+ * animated scroll ref and {@link useScrollOffset} — only mounts once there's a
+ * real {@link Animated.ScrollView} for the ref to attach to.
+ */
+const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
+  id,
+  artist,
+  onAlbumPress,
+}) => {
   const { data: artistImageUrl } = useArtistImage(id);
   const { mutate } = useArtistStar();
 
@@ -92,8 +122,6 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
       },
     ],
   }));
-
-  if (isLoading) return <ArtistScreenSkeleton />;
 
   const onLikeButtonPress = () => {
     if (!artist) return;
