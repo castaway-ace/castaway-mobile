@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
+import { Artist } from "@/types/artists";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -24,7 +25,6 @@ import Animated, {
   useScrollOffset,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Artist } from "@/types/artists";
 import AlbumItem from "./albumItem";
 import { AlbumItemSkeleton, SkeletonShelf } from "./skeletons";
 
@@ -94,7 +94,7 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
   // Concrete pixel height for the hero (the 6:5 aspect ratio applied to the
   // screen width), needed to drive the scroll interpolation below.
   const { width } = useWindowDimensions();
-  const heroHeight = (width * 5) / 6;
+  const heroHeight = (width * 3) / 4;
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
