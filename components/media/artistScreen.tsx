@@ -17,13 +17,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollOffset,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AlbumItem from "./albumItem";
 import { AlbumItemSkeleton, SkeletonShelf } from "./skeletons";
 
@@ -204,7 +204,7 @@ const makeStyles = (colors: ThemeColors) =>
       flex: 1,
       color: colors.primary,
       fontSize: 32,
-      fontWeight: "500",
+      fontWeight: "600",
     },
     albumSection: {
       gap: 16,
@@ -212,7 +212,7 @@ const makeStyles = (colors: ThemeColors) =>
     albumHeader: {
       color: colors.primary,
       fontSize: 24,
-      fontWeight: "bold",
+      fontWeight: "500",
       paddingHorizontal: 16,
     },
     albumScrollContent: {

@@ -174,7 +174,7 @@ const makeStyles = (colors: ThemeColors) =>
     albumTitle: {
       color: colors.primary,
       fontSize: 22,
-      fontWeight: 500,
+      fontWeight: 600,
     },
     artistName: {
       color: colors.primary,
