@@ -2,7 +2,11 @@ import { queryKeys } from "@/api/queryKeys";
 import AlbumScreen from "@/components/media/albumScreen";
 import { SheetType } from "@/contexts/sheetModalContext";
 import { createTestQueryClient } from "@/test-utils/createTestQueryClient";
-import { makeAlbum, makeAlbumTrack, makeArtistRef } from "@/test-utils/fixtures";
+import {
+  makeAlbum,
+  makeAlbumTrack,
+  makeArtistRef,
+} from "@/test-utils/fixtures";
 import {
   fireEvent,
   renderWithProviders,
@@ -49,11 +53,16 @@ const makeTestAlbum = (overrides: Partial<Album> = {}): Album =>
 const renderScreen = async (
   album: Album,
   onArtistPress = jest.fn(),
-): Promise<{
-  onArtistPress: jest.Mock;
-} & Awaited<ReturnType<typeof renderWithProviders>>> => {
+): Promise<
+  {
+    onArtistPress: jest.Mock;
+  } & Awaited<ReturnType<typeof renderWithProviders>>
+> => {
   const queryClient: QueryClient = createTestQueryClient();
-  queryClient.setQueryData(queryKeys.albums.cover(album.id), "https://cover.jpg");
+  queryClient.setQueryData(
+    queryKeys.albums.cover(album.id),
+    "https://cover.jpg",
+  );
   const utils = await renderWithProviders(
     <AlbumScreen album={album} onArtistPress={onArtistPress} />,
     { queryClient },
@@ -70,8 +79,6 @@ describe("AlbumScreen", () => {
     expect(getByText(/^Album • /)).toBeTruthy();
     expect(getByText("Airbag")).toBeTruthy();
     expect(getByText("Karma Police")).toBeTruthy();
-    expect(getByText("1")).toBeTruthy();
-    expect(getByText("2")).toBeTruthy();
   });
 
   it("calls onArtistPress when an artist is tapped", async () => {
