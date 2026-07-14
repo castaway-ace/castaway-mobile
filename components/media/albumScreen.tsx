@@ -104,7 +104,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
           <Pressable onPress={onLikeAlbumButtonPress}>
             <IconSymbol
               name={album?.starred ? "heart.fill" : "heart"}
-              size={48}
+              size={40}
               color={colors.primary}
             />
           </Pressable>
