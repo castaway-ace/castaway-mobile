@@ -112,3 +112,46 @@ export const Easing: Record<string, AnyFn> = new Proxy(
   {},
   { get: () => () => 0 },
 );
+
+/** A chainable stand-in for reanimated's layout-animation builders. */
+type AnimationBuilder = Record<string, (...args: unknown[]) => AnimationBuilder>;
+
+/**
+ * Builds a no-op double for `FadeIn`-style builders.
+ *
+ * @remarks
+ * The real ones are classes whose static modifiers each return a builder, so
+ * call sites chain (`FadeIn.duration(200)`). Every method here returns the same
+ * object so a chain of any length resolves, and the result is only ever handed
+ * to `Animated.View`'s `entering`/`exiting`/`layout` props — which this mock
+ * renders as a plain `View` that ignores them.
+ *
+ * Spelled out rather than proxied (as {@link Easing} is) because these are
+ * passed as props: a catch-all proxy would answer React's internal property
+ * probes with functions.
+ */
+const createAnimationBuilder = (): AnimationBuilder => {
+  const builder: AnimationBuilder = {};
+  const modifiers = [
+    "duration",
+    "delay",
+    "easing",
+    "springify",
+    "damping",
+    "mass",
+    "stiffness",
+    "withInitialValues",
+    "withCallback",
+    "reduceMotion",
+    "randomDelay",
+    "build",
+  ];
+  modifiers.forEach((modifier) => {
+    builder[modifier] = () => builder;
+  });
+  return builder;
+};
+
+export const FadeIn = createAnimationBuilder();
+export const FadeOut = createAnimationBuilder();
+export const LinearTransition = createAnimationBuilder();

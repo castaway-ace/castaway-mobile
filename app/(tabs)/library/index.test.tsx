@@ -125,6 +125,21 @@ describe("Library filters", () => {
     expect(mockGetAll).toHaveBeenCalledTimes(2);
   });
 
+  it("clears the filter when the selected pill is tapped again", async () => {
+    mockGetAll.mockResolvedValue([]);
+
+    const { findByTestId, getByText, queryByTestId } = await renderLibrary();
+    fireEvent.press(await findByTestId("library-filter-album"));
+    await waitFor(() => expect(queryByTestId("library-filter-clear")).toBeTruthy());
+
+    // Re-tapping the only pill left standing means the same thing as clearing.
+    fireEvent.press(await findByTestId("library-filter-album"));
+
+    await waitFor(() => expect(getByText("Playlists")).toBeTruthy());
+    expect(getByText("Artists")).toBeTruthy();
+    expect(queryByTestId("library-filter-clear")).toBeNull();
+  });
+
   it("keeps the loaded list on screen instead of skeletons while a filter loads", async () => {
     mockGetAll.mockResolvedValue([
       makePlaylistLibraryItem({ playlist: { id: "pl1", name: "My Playlist" } }),

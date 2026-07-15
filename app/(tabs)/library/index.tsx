@@ -121,7 +121,7 @@ const Library = () => {
               key={type}
               label={label}
               active={filter === type}
-              onPress={() => setFilter(type)}
+              onPress={() => setFilter(filter === type ? null : type)}
               testID={`library-filter-${type}`}
             />
           ),

@@ -59,6 +59,17 @@ describe("FilterPill", () => {
     expect(pill.props.accessibilityLabel).toBe("Clear filter");
   });
 
+  it("carries transitions so it animates in and out of the row", async () => {
+    const { getByTestId } = await renderWithProviders(
+      <FilterPill label="Albums" onPress={jest.fn()} testID="pill" />,
+    );
+
+    const wrapper = getByTestId("pill").parent;
+    expect(wrapper?.props.entering).toBeDefined();
+    expect(wrapper?.props.exiting).toBeDefined();
+    expect(wrapper?.props.layout).toBeDefined();
+  });
+
   it("exposes its selected state and label to assistive tech", async () => {
     const { getByTestId } = await renderWithProviders(
       <FilterPill label="Artists" active onPress={jest.fn()} testID="pill" />,
