@@ -22,7 +22,7 @@ const barStyles = (indicator: { children: unknown[] }): ViewStyle[] =>
  * in the pulse effect neither animates nor re-renders — an animated style always
  * reads back the initial height whatever `animating` says. The accessibility
  * label is the seam that survives that, which is the reason it exists; the pulse
- * and the freeze-on-pause are UI-thread behavior, verifiable only on a device.
+ * and the collapse-on-pause are UI-thread behavior, verifiable only on a device.
  */
 describe("NowPlayingBars", () => {
   it("labels itself as playing and tints bars with the theme accent", async () => {

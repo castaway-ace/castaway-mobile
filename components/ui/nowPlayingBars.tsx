@@ -2,7 +2,6 @@ import { useTheme } from "@/contexts/themeContext";
 import { FC, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
-  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -29,12 +28,14 @@ const BAR_MAX_HEIGHT = 14;
 const BAR_DURATIONS = [520, 400, 640];
 
 /**
- * How long a bar takes to glide back to the baseline when playback resumes.
+ * How long a bar takes to settle back onto the baseline when playback pauses.
  *
  * @remarks
- * See {@link Bar} for why resuming can't simply restart the pulse in place.
+ * Short enough to read as a response to the tap, but eased rather than snapped —
+ * dropping flat in a single frame reads as the row breaking, not as the music
+ * stopping.
  */
-const BAR_REBASE_MS = 150;
+const BAR_COLLAPSE_MS = 300;
 
 interface BarProps {
   /** Length of this bar's rise; see {@link BAR_DURATIONS}. */
@@ -56,25 +57,27 @@ interface BarProps {
  * to grow upward. At three bars of {@link BAR_WIDTH} px, laying out a real
  * height every frame costs nothing.
  *
- * Pausing cancels in place, leaving the bar at whatever height it had reached,
- * so a paused track reads as suspended rather than stopped. Resuming can't just
- * restart the pulse from there, though: `withRepeat`'s reversing cycle swings
- * between the target and the value the animation *started* at, so resuming from
- * a nearly-full bar would oscillate between nearly-full and full — a twitch
- * rather than a pulse. So a resume first glides back down to the baseline and
- * only then re-enters the loop.
+ * Pausing collapses the bar back to the baseline rather than stopping it where
+ * it stood, so a paused row settles into a flat, inert dash. Assigning the
+ * collapse is enough to call off the pulse — a new animation replaces whatever
+ * was running — so there's nothing to cancel first.
+ *
+ * Resuming re-enters the loop *via* the baseline instead of straight from the
+ * current height: `withRepeat`'s reversing cycle swings between its target and
+ * the height the animation started at, so a bar caught mid-collapse would
+ * otherwise pulse across that stunted range forever instead of the full one.
  */
 const Bar: FC<BarProps> = ({ duration, animating, color }) => {
   const height = useSharedValue(BAR_MIN_HEIGHT);
 
   useEffect(() => {
     if (!animating) {
-      cancelAnimation(height);
+      height.value = withTiming(BAR_MIN_HEIGHT, { duration: BAR_COLLAPSE_MS });
       return;
     }
 
     height.value = withSequence(
-      withTiming(BAR_MIN_HEIGHT, { duration: BAR_REBASE_MS }),
+      withTiming(BAR_MIN_HEIGHT, { duration: BAR_COLLAPSE_MS }),
       withRepeat(
         withTiming(BAR_MAX_HEIGHT, {
           duration,
@@ -96,7 +99,7 @@ const Bar: FC<BarProps> = ({ duration, animating, color }) => {
 };
 
 interface NowPlayingBarsProps {
-  /** Pulse while true; freeze in place while false. */
+  /** Pulse while true; settle flat while false. */
   animating: boolean;
   /** Bar tint; defaults to the theme accent. */
   color?: string;
@@ -104,7 +107,8 @@ interface NowPlayingBarsProps {
 }
 
 /**
- * A small equalizer marking the track that is currently playing.
+ * A small equalizer marking the track that is currently playing: bars pulse
+ * while audio plays and collapse to a flat baseline while it's paused.
  *
  * @remarks
  * Purely presentational — it takes `animating` rather than reading the player,
