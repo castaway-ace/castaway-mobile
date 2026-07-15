@@ -93,6 +93,28 @@ describe("SearchItem", () => {
     expect(navigateMock).toHaveBeenCalledWith("/(tabs)/search/artists/ar1");
   });
 
+  it("keys the cover on the bucket path so re-signing is not a cache miss", async () => {
+    const signed = (sig: string): AlbumSearchItem => ({
+      ...albumItem,
+      imageUrl: `https://cover/kida.jpg?X-Amz-Signature=${sig}`,
+    });
+
+    const { getByTestId, rerender } = await renderWithProviders(
+      <SearchItem item={signed("aaa")} />,
+    );
+
+    expect(getByTestId("expo-image").props.source).toEqual({
+      uri: "https://cover/kida.jpg?X-Amz-Signature=aaa",
+      cacheKey: "https://cover/kida.jpg",
+    });
+
+    rerender(<SearchItem item={signed("bbb")} />);
+
+    expect(getByTestId("expo-image").props.source.cacheKey).toBe(
+      "https://cover/kida.jpg",
+    );
+  });
+
   it("uses the artist placeholder when there is no image", async () => {
     const { getByTestId } = await renderWithProviders(
       <SearchItem item={artistItem} />,

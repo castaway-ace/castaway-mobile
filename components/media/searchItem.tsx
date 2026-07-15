@@ -1,20 +1,21 @@
 import { albumApi } from "@/api/albums/api";
 import {
-    useUpdateAlbumInteraction,
-    useUpdateArtistInteraction,
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
 } from "@/api/interactions/mutations";
 import { queryKeys } from "@/api/queryKeys";
 import { IconSymbol } from "@/components/ui/iconSymbol";
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { useTheme } from "@/contexts/themeContext";
+import { presignedImageSource } from "@/utils/images";
 import { SearchItemElement, SearchItemType } from "@/utils/search";
 import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { blurHash } from "@/constants/blur";
 
 interface SearchItemProps {
   item: SearchItemElement;
@@ -96,7 +97,7 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
   };
 
   const imageSource = item.imageUrl
-    ? { uri: item.imageUrl }
+    ? presignedImageSource(item.imageUrl)
     : item.type === SearchItemType.ARTIST
       ? artistPlaceholder
       : albumPlaceholder;
@@ -104,7 +105,12 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.leftContainer}>
-        <Image source={imageSource} placeholder={blurHash} style={styles.art} />
+        <Image
+          source={imageSource}
+          placeholder={blurHash}
+          cachePolicy="memory-disk"
+          style={styles.art}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.text} numberOfLines={1}>
             {item.text}

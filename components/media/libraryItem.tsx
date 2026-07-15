@@ -1,7 +1,10 @@
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
-import { LibraryItem as LibraryItemData, LibraryItemType } from "@/types/library";
+import {
+  LibraryItem as LibraryItemData,
+  LibraryItemType,
+} from "@/types/library";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
@@ -63,6 +66,7 @@ const LibraryItem: FC<LibraryItemProps> = ({ item }) => {
           item.coverUrl ? presignedImageSource(item.coverUrl) : placeholder
         }
         placeholder={blurHash}
+        cachePolicy="memory-disk"
         style={styles.art}
       />
     );

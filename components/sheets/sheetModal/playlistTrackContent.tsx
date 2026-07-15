@@ -8,6 +8,7 @@ import {
     useSheetModal,
 } from "@/contexts/sheetModalContext";
 import { PlaylistType } from "@/types/playlist";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
@@ -105,9 +106,7 @@ const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
       <View style={styles.trackInfo}>
         <View style={styles.spacing}>
           <Image
-            source={{
-              uri: albumArtUrl,
-            }}
+            source={albumArtUrl ? presignedImageSource(albumArtUrl) : undefined}
             placeholder={blurHash}
             style={styles.albumArt}
           />

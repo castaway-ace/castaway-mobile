@@ -1,3 +1,4 @@
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
@@ -70,9 +71,7 @@ const AlbumTrackContent: FC<AlbumTrackContentProps> = ({ content }) => {
       <View style={styles.trackInfo}>
         <View style={styles.spacing}>
           <Image
-            source={{
-              uri: albumArtUrl,
-            }}
+            source={albumArtUrl ? presignedImageSource(albumArtUrl) : undefined}
             placeholder={blurHash}
             style={styles.albumArt}
           />

@@ -5,6 +5,7 @@ import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -98,9 +99,7 @@ const MusicPlayerModalContent: FC = () => {
       </View>
       <View style={styles.albumArtContainer}>
         <Image
-          source={{
-            uri: coverArtUrl,
-          }}
+          source={coverArtUrl ? presignedImageSource(coverArtUrl) : undefined}
           placeholder={blurHash}
           style={styles.albumArt}
         />

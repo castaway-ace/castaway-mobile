@@ -31,13 +31,17 @@ const PlaylistCover: FC<PlaylistCoverProps> = ({ urls, style }) => {
 
   return (
     <View style={[style, styles.grid]}>
-      {tiles.map((url, index) => (
-        <Image
-          key={`${url}-${index}`}
-          source={presignedImageSource(url)}
-          style={tiles.length === 1 ? styles.full : styles.mini}
-        />
-      ))}
+      {tiles.map((url, index) => {
+        const source = presignedImageSource(url);
+        return (
+          <Image
+            key={`${source.cacheKey}-${index}`}
+            source={source}
+            cachePolicy="memory-disk"
+            style={tiles.length === 1 ? styles.full : styles.mini}
+          />
+        );
+      })}
     </View>
   );
 };

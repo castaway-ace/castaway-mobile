@@ -3,6 +3,7 @@ import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
@@ -63,9 +64,7 @@ const MusicPlayer = () => {
         <View style={styles.contentContainer}>
           <Pressable style={styles.leftContainer} onPress={open}>
             <Image
-              source={{
-                uri: coverArtUrl,
-              }}
+              source={coverArtUrl ? presignedImageSource(coverArtUrl) : undefined}
               placeholder={blurHash}
               style={styles.albumArt}
             />
