@@ -125,8 +125,6 @@ jest.mock("react-native-gesture-handler", () => {
   };
 });
 
-jest.mock("expo-router/js-tabs", () => ({ useBottomTabBarHeight: () => 0 }));
-
 jest.mock("@/components/ui/iconSymbol", () => {
   const React = require("react");
   const { Text } = require("react-native");

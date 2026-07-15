@@ -4,12 +4,15 @@ import { IconSymbol } from "@/components/ui/iconSymbol";
 import { Skeleton } from "@/components/ui/skeleton";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Artist } from "@/types/artists";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import {
   Pressable,
@@ -102,7 +105,7 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
   const insets = useSafeAreaInsets();
 
   // Concrete pixel height for the hero (a 4:3 aspect ratio applied to the
@@ -152,8 +155,7 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
       <Animated.ScrollView
         ref={scrollRef}
         contentContainerStyle={{
-          // Clear the tab bar and the mini-player floating above it.
-          paddingBottom: tabBarHeight + 84,
+          paddingBottom: bottomInset + CONTENT_BOTTOM_GAP,
         }}
         showsVerticalScrollIndicator={false}
       >

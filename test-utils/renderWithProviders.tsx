@@ -1,3 +1,4 @@
+import { BottomInsetProvider } from "@/contexts/bottomInsetContext";
 import ThemeProvider from "@/contexts/themeContext";
 import { ToastProvider } from "@/contexts/toastContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,7 +18,9 @@ const makeWrapper = (queryClient: QueryClient) => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <ToastProvider>{children}</ToastProvider>
+        <BottomInsetProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </BottomInsetProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

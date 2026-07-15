@@ -7,8 +7,8 @@ import type { ComponentProps } from "react";
 jest.mock("@/contexts/audioPlayerContext", () => ({
   useAudioPlayerContext: jest.fn(),
 }));
-jest.mock("@/contexts/toastContext", () => ({
-  useToast: () => ({ setBottomInset: jest.fn() }),
+jest.mock("@/contexts/bottomInsetContext", () => ({
+  useBottomInset: () => ({ bottomInset: 0, setBottomInset: jest.fn() }),
 }));
 jest.mock("expo-router/js-tabs", () => {
   const React = require("react");

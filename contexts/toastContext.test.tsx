@@ -1,3 +1,4 @@
+import { BottomInsetProvider } from "@/contexts/bottomInsetContext";
 import { ToastProvider, useToast } from "@/contexts/toastContext";
 import {
   fireEvent,
@@ -18,9 +19,11 @@ const Harness = ({ message }: { message: string }) => {
 describe("toastContext", () => {
   it("renders the message after showToast is called", async () => {
     const { getByTestId, queryByText } = await render(
-      <ToastProvider>
-        <Harness message="Saved!" />
-      </ToastProvider>,
+      <BottomInsetProvider>
+        <ToastProvider>
+          <Harness message="Saved!" />
+        </ToastProvider>
+      </BottomInsetProvider>,
     );
 
     expect(queryByText("Saved!")).toBeNull();

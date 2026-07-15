@@ -3,6 +3,7 @@ import LoadingScreen from "@/components/ui/loadingScreen";
 import { GC_TIME } from "@/constants/query";
 import { AudioPlayerProvider } from "@/contexts/audioPlayerContext";
 import { AuthProvider, useAuth } from "@/contexts/authContext";
+import { BottomInsetProvider } from "@/contexts/bottomInsetContext";
 import { PlayerModalProvider } from "@/contexts/playerModalContext";
 import { PopupModalProvider } from "@/contexts/popupModalContext";
 import { SheetModalProvider } from "@/contexts/sheetModalContext";
@@ -82,8 +83,10 @@ const RootNavigator = () => {
  * Nesting order is deliberate — outer providers are depended on by inner ones.
  * `QueryClientProvider` is outermost because {@link AuthProvider} uses the query
  * client (to clear the cache on logout); the audio player and modal providers sit
- * inside auth/theme so playback and overlays can read them; and the modal
- * providers wrap the navigator so any screen can open a sheet or popup.
+ * inside auth/theme so playback and overlays can read them;
+ * {@link BottomInsetProvider} wraps `ToastProvider` because the toast positions
+ * itself off the measured inset; and the modal providers wrap the navigator so
+ * any screen can open a sheet or popup.
  */
 const RootLayout = () => {
   return (
@@ -93,18 +96,20 @@ const RootLayout = () => {
           <AudioPlayerProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <KeyboardProvider>
-                <ToastProvider>
-                  {/* Inside ToastProvider so it can raise a toast; the audio
-                      provider above only records the error. */}
-                  <PlaybackErrorToaster />
-                  <PlayerModalProvider>
-                    <SheetModalProvider>
-                      <PopupModalProvider>
-                        <RootNavigator />
-                      </PopupModalProvider>
-                    </SheetModalProvider>
-                  </PlayerModalProvider>
-                </ToastProvider>
+                <BottomInsetProvider>
+                  <ToastProvider>
+                    {/* Inside ToastProvider so it can raise a toast; the audio
+                        provider above only records the error. */}
+                    <PlaybackErrorToaster />
+                    <PlayerModalProvider>
+                      <SheetModalProvider>
+                        <PopupModalProvider>
+                          <RootNavigator />
+                        </PopupModalProvider>
+                      </SheetModalProvider>
+                    </PlayerModalProvider>
+                  </ToastProvider>
+                </BottomInsetProvider>
               </KeyboardProvider>
             </GestureHandlerRootView>
           </AudioPlayerProvider>

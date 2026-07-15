@@ -9,6 +9,10 @@ import { LibraryItemSkeleton } from "@/components/media/skeletons";
 import FilterPill from "@/components/ui/filterPill";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import {
@@ -16,7 +20,6 @@ import {
   LibraryItemType,
 } from "@/types/library";
 import { useRouter } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -42,7 +45,7 @@ const Library = () => {
 
   const router = useRouter();
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
 
   // Held here rather than in the URL: the tab stays mounted, so the choice
   // survives visiting a detail screen and coming back, which is what you want
@@ -131,7 +134,7 @@ const Library = () => {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: tabBarHeight + 84 },
+          { paddingBottom: bottomInset + CONTENT_BOTTOM_GAP },
         ]}
         showsVerticalScrollIndicator={false}
       >

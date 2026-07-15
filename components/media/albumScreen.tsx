@@ -10,6 +10,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Album } from "@/types/albums";
@@ -17,7 +21,6 @@ import { formatDate } from "@/utils/formatters";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -50,7 +53,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
 
   const { playQueue } = useAudioPlayerContext();
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
 
   const {
     scrollRef,
@@ -82,8 +85,7 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
           paddingHorizontal: 16,
           // Start below the sticky header, which floats over the scroll view.
           paddingTop: headerBottom,
-          // Clear the tab bar and the mini-player floating above it.
-          paddingBottom: tabBarHeight + 84,
+          paddingBottom: bottomInset + CONTENT_BOTTOM_GAP,
         }}
       >
         <View style={styles.albumArtContainer}>

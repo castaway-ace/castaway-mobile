@@ -6,11 +6,14 @@ import {
   SkeletonShelf,
 } from "@/components/media/skeletons";
 import { ThemeColors } from "@/constants/theme";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
 import { useDebouncedValue } from "@/utils/useDebouncedValue";
 import { useOrganizedSearch } from "@/utils/search";
 import { router } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo, useState } from "react";
 import {
   Pressable,
@@ -62,7 +65,7 @@ const Search = () => {
 
   const search = useOrganizedSearch(searchData);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
 
   const isInputted = searchInput.length > 0;
   const albumsAvailable = !!albums.length;
@@ -109,7 +112,7 @@ const Search = () => {
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 16,
-            paddingBottom: tabBarHeight + 24,
+            paddingBottom: bottomInset + CONTENT_BOTTOM_GAP,
           }}
           keyboardDismissMode="on-drag"
         >

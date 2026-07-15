@@ -1,5 +1,5 @@
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
-import { useToast } from "@/contexts/toastContext";
+import { useBottomInset } from "@/contexts/bottomInsetContext";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { ComponentProps } from "react";
 import { StyleSheet, View } from "react-native";
@@ -12,12 +12,13 @@ import MusicPlayer from "@/components/player/musicPlayer";
  * @remarks
  * Wraps the default `BottomTabBar` with {@link MusicPlayer} (shown only when
  * something is playing) so the two move as one docked unit. It also reports its
- * measured height to {@link useToast}'s `setBottomInset`, so toasts float above
- * the whole stack — bar plus mini-player — instead of being hidden behind it.
+ * measured height to {@link useBottomInset}, the one place that knows how much
+ * the docked stack — bar plus mini-player — covers, so screens can pad their
+ * content past it and toasts can float above it.
  */
 const CustomTabBar = (props: ComponentProps<typeof BottomTabBar>) => {
   const { currentTrack } = useAudioPlayerContext();
-  const { setBottomInset } = useToast();
+  const { setBottomInset } = useBottomInset();
 
   return (
     <View

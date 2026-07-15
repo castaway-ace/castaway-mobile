@@ -1,4 +1,5 @@
 import Toast from "@/components/ui/toast";
+import { useBottomInset } from "@/contexts/bottomInsetContext";
 import {
   createContext,
   ReactNode,
@@ -12,8 +13,6 @@ import {
 
 interface ToastContextValue {
   showToast: (message: string) => void;
-  /** Lets the active screen lift the toast above overlapping UI (tab bar, mini-player). */
-  setBottomInset: (height: number) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
@@ -27,12 +26,14 @@ const TOAST_DURATION = 2200;
  * One `Toast` is rendered here as a sibling of `children`, so any screen can
  * raise a message without each mounting its own. Calls are used app-wide for
  * mutation feedback (playlist edits, likes, errors); centralizing avoids
- * stacked/duplicate toasts.
+ * stacked/duplicate toasts. The toast floats above the docked tab bar and
+ * mini-player by reading their measured height from {@link useBottomInset},
+ * which requires a `BottomInsetProvider` above this one.
  */
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState("");
   const [visible, setVisible] = useState(false);
-  const [bottomInset, setBottomInset] = useState(0);
+  const { bottomInset } = useBottomInset();
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback((next: string) => {
@@ -51,12 +52,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const value = useMemo<ToastContextValue>(
-    // `setBottomInset` is React's own state setter, which is guaranteed stable,
-    // so it needs no memo dependency here.
-    () => ({ showToast, setBottomInset }),
-    [showToast],
-  );
+  const value = useMemo<ToastContextValue>(() => ({ showToast }), [showToast]);
 
   return (
     <ToastContext.Provider value={value}>

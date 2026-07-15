@@ -20,10 +20,13 @@ import {
   SkeletonShelf,
 } from "@/components/media/skeletons";
 import { ThemeColors } from "@/constants/theme";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
 import { router } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -70,7 +73,7 @@ const HomeScreen = () => {
   const favoriteAlbumsAvailable = !!favoriteAlbums.length;
   const favoriteArtistsAvailable = !!favoriteArtists.length;
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
 
   const onAlbumPress = (albumId: string) => {
     albumInteraction(albumId);
@@ -105,7 +108,10 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
+        testID="home-scroll"
+        contentContainerStyle={{
+          paddingBottom: bottomInset + CONTENT_BOTTOM_GAP,
+        }}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.itemContainerWrapper}>

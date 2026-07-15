@@ -8,11 +8,14 @@ import { IconSymbol } from "@/components/ui/iconSymbol";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import {
+  CONTENT_BOTTOM_GAP,
+  useBottomInset,
+} from "@/contexts/bottomInsetContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Playlist, PlaylistType } from "@/types/playlist";
 import { router } from "expo-router";
-import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -72,7 +75,7 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
 
   const { playQueue } = useAudioPlayerContext();
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const { bottomInset } = useBottomInset();
 
   const {
     scrollRef,
@@ -109,9 +112,7 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
           paddingHorizontal: 16,
           // Start below the sticky header, which floats over the scroll view.
           paddingTop: headerBottom,
-          // Clear both the tab bar and the mini-player that floats above it, so
-          // the last track isn't hidden behind them when scrolled to the end.
-          paddingBottom: tabBarHeight + 84,
+          paddingBottom: bottomInset + CONTENT_BOTTOM_GAP,
         }}
       >
         <View style={styles.playlistArtContainer}>
