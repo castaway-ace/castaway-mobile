@@ -52,6 +52,7 @@ describe("useStarMutation (via useTrackStar)", () => {
       queryKeys.tracks.all,
       queryKeys.playlists.all,
       queryKeys.interactions,
+      queryKeys.library.all,
     ]) {
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: key });
     }

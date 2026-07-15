@@ -75,6 +75,15 @@ export const InteractionItemSkeleton = ({
     />
   );
 
+/** Loading placeholder for the library row (thumbnail + name + type line). */
+export const LibraryItemSkeleton = () => (
+  <MediaRowSkeleton
+    thumbSize={100}
+    thumbRadius={12}
+    testID="library-item-skeleton"
+  />
+);
+
 /** Loading placeholder for the search result row (thumbnail + two text lines). */
 export const SearchItemSkeleton = () => (
   <MediaRowSkeleton thumbSize={48} thumbRadius={4} testID="search-item-skeleton" />

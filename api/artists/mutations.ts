@@ -7,8 +7,9 @@ import { artistApi } from "./api";
  *
  * @remarks
  * Supplies the artist-specific config to {@link useStarMutation}, invalidating
- * the artist detail and the artist lists after settling. Mirrors
- * {@link useAlbumStar}.
+ * the artist detail, the artist lists, and the library the star adds to or
+ * removes from. Mirrors {@link useAlbumStar}, including why the library key is
+ * in the list.
  */
 export const useArtistStar = () =>
   useStarMutation({
@@ -22,5 +23,6 @@ export const useArtistStar = () =>
     invalidateKeys: (id) => [
       queryKeys.artists.detail(id),
       queryKeys.artists.all,
+      queryKeys.library.all,
     ],
   });

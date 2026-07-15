@@ -9,6 +9,11 @@ import { albumApi } from "./api";
  * Delegates the optimistic-update choreography to {@link useStarMutation}; this
  * only supplies the album-specific endpoints, toast copy, and the keys to
  * refresh — the album's own detail plus the album lists that show the star.
+ *
+ * Starring is exactly what puts an album in (or takes it out of) the library, so
+ * {@link queryKeys.library} is refreshed too. That list is assembled server-side
+ * and shares no cache key with the album queries, so it would otherwise keep
+ * serving a library the star no longer belongs to.
  */
 export const useAlbumStar = () =>
   useStarMutation({
@@ -19,5 +24,9 @@ export const useAlbumStar = () =>
       removed: "Removed from Your Library",
     },
     detailKey: (id) => queryKeys.albums.detail(id),
-    invalidateKeys: (id) => [queryKeys.albums.detail(id), queryKeys.albums.all],
+    invalidateKeys: (id) => [
+      queryKeys.albums.detail(id),
+      queryKeys.albums.all,
+      queryKeys.library.all,
+    ],
   });

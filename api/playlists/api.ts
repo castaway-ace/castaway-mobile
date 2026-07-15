@@ -19,7 +19,14 @@ interface PlaylistParams {
   offset: number;
   order: PlaylistOrder;
   orderBy: OrderBy;
-  /** When true, restricts results to playlists the current user owns. */
+  /**
+   * When true, narrows results to hand-made ({@link PlaylistType.USER})
+   * playlists, excluding the system-managed Liked Songs.
+   *
+   * @remarks
+   * Not an ownership filter despite the name — the endpoint already returns only
+   * the caller's own playlists either way.
+   */
   onlyUser: boolean;
 }
 

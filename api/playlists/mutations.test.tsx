@@ -50,7 +50,7 @@ const expectInvalidated = (
 };
 
 describe("useCreatePlaylist", () => {
-  it("creates a playlist, toasts, and invalidates the playlist list", async () => {
+  it("creates a playlist, toasts, and invalidates the playlist list and library", async () => {
     (playlistApi.create as jest.Mock).mockResolvedValue({
       id: "p1",
       name: "Road Trip",
@@ -73,12 +73,17 @@ describe("useCreatePlaylist", () => {
     await waitFor(() =>
       expect(mockShowToast).toHaveBeenCalledWith("Playlist created"),
     );
-    expectInvalidated(queryClient, [queryKeys.playlists.all]);
+    // A new playlist is a new library row, which the library query only learns
+    // about from the server.
+    expectInvalidated(queryClient, [
+      queryKeys.playlists.all,
+      queryKeys.library.all,
+    ]);
   });
 });
 
 describe("useUpdatePlaylist", () => {
-  it("updates, toasts, and invalidates the detail + list", async () => {
+  it("updates, toasts, and invalidates the detail + list + library", async () => {
     (playlistApi.update as jest.Mock).mockResolvedValue(undefined);
     const queryClient = createTestQueryClient();
     jest.spyOn(queryClient, "invalidateQueries");
@@ -101,15 +106,17 @@ describe("useUpdatePlaylist", () => {
     await waitFor(() =>
       expect(mockShowToast).toHaveBeenCalledWith("Playlist updated"),
     );
+    // The name is both the library row's label and its alphabetical sort key.
     expectInvalidated(queryClient, [
       queryKeys.playlists.detail("p1"),
       queryKeys.playlists.all,
+      queryKeys.library.all,
     ]);
   });
 });
 
 describe("useDeletePlaylist", () => {
-  it("deletes, toasts, and invalidates detail + list + interactions", async () => {
+  it("deletes, toasts, and invalidates detail + list + interactions + library", async () => {
     (playlistApi.delete as jest.Mock).mockResolvedValue(undefined);
     const queryClient = createTestQueryClient();
     jest.spyOn(queryClient, "invalidateQueries");
@@ -133,6 +140,7 @@ describe("useDeletePlaylist", () => {
       queryKeys.playlists.detail("p1"),
       queryKeys.playlists.all,
       queryKeys.interactions,
+      queryKeys.library.all,
     ]);
   });
 });
@@ -167,6 +175,7 @@ describe("useAddTrackToPlaylist", () => {
       queryKeys.playlists.tracks("p1"),
       queryKeys.playlists.all,
       queryKeys.interactions,
+      queryKeys.library.all,
     ]);
   });
 
@@ -215,6 +224,7 @@ describe("useRemoveTrackFromPlaylist", () => {
       queryKeys.playlists.tracks("p1"),
       queryKeys.playlists.all,
       queryKeys.interactions,
+      queryKeys.library.all,
     ]);
   });
 });

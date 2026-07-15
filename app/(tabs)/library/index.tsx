@@ -3,29 +3,31 @@ import {
     useUpdateArtistInteraction,
     useUpdatePlaylistInteraction,
 } from "@/api/interactions/mutations";
-import { useSeedInteractionArtwork } from "@/api/interactions/cache";
-import { useInteractions } from "@/api/interactions/queries";
+import { useLibrary } from "@/api/library/queries";
+import LibraryItem from "@/components/media/libraryItem";
+import { LibraryItemSkeleton } from "@/components/media/skeletons";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
-import { Interaction, InteractionType } from "@/types/interactions";
+import { LibraryItem as LibraryItemData, LibraryItemType } from "@/types/library";
 import { useRouter } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import InteractionItem from "@/components/media/interactionItem";
-import { InteractionItemSkeleton } from "@/components/media/skeletons";
 
 /**
- * Library tab: a vertical list of the user's recent items plus a create-playlist
- * action.
+ * Library tab: everything the user has collected — their playlists (Liked Songs
+ * included) plus every album and artist they've favorited — as one list ordered
+ * by how recently each was opened, with a create-playlist action in the header.
  *
  * @remarks
- * Renders the same interaction feed as Home but in the full-width `row` variant.
- * The header's "+" opens the create-playlist popup. Like Home, it records an
- * interaction before navigating and keeps routes under `/library`.
+ * The list arrives assembled, ordered, and with artwork resolved from
+ * {@link useLibrary}, so this screen owns only presentation and navigation.
+ * Tapping a row records an interaction before navigating, which both keeps
+ * recency fresh and re-sorts the list on return. Routes stay under `/library` so
+ * detail screens land in this tab's stack.
  */
 const Library = () => {
   const { colors } = useTheme();
@@ -35,8 +37,7 @@ const Library = () => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  const { data: interactions, isLoading: interactionsLoading } =
-    useInteractions();
+  const { data: items, isLoading } = useLibrary();
 
   const { openCreatePlaylist } = usePopupModal();
 
@@ -44,37 +45,26 @@ const Library = () => {
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
-  const seedInteractionArtwork = useSeedInteractionArtwork();
+  const itemsAvailable = !!items?.length;
 
-  const interactionsAvailable = !!interactions?.length;
-
-  const onAlbumPress = (albumId: string) => {
-    albumInteraction(albumId);
-    router.navigate(`/(tabs)/library/albums/${albumId}`);
-  };
-
-  const onArtistPress = (artistId: string) => {
-    artistInteraction(artistId);
-    router.navigate(`/(tabs)/library/artists/${artistId}`);
-  };
-
-  const onPlaylistPress = (playlistId: string) => {
-    playlistInteraction(playlistId);
-    router.navigate(`/(tabs)/library/playlists/${playlistId}`);
-  };
-
-  const onInteractionPress = (interaction: Interaction) => {
-    // Hand the feed's artwork to the screen we're about to open, which otherwise
-    // refetches a URL we already have and renders empty until it lands.
-    seedInteractionArtwork(interaction);
-
-    if (interaction.type === InteractionType.ALBUM) {
-      onAlbumPress(interaction.album.id);
-    } else if (interaction.type === InteractionType.ARTIST) {
-      onArtistPress(interaction.artist.id);
+  const onItemPress = (item: LibraryItemData) => {
+    if (item.type === LibraryItemType.ALBUM) {
+      albumInteraction(item.album.id);
+      router.navigate(`/(tabs)/library/albums/${item.album.id}`);
+    } else if (item.type === LibraryItemType.ARTIST) {
+      artistInteraction(item.artist.id);
+      router.navigate(`/(tabs)/library/artists/${item.artist.id}`);
     } else {
-      onPlaylistPress(interaction.playlist.id);
+      playlistInteraction(item.playlist.id);
+      router.navigate(`/(tabs)/library/playlists/${item.playlist.id}`);
     }
+  };
+
+  // The union has no shared id field, so key on the entity the row points at.
+  const itemKey = (item: LibraryItemData) => {
+    if (item.type === LibraryItemType.ALBUM) return `album-${item.album.id}`;
+    if (item.type === LibraryItemType.ARTIST) return `artist-${item.artist.id}`;
+    return `playlist-${item.playlist.id}`;
   };
 
   const onPlaylistCreatePress = () => {
@@ -94,22 +84,19 @@ const Library = () => {
         contentContainerStyle={{ paddingBottom: tabBarHeight + 84 }}
         showsVerticalScrollIndicator={false}
       >
-        {interactionsLoading && (
+        {isLoading && (
           <View style={styles.itemContainer}>
             {[0, 1, 2, 3, 4].map((i) => (
-              <InteractionItemSkeleton key={i} variant="row" />
+              <LibraryItemSkeleton key={i} />
             ))}
           </View>
         )}
-        {interactionsAvailable && (
+        {itemsAvailable && (
           <View style={styles.itemContainer}>
-            {interactions.map((interaction) => {
+            {items.map((item) => {
               return (
-                <Pressable
-                  key={interaction.id}
-                  onPress={() => onInteractionPress(interaction)}
-                >
-                  <InteractionItem interaction={interaction} variant="row" />
+                <Pressable key={itemKey(item)} onPress={() => onItemPress(item)}>
+                  <LibraryItem item={item} />
                 </Pressable>
               );
             })}

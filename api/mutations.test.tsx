@@ -65,6 +65,9 @@ describe("useAlbumStar", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: queryKeys.albums.all,
     });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.library.all,
+    });
   });
 });
 
@@ -87,6 +90,9 @@ describe("useArtistStar", () => {
     expect(mockShowToast).toHaveBeenCalledWith("Removed from Your Library");
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: queryKeys.artists.all,
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.library.all,
     });
   });
 });
@@ -111,7 +117,7 @@ describe("interaction mutations", () => {
   ];
 
   it.each(cases)(
-    "$name records the interaction and invalidates interactions",
+    "$name records the interaction and invalidates both recency-ordered views",
     async ({ hook, api }) => {
       api().mockResolvedValue(undefined);
       const queryClient = createTestQueryClient();
@@ -128,6 +134,9 @@ describe("interaction mutations", () => {
       expect(api().mock.calls[0][0]).toBe("entity-1");
       expect(invalidateSpy).toHaveBeenCalledWith({
         queryKey: queryKeys.interactions,
+      });
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: queryKeys.library.all,
       });
     },
   );

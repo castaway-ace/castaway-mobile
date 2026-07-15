@@ -7,9 +7,13 @@ import { interactionApi } from "./api";
  *
  * @remarks
  * All three entity types record identically — fire the request, then refresh the
- * interactions feed so recency-ordered rows reflect the new engagement — so the
- * behavior lives here once and each export just binds the entity-specific
- * endpoint. Typically fired as a side effect of opening or playing an entity.
+ * recency-ordered views so they reflect the new engagement — so the behavior
+ * lives here once and each export just binds the entity-specific endpoint.
+ * Typically fired as a side effect of opening or playing an entity.
+ *
+ * Both the interactions feed and the library rank on this recency, and each is
+ * ordered server-side, so both are invalidated: recording an interaction is
+ * precisely what moves an item to the top of either list.
  */
 const useInteractionMutation = (
   createOrUpdate: (id: string) => Promise<void>,
@@ -19,6 +23,7 @@ const useInteractionMutation = (
     mutationFn: createOrUpdate,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
+      queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
     },
   });
 };

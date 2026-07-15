@@ -1,5 +1,12 @@
 import { useAlbums } from "@/api/albums/queries";
 import { useArtists } from "@/api/artists/queries";
+import { useSeedInteractionArtwork } from "@/api/interactions/cache";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+  useUpdatePlaylistInteraction,
+} from "@/api/interactions/mutations";
+import { useInteractions } from "@/api/interactions/queries";
 import { usePlaylists } from "@/api/playlists/queries";
 import AlbumItem from "@/components/media/albumItem";
 import ArtistItem from "@/components/media/artistItem";
@@ -20,13 +27,6 @@ import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-    useUpdateAlbumInteraction,
-    useUpdateArtistInteraction,
-    useUpdatePlaylistInteraction,
-} from "@/api/interactions/mutations";
-import { useSeedInteractionArtwork } from "@/api/interactions/cache";
-import { useInteractions } from "@/api/interactions/queries";
 
 /**
  * Home tab: horizontally-scrolling shelves of favorite albums, playlists,
@@ -172,7 +172,7 @@ const HomeScreen = () => {
           )}
           {interactionsAvailable && (
             <View style={styles.itemsContainer}>
-              <Text style={[styles.itemsContainerTitle]}>Recently Played</Text>
+              <Text style={[styles.itemsContainerTitle]}>Recents</Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -184,7 +184,10 @@ const HomeScreen = () => {
                       key={interaction.id}
                       onPress={() => onInteractionPress(interaction)}
                     >
-                      <InteractionItem interaction={interaction} variant="grid" />
+                      <InteractionItem
+                        interaction={interaction}
+                        variant="grid"
+                      />
                     </Pressable>
                   );
                 })}

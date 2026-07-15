@@ -7,10 +7,10 @@ import { trackApi } from "./api";
  *
  * @remarks
  * Invalidates more than the track itself: liking a track changes the Liked Songs
- * playlist (and thus its generated cover art), which is surfaced through both the
- * playlist and interactions caches. So `playlists.all` and `interactions` are
- * refreshed alongside the track detail and lists — otherwise the Liked Songs
- * cover would lag behind the like.
+ * playlist (and thus its generated cover art), which is surfaced through the
+ * playlist, interactions, and library caches alike. So all three are refreshed
+ * alongside the track detail and lists — otherwise the Liked Songs cover would
+ * lag behind the like on whichever surface was missed.
  */
 export const useTrackStar = () =>
   useStarMutation({
@@ -26,5 +26,6 @@ export const useTrackStar = () =>
       queryKeys.tracks.all,
       queryKeys.playlists.all,
       queryKeys.interactions,
+      queryKeys.library.all,
     ],
   });

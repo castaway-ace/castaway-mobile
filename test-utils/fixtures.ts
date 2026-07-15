@@ -9,6 +9,13 @@ import {
   PlaylistInteraction,
 } from "@/types/interactions";
 import {
+  AlbumLibraryItem,
+  ArtistLibraryItem,
+  LibraryItem,
+  LibraryItemType,
+  PlaylistLibraryItem,
+} from "@/types/library";
+import {
   Playlist,
   PlaylistRef,
   PlaylistSummary,
@@ -202,6 +209,43 @@ export const makeInteractions = (): Interaction[] => [
   makeAlbumInteraction(),
   makeArtistInteraction(),
   makePlaylistInteraction(),
+];
+
+export const makeAlbumLibraryItem = (
+  overrides: Partial<AlbumLibraryItem> = {},
+): AlbumLibraryItem => ({
+  type: LibraryItemType.ALBUM,
+  album: makeAlbumRef(),
+  artists: [makeArtistRef()],
+  coverUrl: "https://cover/album.jpg",
+  lastInteractedAt: "2024-01-01T00:00:00.000Z",
+  ...overrides,
+});
+
+export const makeArtistLibraryItem = (
+  overrides: Partial<ArtistLibraryItem> = {},
+): ArtistLibraryItem => ({
+  type: LibraryItemType.ARTIST,
+  artist: makeArtistRef(),
+  coverUrl: "https://cover/artist.jpg",
+  lastInteractedAt: "2024-01-01T00:00:00.000Z",
+  ...overrides,
+});
+
+export const makePlaylistLibraryItem = (
+  overrides: Partial<PlaylistLibraryItem> = {},
+): PlaylistLibraryItem => ({
+  type: LibraryItemType.PLAYLIST,
+  playlist: makePlaylistRef(),
+  coverUrls: ["https://cover/1.jpg", "https://cover/2.jpg"],
+  lastInteractedAt: null,
+  ...overrides,
+});
+
+export const makeLibrary = (): LibraryItem[] => [
+  makeAlbumLibraryItem(),
+  makeArtistLibraryItem(),
+  makePlaylistLibraryItem(),
 ];
 
 export const makeSearch = (overrides: Partial<Search> = {}): Search => ({

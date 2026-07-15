@@ -8,11 +8,14 @@ import { playlistApi } from "./api";
  * toast on success, and invalidates the caches its change affects.
  *
  * @remarks
- * Track-membership changes invalidate {@link queryKeys.interactions} alongside
- * the playlist keys. Playlist cover art is derived from *both* the playlist
- * queries and the interactions ("Liked Songs") queries, so touching a
- * playlist's contents can change a cover surfaced through either source;
- * invalidating only the playlist keys would leave a stale grid behind.
+ * Every hook here also invalidates {@link queryKeys.interactions} and
+ * {@link queryKeys.library} alongside the playlist keys. A playlist surfaces
+ * through all three caches, and its cover art is derived independently in each,
+ * so touching a playlist's contents can change a cover rendered from any of
+ * them; invalidating only the playlist keys would leave a stale grid behind.
+ * Creating, renaming, or deleting likewise adds, relabels, or removes a library
+ * row, which the library query resolves server-side and cannot infer from the
+ * playlist keys.
  *
  * @packageDocumentation
  */
@@ -42,11 +45,12 @@ export const useCreatePlaylist = () => {
         onSuccess: (): void => {
             showToast("Playlist created");
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
         },
     });
 };
 
-/** Renames a playlist, invalidating its detail plus the list that shows its name. */
+/** Renames a playlist, invalidating its detail plus the lists that show its name. */
 export const useUpdatePlaylist = () => {
     const queryClient = useQueryClient();
     const { showToast } = useToast();
@@ -58,13 +62,14 @@ export const useUpdatePlaylist = () => {
             showToast("Playlist updated");
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(id) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
         },
     });
 };
 
 /**
- * Deletes a playlist and clears every cache that referenced it — its detail,
- * the list, and interactions (which may have surfaced its cover art).
+ * Deletes a playlist and clears every cache that referenced it — its detail, the
+ * list, interactions, and the library (either of which may have surfaced it).
  */
 export const useDeletePlaylist = () => {
     const queryClient = useQueryClient();
@@ -78,14 +83,15 @@ export const useDeletePlaylist = () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.detail(id) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
+            queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
         },
     });
 };
 
 /**
  * Adds a track to a playlist and refreshes the playlist's detail, its track
- * list, the playlist index, and interactions (see the module note on why cover
- * art forces the interactions invalidation).
+ * list, the playlist index, interactions, and the library (see the module note
+ * on why cover art forces those last two).
  */
 export const useAddTrackToPlaylist = () => {
     const queryClient = useQueryClient();
@@ -100,6 +106,7 @@ export const useAddTrackToPlaylist = () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
+            queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
         },
     });
 };
@@ -118,6 +125,7 @@ export const useRemoveTrackFromPlaylist = () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.tracks(playlistId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.playlists.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.interactions });
+            queryClient.invalidateQueries({ queryKey: queryKeys.library.all });
         },
     });
 };

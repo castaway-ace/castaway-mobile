@@ -43,4 +43,8 @@ export const queryKeys = {
   },
   search: (query: string) => ["search", query] as const,
   interactions: ["interactions"] as const,
+  library: {
+    all: ["library"] as const,
+    list: (filters: Filters) => ["library", "list", filters] as const,
+  },
 };

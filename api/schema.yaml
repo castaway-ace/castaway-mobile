@@ -228,6 +228,108 @@ paths:
         - bearer: []
       tags:
         - Auth
+  /admin/whitelist:
+    post:
+      operationId: WhitelistController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWhitelistEntryDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhitelistEntryEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '409':
+          description: Email is already whitelisted.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+    get:
+      operationId: WhitelistController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WhitelistEntryEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+  /admin/whitelist/{id}:
+    patch:
+      operationId: WhitelistController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWhitelistEntryDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhitelistEntryEntity'
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '404':
+          description: Whitelist entry not found.
+        '409':
+          description: Email is already whitelisted.
+      security:
+        - bearer: []
+      tags:
+        - Admin
+    delete:
+      operationId: WhitelistController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: Missing or invalid bearer token.
+        '403':
+          description: Requires admin privileges.
+        '404':
+          description: Whitelist entry not found.
+      security:
+        - bearer: []
+      tags:
+        - Admin
   /tracks:
     get:
       operationId: TracksController_findAll
@@ -1232,6 +1334,51 @@ paths:
         - bearer: []
       tags:
         - Interactions
+  /library:
+    get:
+      operationId: LibraryController_findAll
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            default: 100
+            type: number
+        - name: offset
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            default: 0
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/ArtistLibraryItemEntity'
+                    - $ref: '#/components/schemas/PlaylistLibraryItemEntity'
+                    - $ref: '#/components/schemas/AlbumLibraryItemEntity'
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      artist: '#/components/schemas/ArtistLibraryItemEntity'
+                      playlist: '#/components/schemas/PlaylistLibraryItemEntity'
+                      album: '#/components/schemas/AlbumLibraryItemEntity'
+        '400':
+          description: Invalid query parameters.
+        '401':
+          description: Missing or invalid bearer token.
+      security:
+        - bearer: []
+      tags:
+        - Library
 info:
   title: Castaway
   description: The API documentation
@@ -1332,6 +1479,50 @@ components:
           type: string
       required:
         - refreshToken
+    CreateWhitelistEntryDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        note:
+          type: string
+          maxLength: 200
+      required:
+        - email
+    WhitelistEntryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        note:
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - email
+        - note
+        - createdAt
+        - updatedAt
+    UpdateWhitelistEntryDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        note:
+          type: string
+          maxLength: 200
     TrackSortOrder:
       type: string
       enum:
@@ -1793,3 +1984,81 @@ components:
         - album
         - artists
         - coverUrl
+    LibraryItemTypeArtist:
+      type: string
+      enum:
+        - artist
+    ArtistLibraryItemEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/LibraryItemTypeArtist'
+        artist:
+          $ref: '#/components/schemas/ArtistRef'
+        coverUrl:
+          type: string
+          nullable: true
+        lastInteractedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - type
+        - artist
+        - coverUrl
+        - lastInteractedAt
+    LibraryItemTypePlaylist:
+      type: string
+      enum:
+        - playlist
+    PlaylistLibraryItemEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/LibraryItemTypePlaylist'
+        playlist:
+          $ref: '#/components/schemas/PlaylistRef'
+        coverUrls:
+          type: array
+          items:
+            type: string
+        lastInteractedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - type
+        - playlist
+        - coverUrls
+        - lastInteractedAt
+    LibraryItemTypeAlbum:
+      type: string
+      enum:
+        - album
+    AlbumLibraryItemEntity:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/LibraryItemTypeAlbum'
+        album:
+          $ref: '#/components/schemas/AlbumRef'
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistRef'
+        coverUrl:
+          type: string
+          nullable: true
+        lastInteractedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - type
+        - album
+        - artists
+        - coverUrl
+        - lastInteractedAt
