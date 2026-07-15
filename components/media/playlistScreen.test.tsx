@@ -94,6 +94,7 @@ describe("PlaylistScreen", () => {
 
     expect(mockPlayQueue).toHaveBeenCalledWith(tracks, 0, {
       type: "playlist",
+      id: "p1",
       name: "Road Trip",
     });
   });

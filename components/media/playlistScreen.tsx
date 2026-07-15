@@ -90,7 +90,9 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
     playQueue(
       playlistTracks,
       index,
-      playlist ? { type: "playlist", name: playlist.name } : null,
+      playlist
+        ? { type: "playlist", id: playlist.id, name: playlist.name }
+        : null,
     );
   };
 

@@ -151,6 +151,7 @@ describe("SearchItem", () => {
     await waitFor(() =>
       expect(mockPlayQueue).toHaveBeenCalledWith(album.tracks, 1, {
         type: "album",
+        id: "al1",
         name: "Kid A",
       }),
     );

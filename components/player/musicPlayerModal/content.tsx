@@ -1,4 +1,8 @@
-import { CrossfadeIcon } from "../crossfadeIcon";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+  useUpdatePlaylistInteraction,
+} from "@/api/interactions/mutations";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
@@ -6,11 +10,14 @@ import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { presignedImageSource } from "@/utils/images";
+import { useTabLocation } from "@/utils/useTabLocation";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CrossfadeIcon } from "../crossfadeIcon";
 import { useActiveTrackStar, usePlayPause } from "../useNowPlayingControls";
 import { usePlayerForeground } from "../usePlayerForeground";
 import ProgressBar from "./progressBar";
@@ -25,6 +32,10 @@ import ProgressBar from "./progressBar";
  * player context. Every icon is a {@link CrossfadeIcon} so the whole control
  * cluster re-tints with the artwork. Renders nothing if the queue empties out
  * from under it.
+ *
+ * The artist line and the "Playing from" header both navigate. Because the player
+ * is an overlay rather than a route, each has to `close()` it explicitly or the
+ * destination is left buried underneath.
  */
 const MusicPlayerModalContent: FC = () => {
   const { colors } = useTheme();
@@ -43,7 +54,12 @@ const MusicPlayerModalContent: FC = () => {
   } = useAudioPlayerContext();
   const { close } = usePlayerModal();
   const { open: openOptions } = useSheetModal();
+  const location = useTabLocation();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const { mutate: albumInteraction } = useUpdateAlbumInteraction();
+  const { mutate: artistInteraction } = useUpdateArtistInteraction();
+  const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
   const { palette, primaryTextStyle, secondaryTextStyle } = usePlayerForeground(
     coverColor,
@@ -61,6 +77,33 @@ const MusicPlayerModalContent: FC = () => {
     ? `Playing from ${source.type === "album" ? "Album" : "Playlist"}`
     : null;
 
+  const artists = currentTrack.artists ?? [];
+
+  const onArtistPress = () => {
+    if (artists.length > 1) {
+      openOptions({ type: SheetType.NOW_PLAYING_ARTISTS });
+      return;
+    }
+
+    const artistId = artists[0]?.id;
+    if (!artistId) return;
+    close();
+    artistInteraction(artistId);
+    router.navigate(`/(tabs)/${location}/artists/${artistId}`);
+  };
+
+  const onSourcePress = () => {
+    if (!source) return;
+    close();
+    if (source.type === "album") {
+      albumInteraction(source.id);
+      router.navigate(`/(tabs)/${location}/albums/${source.id}`);
+      return;
+    }
+    playlistInteraction(source.id);
+    router.navigate(`/(tabs)/${location}/playlists/${source.id}`);
+  };
+
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
       <View style={styles.header}>
@@ -71,28 +114,28 @@ const MusicPlayerModalContent: FC = () => {
             color={palette.primary}
           />
         </Pressable>
-        <View style={styles.headerCenter}>
-          {source ? (
-            <>
-              <Animated.Text
-                style={[styles.headerLabel, secondaryTextStyle]}
-                numberOfLines={1}
-              >
-                {sourceLabel}
-              </Animated.Text>
-              <Animated.Text
-                style={[styles.headerTitle, primaryTextStyle]}
-                numberOfLines={1}
-              >
-                {source.name}
-              </Animated.Text>
-            </>
-          ) : (
+        {source ? (
+          <Pressable onPress={onSourcePress} style={styles.headerCenter}>
+            <Animated.Text
+              style={[styles.headerLabel, secondaryTextStyle]}
+              numberOfLines={1}
+            >
+              {sourceLabel}
+            </Animated.Text>
+            <Animated.Text
+              style={[styles.headerTitle, primaryTextStyle]}
+              numberOfLines={1}
+            >
+              {source.name}
+            </Animated.Text>
+          </Pressable>
+        ) : (
+          <View style={styles.headerCenter}>
             <Animated.Text style={[styles.headerTitle, primaryTextStyle]}>
               Playing Now
             </Animated.Text>
-          )}
-        </View>
+          </View>
+        )}
         <Pressable onPress={() => openOptions({ type: SheetType.NOW_PLAYING })}>
           <CrossfadeIcon size={32} name={"ellipsis"} color={palette.primary} />
         </Pressable>
@@ -113,12 +156,14 @@ const MusicPlayerModalContent: FC = () => {
             >
               {currentTrack.title}
             </Animated.Text>
-            <Animated.Text
-              style={[styles.artistText, secondaryTextStyle]}
-              numberOfLines={1}
-            >
-              {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
-            </Animated.Text>
+            <Pressable onPress={onArtistPress}>
+              <Animated.Text
+                style={[styles.artistText, secondaryTextStyle]}
+                numberOfLines={1}
+              >
+                {artists.map((artist) => artist.name).join(", ")}
+              </Animated.Text>
+            </Pressable>
           </View>
           <Pressable onPress={toggleStar}>
             <CrossfadeIcon

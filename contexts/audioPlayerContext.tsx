@@ -40,9 +40,14 @@ export type PlayableTrack = TrackSummary | AlbumTrack | PlaylistTrack;
 
 export type PlaybackSourceType = "album" | "playlist";
 
-/** Where the current queue came from, so the player UI can show "Playing from …". */
+/**
+ * Where the current queue came from, so the player UI can show "Playing from …"
+ * and link back to it.
+ */
 export interface PlaybackSource {
   type: PlaybackSourceType;
+  /** Id of the album or playlist, per {@link PlaybackSource.type}. */
+  id: string;
   name: string;
 }
 

@@ -106,6 +106,7 @@ describe("AlbumScreen", () => {
     await fireEvent.press(getByText("Karma Police"));
     expect(mockPlayQueue).toHaveBeenCalledWith(album.tracks, 1, {
       type: "album",
+      id: "a1",
       name: "OK Computer",
     });
   });

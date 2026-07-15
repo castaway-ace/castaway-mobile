@@ -83,6 +83,7 @@ const SearchItem: FC<SearchItemProps> = ({ item }) => {
 
         playQueue(album.tracks, startIndex, {
           type: "album",
+          id: album.id,
           name: album.title,
         });
       } catch (error) {

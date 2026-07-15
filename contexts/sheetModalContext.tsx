@@ -14,10 +14,15 @@ export enum SheetType {
   PLAYLIST_SELECT = "playlist-select",
   ALBUM_TRACK = "album-track",
   NOW_PLAYING = "now-playing",
+  NOW_PLAYING_ARTISTS = "now-playing-artists",
 }
 
 export type SheetNowPlaying = {
   type: SheetType.NOW_PLAYING;
+};
+
+export type SheetNowPlayingArtists = {
+  type: SheetType.NOW_PLAYING_ARTISTS;
 };
 
 export type SheetAlbumTrack = {
@@ -49,13 +54,15 @@ export type SheetPlaylistSelect = {
  * A discriminated union rather than a bag of optional fields, so each variant
  * declares exactly the ids it needs (e.g. a track sheet requires a `trackId`)
  * and the consumer gets exhaustive, type-safe narrowing when switching on `type`.
+ *
  */
 export type SheetContent =
   | SheetAlbumTrack
   | SheetPlaylistTrack
   | SheetPlaylistSelect
   | SheetPlaylist
-  | SheetNowPlaying;
+  | SheetNowPlaying
+  | SheetNowPlayingArtists;
 
 interface SheetModalContextValue {
   /** The open sheet's content, or `null` when none is showing. */

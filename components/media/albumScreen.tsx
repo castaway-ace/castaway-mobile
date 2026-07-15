@@ -65,7 +65,11 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
 
   const onTrackPress = (index: number) => {
     if (!album?.tracks) return;
-    playQueue(album.tracks, index, { type: "album", name: album.title });
+    playQueue(album.tracks, index, {
+      type: "album",
+      id: album.id,
+      name: album.title,
+    });
   };
 
   const onLikeAlbumButtonPress = () => {

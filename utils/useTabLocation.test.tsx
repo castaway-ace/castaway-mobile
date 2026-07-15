@@ -1,5 +1,5 @@
-import { useTabLocation } from "@/utils/useTabLocation";
 import { renderHook } from "@/test-utils/renderWithProviders";
+import { useTabLocation } from "@/utils/useTabLocation";
 import { usePathname } from "expo-router";
 
 describe("useTabLocation", () => {
@@ -7,7 +7,9 @@ describe("useTabLocation", () => {
     ["/home/index", "home"],
     ["/library/albums/1", "library"],
     ["/search", "search"],
-    ["/somewhere/else", "search"],
+    ["/search/artists/1", "search"],
+    ["/settings", "home"],
+    ["/somewhere/else", "home"],
   ])("maps %s to the %s tab", async (pathname, expected) => {
     (usePathname as jest.Mock).mockReturnValue(pathname);
 

@@ -23,6 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 import AlbumTrackContent from "./albumTrackContent";
+import NowPlayingArtistsContent from "./nowPlayingArtistsContent";
 import NowPlayingContent from "./nowPlayingContent";
 import PlaylistContent from "./playlistContent";
 import PlaylistSelectContent from "./playlistSelectContent";
@@ -209,6 +210,9 @@ const SheetModal: FC = () => {
             <PlaylistSelectContent trackId={displayed.trackId} />
           )}
           {displayed.type === SheetType.NOW_PLAYING && <NowPlayingContent />}
+          {displayed.type === SheetType.NOW_PLAYING_ARTISTS && (
+            <NowPlayingArtistsContent />
+          )}
         </Animated.View>
       </GestureDetector>
     </View>
