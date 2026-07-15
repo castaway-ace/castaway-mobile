@@ -7,11 +7,14 @@ import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { CrossfadeIcon } from "./crossfadeIcon";
+import TrackInfoCarousel from "./trackInfoCarousel";
 import { useAnimatedBackground } from "./useAnimatedBackground";
 import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
 import { usePlayerForeground } from "./usePlayerForeground";
+import { useTrackSwipe } from "./useTrackSwipe";
 
 /**
  * The persistent mini-player docked above the tab bar.
@@ -23,12 +26,17 @@ import { usePlayerForeground } from "./usePlayerForeground";
  * colors are driven by the cover art via {@link useAnimatedBackground} /
  * {@link usePlayerForeground}, and icons crossfade through {@link CrossfadeIcon},
  * so the whole bar re-tints smoothly as tracks change.
+ *
+ * Swiping the bar sideways changes track ({@link useTrackSwipe}); the artwork
+ * stays put and the {@link TrackInfoCarousel} is what follows the finger.
  */
 const MusicPlayer = () => {
   const {
     isPlaying,
     isLoading,
     currentTrack,
+    previousTrack,
+    nextTrack,
     coverArtUrl,
     coverColor,
     currentTime,
@@ -38,6 +46,8 @@ const MusicPlayer = () => {
   const { colors } = useTheme();
   const { starred, toggleStar } = useActiveTrackStar();
   const handlePlayTrack = usePlayPause();
+  const { pan, stripStyle, restingLeft, width, onViewportLayout } =
+    useTrackSwipe();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
   const {
@@ -61,53 +71,54 @@ const MusicPlayer = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.secondaryContainer, backgroundStyle]}>
-        <View style={styles.contentContainer}>
-          <Pressable style={styles.leftContainer} onPress={open}>
-            <Image
-              source={coverArtUrl ? presignedImageSource(coverArtUrl) : undefined}
-              placeholder={blurHash}
-              style={styles.albumArt}
-            />
-            <View style={styles.info}>
-              <Animated.Text
-                style={[styles.title, primaryTextStyle]}
-                numberOfLines={1}
-              >
-                {currentTrack.title}
-              </Animated.Text>
-              <Animated.Text
-                style={[styles.artist, secondaryTextStyle]}
-                numberOfLines={1}
-              >
-                {currentTrack.artists?.map((artist) => artist.name)?.join(", ")}
-              </Animated.Text>
-            </View>
-          </Pressable>
-          <View style={styles.buttonContainer}>
-            <Pressable onPress={toggleStar}>
-              <CrossfadeIcon
-                name={starred ? "heart.fill" : "heart"}
-                size={32}
-                color={palette.primary}
+        <GestureDetector gesture={pan}>
+          <View style={styles.contentContainer}>
+            <Pressable style={styles.leftContainer} onPress={open}>
+              <Image
+                source={
+                  coverArtUrl ? presignedImageSource(coverArtUrl) : undefined
+                }
+                placeholder={blurHash}
+                style={styles.albumArt}
+              />
+              <TrackInfoCarousel
+                previousTrack={previousTrack}
+                currentTrack={currentTrack}
+                nextTrack={nextTrack}
+                primaryTextStyle={primaryTextStyle}
+                secondaryTextStyle={secondaryTextStyle}
+                stripStyle={stripStyle}
+                restingLeft={restingLeft}
+                width={width}
+                onViewportLayout={onViewportLayout}
               />
             </Pressable>
-            <Pressable onPress={handlePlayTrack} disabled={isLoading}>
-              {isLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={palette.primary}
-                  style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-                />
-              ) : (
+            <View style={styles.buttonContainer}>
+              <Pressable onPress={toggleStar}>
                 <CrossfadeIcon
-                  size={28}
-                  name={isPlaying ? "pause.fill" : "play.fill"}
+                  name={starred ? "heart.fill" : "heart"}
+                  size={32}
                   color={palette.primary}
                 />
-              )}
-            </Pressable>
+              </Pressable>
+              <Pressable onPress={handlePlayTrack} disabled={isLoading}>
+                {isLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={palette.primary}
+                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                  />
+                ) : (
+                  <CrossfadeIcon
+                    size={28}
+                    name={isPlaying ? "pause.fill" : "play.fill"}
+                    color={palette.primary}
+                  />
+                )}
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </GestureDetector>
         <View style={styles.barArea}>
           <Animated.View style={[styles.bar, secondaryBgStyle]}>
             <Animated.View
@@ -147,24 +158,10 @@ const makeStyles = (colors: ThemeColors) =>
       alignItems: "center",
       gap: 8,
     },
-    title: {
-      fontWeight: 700,
-      fontSize: 18,
-      color: colors.primary,
-    },
     albumArt: {
       width: 48,
       height: 48,
       borderRadius: 4,
-    },
-    artist: {
-      fontSize: 14,
-      color: colors.secondary,
-    },
-    info: {
-      flex: 1,
-      flexDirection: "column",
-      gap: 4,
     },
     buttonContainer: {
       flexDirection: "row",

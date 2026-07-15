@@ -47,10 +47,13 @@ const tracks = [
   makeTrackSummary({ id: "t2" }),
 ];
 
+const mockPlayer = jest.requireMock("expo-audio").useAudioPlayer();
+
 const renderPlayer = () =>
   renderHook(() => useAudioPlayerContext(), { wrapper: AudioPlayerProvider });
 
 beforeEach(() => {
+  jest.clearAllMocks();
   mockStatus.isLoaded = false;
   mockStatus.playing = false;
   mockStatus.didJustFinish = false;
@@ -79,13 +82,23 @@ describe("audioPlayerContext queue", () => {
     expect(result.current.currentTrack?.id).toBe("t1");
   });
 
-  it("clears the queue at the end when repeat is off", async () => {
+  it("wraps to the first track when skipping past the end with repeat off", async () => {
     const { result } = await renderPlayer();
 
-    await act(async () => result.current.playQueue([tracks[0]], 0));
+    await act(async () => result.current.playQueue(tracks, 2));
     await act(async () => result.current.next());
 
-    expect(result.current.currentTrack).toBeNull();
+    expect(result.current.currentTrack?.id).toBe("t0");
+    expect(result.current.queue).toHaveLength(3);
+  });
+
+  it("wraps to the last track when stepping back from the first", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 0));
+    await act(async () => result.current.previous());
+
+    expect(result.current.currentTrack?.id).toBe("t2");
   });
 
   it("steps to the previous track", async () => {
@@ -93,6 +106,44 @@ describe("audioPlayerContext queue", () => {
 
     await act(async () => result.current.playQueue(tracks, 1));
     await act(async () => result.current.previous());
+
+    expect(result.current.currentTrack?.id).toBe("t0");
+  });
+
+  it("restarts the current track when previous is pressed past the threshold", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 1));
+    mockStatus.currentTime = 10;
+    await act(async () => result.current.previous());
+
+    expect(result.current.currentTrack?.id).toBe("t1");
+    expect(mockPlayer.seekTo).toHaveBeenCalledWith(0);
+  });
+
+  it("parks on the last track when it ends naturally with repeat off", async () => {
+    const { result, rerender } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 2));
+    await act(async () => {
+      mockStatus.didJustFinish = true;
+      await rerender(undefined);
+    });
+
+    expect(result.current.currentTrack?.id).toBe("t2");
+    expect(result.current.queue).toHaveLength(3);
+    expect(mockPlayer.pause).toHaveBeenCalled();
+  });
+
+  it("wraps on a natural end when repeat is all", async () => {
+    const { result, rerender } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 2));
+    await act(async () => result.current.setRepeatMode("all"));
+    await act(async () => {
+      mockStatus.didJustFinish = true;
+      await rerender(undefined);
+    });
 
     expect(result.current.currentTrack?.id).toBe("t0");
   });
@@ -137,6 +188,89 @@ describe("audioPlayerContext queue", () => {
 
     expect(result.current.currentTrack).toBeNull();
     expect(result.current.queue).toHaveLength(0);
+  });
+});
+
+describe("audioPlayerContext swipe neighbors", () => {
+  it("reports the adjacent tracks mid-queue", async () => {
+    const { result } = await renderPlayer();
+    await act(async () => result.current.playQueue(tracks, 1));
+
+    expect(result.current.previousTrack?.id).toBe("t0");
+    expect(result.current.nextTrack?.id).toBe("t2");
+  });
+
+  it("wraps the neighbors at both ends with repeat off", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 0));
+    expect(result.current.previousTrack?.id).toBe("t2");
+
+    await act(async () => result.current.playQueue(tracks, 2));
+    expect(result.current.nextTrack?.id).toBe("t0");
+  });
+
+  it.each(["off", "all", "one"] as const)(
+    "reports no neighbors for a single-track queue with repeat %s",
+    async (mode) => {
+      const { result } = await renderPlayer();
+      await act(async () => result.current.playQueue([tracks[0]], 0));
+      await act(async () => result.current.setRepeatMode(mode));
+
+      expect(result.current.nextTrack).toBeNull();
+      expect(result.current.previousTrack).toBeNull();
+    },
+  );
+
+  it("reports no neighbors when nothing is playing", async () => {
+    const { result } = await renderPlayer();
+
+    expect(result.current.nextTrack).toBeNull();
+    expect(result.current.previousTrack).toBeNull();
+  });
+
+  it("follows the shuffled play order", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 0));
+    await act(async () => result.current.toggleShuffle());
+
+    // Deterministic without stubbing Math.random: whatever order shuffle picked,
+    // the next neighbor is the head of what's actually up next.
+    expect(result.current.nextTrack?.id).toBe(result.current.upNext[0]?.id);
+  });
+
+  it("skips forward and wraps without emptying the queue", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 2));
+    await act(async () => result.current.skipNext());
+
+    expect(result.current.currentTrack?.id).toBe("t0");
+    expect(result.current.queue).toHaveLength(3);
+  });
+
+  // The contrast against `previous`, which restarts once past the threshold.
+  it("skips back even when past the restart threshold", async () => {
+    const { result } = await renderPlayer();
+
+    await act(async () => result.current.playQueue(tracks, 1));
+    mockStatus.currentTime = 10;
+    await act(async () => result.current.skipPrevious());
+
+    expect(result.current.currentTrack?.id).toBe("t0");
+    expect(mockPlayer.seekTo).not.toHaveBeenCalled();
+  });
+
+  it("ignores skips on a single-track queue", async () => {
+    const { result } = await renderPlayer();
+    await act(async () => result.current.playQueue([tracks[0]], 0));
+
+    await act(async () => result.current.skipNext());
+    expect(result.current.currentTrack?.id).toBe("t0");
+
+    await act(async () => result.current.skipPrevious());
+    expect(result.current.currentTrack?.id).toBe("t0");
   });
 });
 

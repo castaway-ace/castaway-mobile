@@ -1,11 +1,13 @@
-import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import MusicPlayer from "@/components/player/musicPlayer";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { makeArtistRef, makeTrack } from "@/test-utils/fixtures";
 import { fireEvent, render } from "@/test-utils/renderWithProviders";
 
 const mockOpen = jest.fn();
 const mockToggleStar = jest.fn();
 const mockPlayPause = jest.fn();
+const mockSkipNext = jest.fn();
+const mockSkipPrevious = jest.fn();
 
 jest.mock("@/components/player/crossfadeIcon", () => {
   const React = require("react");
@@ -38,6 +40,10 @@ const baseState = {
   isPlaying: false,
   isLoading: false,
   currentTrack: track,
+  previousTrack: null,
+  nextTrack: null,
+  skipNext: mockSkipNext,
+  skipPrevious: mockSkipPrevious,
   coverArtUrl: "https://cover.jpg",
   coverColor: "#123456",
   currentTime: 30,

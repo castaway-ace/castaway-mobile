@@ -60,6 +60,16 @@ interface AudioPlayerContextValue {
   queue: PlayableTrack[];
   /** Tracks after the current one, already reordered for shuffle. */
   upNext: PlayableTrack[];
+  /**
+   * The track a forward skip would land on, wrapping to the start from the end;
+   * `null` when there is no other track to reach.
+   */
+  nextTrack: PlayableTrack | null;
+  /**
+   * The track a backward skip would land on, wrapping to the end from the start;
+   * `null` when there is no other track to reach.
+   */
+  previousTrack: PlayableTrack | null;
   /** Index into the play order (not the raw queue); `-1` when nothing is playing. */
   position: number;
   source: PlaybackSource | null;
@@ -86,6 +96,13 @@ interface AudioPlayerContextValue {
   next: () => void;
   /** Restarts the current track, or steps back if already near its start. */
   previous: () => void;
+  /** Forward skip for the swipe gesture. No-ops when {@link AudioPlayerContextValue.nextTrack} is null. */
+  skipNext: () => void;
+  /**
+   * Backward skip for the swipe gesture: always steps back, bypassing the
+   * restart-near-the-start rule {@link AudioPlayerContextValue.previous} applies.
+   */
+  skipPrevious: () => void;
   toggleShuffle: () => void;
   /** Advances repeat mode: off → all → one → off. */
   cycleRepeat: () => void;
@@ -204,28 +221,24 @@ const queueReducer = (state: QueueState, action: QueueAction): QueueState => {
     case "NEXT": {
       const length = state.order.length;
       if (length === 0) return state;
-      // Wrap to the top when repeating the whole queue. Repeat-one only wraps on
-      // a *manual* skip: on a natural track end the finish handler restarts the
-      // same track instead of dispatching NEXT, so `naturalEnd` here means the
-      // user pressed skip and expects to leave the looping track.
-      const wrap =
-        state.repeatMode === "all" ||
-        (!action.naturalEnd && state.repeatMode === "one");
       const nextPos = state.position + 1;
       if (nextPos < length) return { ...state, position: nextPos };
-      if (wrap) return { ...state, position: 0 };
-      // Ran off the end with no repeat: clear the queue so playback stops.
-      return { ...state, queue: [], order: [], position: -1 };
+      // Ran off the end. A natural end with no repeat parks on the last track:
+      // the engine has already stopped there, so leaving state untouched keeps
+      // the queue and player intact rather than making them vanish mid-listen.
+      if (action.naturalEnd && state.repeatMode === "off") return state;
+      // Any manual skip wraps, repeat or not — the end of a queue is never a
+      // dead end the user can't skip out of. Repeat mode governs only what
+      // happens on a natural end.
+      return { ...state, position: 0 };
     }
 
     case "PREVIOUS": {
       const length = state.order.length;
       if (length === 0) return state;
       const prevPos = state.position - 1;
-      if (prevPos >= 0) return { ...state, position: prevPos };
-      // At the first track, wrap to the last only if some repeat mode is on.
-      if (state.repeatMode !== "off") return { ...state, position: length - 1 };
-      return state;
+      // Wraps regardless of repeat mode, mirroring NEXT.
+      return { ...state, position: prevPos >= 0 ? prevPos : length - 1 };
     }
 
     case "ENQUEUE": {
@@ -371,6 +384,26 @@ export const AudioPlayerProvider = ({
     return order.slice(position + 1).map((i) => queue[i]);
   }, [queue, order, position]);
 
+  // The tracks a manual skip would land on. Deliberately not `upNext[0]`: that's
+  // the literal remainder of the queue and stops at the end, whereas a skip
+  // wraps. Both derive from `order`, so they're shuffle-aware for free.
+  //
+  // A one-track queue reports null in both directions: NEXT/PREVIOUS resolve to
+  // the position already held, so `currentTrack`'s identity never changes and
+  // the dispatch is a silent no-op. Null lets the swipe refuse up front instead
+  // of animating to a track it can't actually reach.
+  const nextTrack = useMemo<PlayableTrack | null>(() => {
+    if (position < 0 || order.length <= 1) return null;
+    const at = position + 1 < order.length ? position + 1 : 0;
+    return queue[order[at]] ?? null;
+  }, [queue, order, position]);
+
+  const previousTrack = useMemo<PlayableTrack | null>(() => {
+    if (position < 0 || order.length <= 1) return null;
+    const at = position - 1 >= 0 ? position - 1 : order.length - 1;
+    return queue[order[at]] ?? null;
+  }, [queue, order, position]);
+
   const { data: albumArtUrl } = useAlbumCover(currentTrack?.album.id);
 
   const [coverColor, setCoverColor] = useState<string | undefined>(undefined);
@@ -484,16 +517,23 @@ export const AudioPlayerProvider = ({
     if (status.didJustFinish && !finishHandledRef.current) {
       finishHandledRef.current = true;
       const onlyOneTrack = order.length <= 1;
+      const atEnd = order.length > 0 && position + 1 >= order.length;
       if (repeatMode === "one" || (repeatMode === "all" && onlyOneTrack)) {
         player.seekTo(0);
         player.play();
+      } else if (repeatMode === "off" && atEnd) {
+        // Park on the last track instead of advancing: the queue stays intact so
+        // the player remains on screen and the listener can scrub back or replay.
+        // Pausing explicitly rather than trusting the engine to have settled into
+        // a stopped state on its own.
+        player.pause();
       } else {
         dispatch({ type: "NEXT", naturalEnd: true });
       }
     } else if (!status.didJustFinish) {
       finishHandledRef.current = false;
     }
-  }, [status.didJustFinish, repeatMode, order.length, player]);
+  }, [status.didJustFinish, repeatMode, order.length, position, player]);
 
   // Surface a load/playback failure the engine reports. The stream is fetched by
   // the native engine outside the Axios client, so a failure — a session whose
@@ -564,16 +604,27 @@ export const AudioPlayerProvider = ({
   }, []);
 
   const previous = useCallback((): void => {
-    // Restart the current track rather than stepping back if we're already past
-    // the threshold, or if there's no earlier track to go to (first track, no
-    // repeat) — matching how physical media controls behave.
-    const atStart = position <= 0 && repeatMode === "off";
-    if (status.currentTime > RESTART_THRESHOLD_SECONDS || atStart) {
+    // Restart the current track rather than stepping back once we're past the
+    // threshold — matching how physical media controls behave.
+    if (status.currentTime > RESTART_THRESHOLD_SECONDS) {
       player.seekTo(0);
       return;
     }
     dispatch({ type: "PREVIOUS" });
-  }, [position, repeatMode, status.currentTime, player]);
+  }, [status.currentTime, player]);
+
+  const skipNext = useCallback((): void => {
+    if (!nextTrack) return;
+    dispatch({ type: "NEXT", naturalEnd: false });
+  }, [nextTrack]);
+
+  const skipPrevious = useCallback((): void => {
+    // No restart-if-past-the-threshold rule here, unlike `previous`: the swipe
+    // has already dragged the previous track's text into view, so restarting
+    // would animate to a track and then silently not go there.
+    if (!previousTrack) return;
+    dispatch({ type: "PREVIOUS" });
+  }, [previousTrack]);
 
   const toggleShuffle = useCallback((): void => {
     dispatch({ type: "TOGGLE_SHUFFLE" });
@@ -628,6 +679,8 @@ export const AudioPlayerProvider = ({
     coverColor,
     queue,
     upNext,
+    nextTrack,
+    previousTrack,
     position,
     source,
     isShuffled,
@@ -645,6 +698,8 @@ export const AudioPlayerProvider = ({
     pause,
     next,
     previous,
+    skipNext,
+    skipPrevious,
     toggleShuffle,
     cycleRepeat,
     setRepeatMode,
