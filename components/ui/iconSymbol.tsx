@@ -25,6 +25,7 @@ const MAPPING = {
   "plus.circle": "add-circle-outline",
   plus: "add-outline",
   checkmark: "checkmark",
+  xmark: "close",
   "minus.circle": "remove-circle-outline",
   "pause.fill": "pause",
   "play.fill": "play",

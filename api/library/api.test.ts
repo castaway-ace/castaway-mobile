@@ -1,6 +1,7 @@
 import apiClient from "@/api/client";
 import { libraryApi } from "@/api/library/api";
 import { makeLibrary } from "@/test-utils/fixtures";
+import { LibraryItemType } from "@/types/library";
 import MockAdapter from "axios-mock-adapter";
 
 let mock: MockAdapter;
@@ -26,6 +27,25 @@ describe("libraryApi.getAll", () => {
 
     await libraryApi.getAll({ limit: 50, offset: 10 });
 
-    expect(mock.history.get[0].params).toEqual({ limit: 50, offset: 10 });
+    expect(mock.history.get[0].params).toMatchObject({ limit: 50, offset: 10 });
+  });
+
+  it("passes the type filter through", async () => {
+    mock.onGet("/library").reply(200, []);
+
+    await libraryApi.getAll({
+      limit: 200,
+      offset: 0,
+      type: LibraryItemType.ARTIST,
+    });
+
+    expect(mock.history.get[0].params).toMatchObject({ type: "artist" });
+  });
+
+  it("sends no type at all when unfiltered", async () => {
+    mock.onGet("/library").reply(200, []);
+
+    await libraryApi.getAll({ limit: 200, offset: 0 });
+    expect(mock.history.get[0].params.type).toBeUndefined();
   });
 });

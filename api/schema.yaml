@@ -1338,6 +1338,11 @@ paths:
     get:
       operationId: LibraryController_findAll
       parameters:
+        - name: type
+          required: false
+          in: query
+          schema:
+            $ref: '#/components/schemas/LibraryItemType'
         - name: limit
           required: false
           in: query
@@ -2062,3 +2067,9 @@ components:
         - artists
         - coverUrl
         - lastInteractedAt
+    LibraryItemType:
+      type: string
+      enum:
+        - album
+        - artist
+        - playlist

@@ -832,6 +832,8 @@ export interface components {
             /** Format: date-time */
             lastInteractedAt: string | null;
         };
+        /** @enum {string} */
+        LibraryItemType: "album" | "artist" | "playlist";
     };
     responses: never;
     parameters: never;
@@ -2619,6 +2621,7 @@ export interface operations {
     LibraryController_findAll: {
         parameters: {
             query?: {
+                type?: components["schemas"]["LibraryItemType"];
                 limit?: number;
                 offset?: number;
             };
