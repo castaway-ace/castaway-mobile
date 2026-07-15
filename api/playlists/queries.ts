@@ -1,5 +1,5 @@
 import { OrderBy } from "@/constants/api";
-import { GC_TIME, STALE_TIME } from "@/constants/query";
+import { STALE_TIME } from "@/constants/query";
 import {
   skipToken,
   useInfiniteQuery,
@@ -48,7 +48,6 @@ export const usePlaylists = (options: Partial<PlaylistOptions> = {}) => {
       return allPages.length * limit;
     },
     staleTime: STALE_TIME.SHORT,
-    gcTime: GC_TIME,
     initialPageParam: 0,
   });
 }
@@ -115,7 +114,6 @@ export const usePlaylistsContainingTrack = (
       queryKey: queryKeys.playlists.tracks(playlistId),
       queryFn: () => playlistApi.getAllTracks(playlistId),
       staleTime: STALE_TIME.LONG,
-      gcTime: GC_TIME,
     })),
     combine: (results) => {
       const containing = new Set<string>();

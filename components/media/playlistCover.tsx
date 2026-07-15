@@ -1,3 +1,4 @@
+import { presignedImageSource } from "@/utils/images";
 import { buildPlaylistCover } from "@/utils/playlist";
 import { Image } from "expo-image";
 import { FC } from "react";
@@ -33,7 +34,7 @@ const PlaylistCover: FC<PlaylistCoverProps> = ({ urls, style }) => {
       {tiles.map((url, index) => (
         <Image
           key={`${url}-${index}`}
-          source={{ uri: url }}
+          source={presignedImageSource(url)}
           style={tiles.length === 1 ? styles.full : styles.mini}
         />
       ))}

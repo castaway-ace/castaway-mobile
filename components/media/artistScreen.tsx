@@ -6,6 +6,7 @@ import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Artist } from "@/types/artists";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -141,7 +142,7 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
     mutate({ id: artist.id, starred: !!artist?.starred });
   };
   const imageSource = artistImageUrl
-    ? { uri: artistImageUrl }
+    ? presignedImageSource(artistImageUrl)
     : isImagePending
       ? undefined
       : require("../../assets/placeholders/artist-placeholder.png");
@@ -160,6 +161,11 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
           <Image
             source={imageSource}
             placeholder={blurHash}
+            // expo-image defaults to `disk`, which re-reads and re-decodes this
+            // full-bleed photo on every visit to the screen; keeping it in memory
+            // too makes a return trip immediate. Falls back to disk when the
+            // memory cache is purged.
+            cachePolicy="memory-disk"
             contentFit="cover"
             // Anchor to the top rather than cover's default center: artist photos
             // are portraits framing the face in the upper half, so a center crop

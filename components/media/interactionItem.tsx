@@ -1,6 +1,8 @@
+import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -64,7 +66,14 @@ const InteractionItem: FC<InteractionItemProps> = ({
     }
     return (
       <Image
-        source={interaction.coverUrl ?? placeholder}
+        source={
+          interaction.coverUrl
+            ? presignedImageSource(interaction.coverUrl)
+            : placeholder
+        }
+        // Every other artwork in the app carries this; without it the tile is
+        // blank rather than shimmering while the image downloads.
+        placeholder={blurHash}
         style={styles.interactionArt}
       />
     );

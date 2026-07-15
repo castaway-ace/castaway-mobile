@@ -14,6 +14,7 @@ import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Album } from "@/types/albums";
 import { formatDate } from "@/utils/formatters";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
@@ -87,9 +88,9 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
       >
         <View style={styles.albumArtContainer}>
           <Image
-            source={{
-              uri: albumCoverUrl,
-            }}
+            source={
+              albumCoverUrl ? presignedImageSource(albumCoverUrl) : undefined
+            }
             placeholder={blurHash}
             style={styles.albumArt}
           />

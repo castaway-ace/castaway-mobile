@@ -2,6 +2,7 @@ import { useArtist, useArtistImage } from "@/api/artists/queries";
 import { ArtistItemSkeleton } from "@/components/media/skeletons";
 import { ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/contexts/themeContext";
+import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { FC, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -27,9 +28,7 @@ const ArtistItem: FC<ArtistItemProps> = ({ id }) => {
   if (isLoading) return <ArtistItemSkeleton />;
 
   const imageSource = artistImageUrl
-    ? {
-        uri: artistImageUrl,
-      }
+    ? presignedImageSource(artistImageUrl)
     : require("../../assets/placeholders/artist-placeholder.png");
 
   return (

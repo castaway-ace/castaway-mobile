@@ -3,6 +3,7 @@ import {
     useUpdateArtistInteraction,
     useUpdatePlaylistInteraction,
 } from "@/api/interactions/mutations";
+import { useSeedInteractionArtwork } from "@/api/interactions/cache";
 import { useInteractions } from "@/api/interactions/queries";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { ThemeColors } from "@/constants/theme";
@@ -43,6 +44,8 @@ const Library = () => {
   const { mutate: artistInteraction } = useUpdateArtistInteraction();
   const { mutate: playlistInteraction } = useUpdatePlaylistInteraction();
 
+  const seedInteractionArtwork = useSeedInteractionArtwork();
+
   const interactionsAvailable = !!interactions?.length;
 
   const onAlbumPress = (albumId: string) => {
@@ -61,6 +64,10 @@ const Library = () => {
   };
 
   const onInteractionPress = (interaction: Interaction) => {
+    // Hand the feed's artwork to the screen we're about to open, which otherwise
+    // refetches a URL we already have and renders empty until it lands.
+    seedInteractionArtwork(interaction);
+
     if (interaction.type === InteractionType.ALBUM) {
       onAlbumPress(interaction.album.id);
     } else if (interaction.type === InteractionType.ARTIST) {

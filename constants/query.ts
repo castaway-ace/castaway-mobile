@@ -13,5 +13,12 @@ export const STALE_TIME = {
   LONG: 10 * 60 * 1000,
 } as const;
 
-/** How long unused query data lingers in cache (10 min) before garbage collection. */
+/**
+ * How long unused query data lingers in cache (10 min) before garbage collection.
+ *
+ * @remarks
+ * Applied once as a client-wide default in `app/_layout.tsx` rather than per
+ * query. It must not sit below any `STALE_TIME`, or data a query still considers
+ * fresh gets evicted first and refetches on the next visit anyway.
+ */
 export const GC_TIME = 10 * 60 * 1000;

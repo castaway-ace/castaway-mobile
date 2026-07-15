@@ -1,5 +1,5 @@
 import { OrderBy } from "@/constants/api";
-import { GC_TIME, STALE_TIME } from "@/constants/query";
+import { STALE_TIME } from "@/constants/query";
 import { queryOptions, skipToken, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../queryKeys";
 import { ArtistOrder, artistApi } from "./api";
@@ -38,7 +38,6 @@ export const useArtists = (options: Partial<ArtistOptions> = {}) => {
             return allPages.length * limit;
         },
         staleTime: STALE_TIME.SHORT,
-        gcTime: GC_TIME,
         initialPageParam: 0,
     });
 }

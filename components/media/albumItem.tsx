@@ -1,4 +1,5 @@
 import { useAlbum, useAlbumCover } from "@/api/albums/queries";
+import { presignedImageSource } from "@/utils/images";
 import { AlbumItemSkeleton } from "@/components/media/skeletons";
 import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
@@ -31,9 +32,7 @@ const AlbumItem: FC<AlbumProps> = ({ id }) => {
   return (
     <View style={styles.albumContainer}>
       <Image
-        source={{
-          uri: albumArtUrl,
-        }}
+        source={albumArtUrl ? presignedImageSource(albumArtUrl) : undefined}
         placeholder={blurHash}
         style={styles.albumArt}
       />

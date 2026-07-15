@@ -105,8 +105,11 @@ describe("ArtistScreen", () => {
   it("renders the artist photo once its url resolves", async () => {
     const { getByTestId } = await renderScreen(testArtist());
 
+    // cacheKey rather than the raw uri: the url is presigned and re-signed on
+    // every fetch, so it can't be the cache identity. See presignedImageSource.
     expect(getByTestId("expo-image").props.source).toEqual({
       uri: "https://img.jpg",
+      cacheKey: "https://img.jpg",
     });
   });
 
