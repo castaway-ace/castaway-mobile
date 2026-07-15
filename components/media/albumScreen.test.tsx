@@ -87,7 +87,7 @@ describe("AlbumScreen", () => {
     const { getByTestId } = await renderScreen(makeTestAlbum());
 
     const style = StyleSheet.flatten(
-      getByTestId("album-sticky-header-title").props.style,
+      getByTestId("sticky-header-title").props.style,
     );
     expect(style.opacity).toBe(0);
   });

@@ -13,6 +13,7 @@ import {
 } from "@/test-utils/renderWithProviders";
 import { PlaylistType } from "@/types/playlist";
 import type { QueryClient } from "@tanstack/react-query";
+import { StyleSheet } from "react-native";
 
 const mockOpen = jest.fn();
 const mockPlayQueue = jest.fn();
@@ -51,11 +52,21 @@ const renderScreen = async (type = PlaylistType.USER) => {
 
 describe("PlaylistScreen", () => {
   it("renders the playlist name and its tracks", async () => {
-    const { getByText } = await renderScreen();
+    const { getByText, getAllByText } = await renderScreen();
 
-    expect(getByText("Road Trip")).toBeTruthy();
+    // Twice: once in the body title row, once in the sticky header.
+    expect(getAllByText("Road Trip")).toHaveLength(2);
     expect(getByText("Song A")).toBeTruthy();
     expect(getByText("Artist A")).toBeTruthy();
+  });
+
+  it("keeps the sticky header title hidden at the top of the scroll", async () => {
+    const { getByTestId } = await renderScreen();
+
+    const style = StyleSheet.flatten(
+      getByTestId("sticky-header-title").props.style,
+    );
+    expect(style.opacity).toBe(0);
   });
 
   it("shows an options button for USER playlists and opens the playlist sheet", async () => {

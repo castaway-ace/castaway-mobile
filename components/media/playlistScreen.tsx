@@ -1,16 +1,22 @@
 import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
+import {
+  STICKY_HEADER_CONTENT_HEIGHT,
+  StickyHeader,
+  useStickyHeaderReveal,
+} from "@/components/navigation/stickyHeader";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeColors } from "@/constants/theme";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
-import { PlaylistType } from "@/types/playlist";
+import { Playlist, PlaylistType } from "@/types/playlist";
 import { router } from "expo-router";
 import { useBottomTabBarHeight } from "expo-router/js-tabs";
 import { FC, useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PlaylistCover from "./playlistCover";
 
 interface PlaylistScreenProps {
@@ -34,6 +40,29 @@ interface PlaylistScreenProps {
  */
 const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   const { data: playlist, isLoading } = usePlaylist(id);
+
+  if (isLoading) return <PlaylistScreenSkeleton />;
+
+  return <PlaylistScreenContent id={id} playlist={playlist} />;
+};
+
+interface PlaylistScreenContentProps extends PlaylistScreenProps {
+  /** The loaded playlist; may be `undefined` if the fetch resolved without data. */
+  playlist: Playlist | undefined;
+}
+
+/**
+ * The loaded playlist screen: sticky header, cover, title row, and track list.
+ *
+ * @remarks
+ * Split out from {@link PlaylistScreen} so the sticky-header machinery — the
+ * animated scroll ref and {@link useScrollOffset} — only mounts once there's a
+ * real {@link Animated.ScrollView} for the ref to attach to.
+ */
+const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
+  id,
+  playlist,
+}) => {
   const { data: playlistTracks } = usePlaylistTracks(id);
 
   const { colors } = useTheme();
@@ -45,7 +74,13 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
 
   const tabBarHeight = useBottomTabBarHeight();
 
-  if (isLoading) return <PlaylistScreenSkeleton />;
+  const {
+    scrollRef,
+    headerBottom,
+    onHeaderRowLayout,
+    onTitleLayout,
+    headerStyle,
+  } = useStickyHeaderReveal();
 
   const onTrackPress = (index: number) => {
     if (!playlistTracks) return;
@@ -67,30 +102,28 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView
+    <View style={styles.container}>
+      <Animated.ScrollView
+        ref={scrollRef}
         contentContainerStyle={{
           paddingHorizontal: 16,
+          // Start below the sticky header, which floats over the scroll view.
+          paddingTop: headerBottom,
           // Clear both the tab bar and the mini-player that floats above it, so
           // the last track isn't hidden behind them when scrolled to the end.
           paddingBottom: tabBarHeight + 84,
         }}
       >
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <IconSymbol
-            size={32}
-            name={"arrow.backward"}
-            color={colors.primary}
-          />
-        </Pressable>
         <View style={styles.playlistArtContainer}>
           <PlaylistCover
             urls={playlist?.albumCoverUrls}
             style={styles.playlistArt}
           />
         </View>
-        <View style={styles.playlistInfoContainer}>
-          <Text style={styles.playlistTitle}>{playlist?.name}</Text>
+        <View style={styles.playlistInfoContainer} onLayout={onHeaderRowLayout}>
+          <Text style={styles.playlistTitle} onLayout={onTitleLayout}>
+            {playlist?.name}
+          </Text>
           {playlist?.type === PlaylistType.USER && (
             <Pressable onPress={onOptionPress}>
               <IconSymbol name={"ellipsis"} size={32} color={colors.primary} />
@@ -107,8 +140,10 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
               >
                 <View style={styles.trackInfo}>
                   <View style={styles.trackLeftInfo}>
-                    <Text style={styles.trackTitle}>{playlistTrack.title}</Text>
-                    <Text style={styles.trackArtists}>
+                    <Text style={styles.trackTitle} numberOfLines={1}>
+                      {playlistTrack.title}
+                    </Text>
+                    <Text style={styles.trackArtists} numberOfLines={1}>
                       {playlistTrack?.artists
                         ?.map((artist) => artist.name)
                         ?.join(", ")}
@@ -128,8 +163,14 @@ const PlaylistScreen: FC<PlaylistScreenProps> = ({ id }) => {
             );
           })}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </Animated.ScrollView>
+
+      <StickyHeader
+        title={playlist?.name}
+        headerStyle={headerStyle}
+        onBack={() => router.back()}
+      />
+    </View>
   );
 };
 
@@ -138,11 +179,6 @@ const makeStyles = (colors: ThemeColors) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingTop: 16,
-    },
-    backButton: {
-      position: "absolute",
-      left: 16,
     },
     playlistArtContainer: {
       display: "flex",
@@ -157,9 +193,12 @@ const makeStyles = (colors: ThemeColors) =>
     playlistInfoContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
+      gap: 12,
       marginBottom: 24,
     },
     playlistTitle: {
+      flex: 1,
       color: colors.primary,
       fontSize: 22,
       fontWeight: 500,
@@ -183,8 +222,10 @@ const makeStyles = (colors: ThemeColors) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      gap: 12,
     },
     trackLeftInfo: {
+      flex: 1,
       display: "flex",
       gap: 4,
     },
@@ -213,10 +254,15 @@ const PlaylistTrackRowSkeleton = () => (
  */
 export const PlaylistScreenSkeleton = () => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background, paddingTop: 16 }}
-      edges={["top"]}
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        // Match the loaded screen's content offset so nothing shifts on load.
+        paddingTop: insets.top + STICKY_HEADER_CONTENT_HEIGHT,
+      }}
       testID="playlist-screen-skeleton"
     >
       <View style={{ paddingHorizontal: 16, gap: 24 }}>
@@ -231,7 +277,7 @@ export const PlaylistScreenSkeleton = () => {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
