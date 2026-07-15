@@ -64,6 +64,9 @@ jest.mock("expo-image", () => {
     return React.createElement(View, {
       testID: "expo-image",
       accessibilityLabel: uri,
+      // Forwarded as well as reduced to `uri` above, so tests can tell a missing
+      // source apart from a local `require`d asset — both of which have no uri.
+      source,
       ...props,
     });
   };

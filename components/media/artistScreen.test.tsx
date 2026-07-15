@@ -15,6 +15,21 @@ jest.mock("@/api/artists/mutations", () => ({
   useArtistStar: () => ({ mutate: mockArtistStar }),
 }));
 
+// Left unresolved so either query can be parked in `pending` on demand; tests
+// that want them loaded seed the cache instead, and the LONG stale time means
+// the seeded data is fresh and never refetches through these.
+jest.mock("@/api/artists/api", () => {
+  const actual = jest.requireActual("@/api/artists/api");
+  return {
+    ...actual,
+    artistApi: {
+      ...actual.artistApi,
+      getOne: jest.fn(() => new Promise(() => {})),
+      getImage: jest.fn(() => new Promise(() => {})),
+    },
+  };
+});
+
 jest.mock("@/components/media/albumItem", () => {
   const React = require("react");
   const { Text } = require("react-native");
@@ -27,6 +42,7 @@ jest.mock("@/components/media/albumItem", () => {
 const renderScreen = async (
   artist: Artist,
   onAlbumPress = jest.fn(),
+  { seedImage = true }: { seedImage?: boolean } = {},
 ): Promise<
   {
     onAlbumPress: jest.Mock;
@@ -34,10 +50,12 @@ const renderScreen = async (
 > => {
   const queryClient: QueryClient = createTestQueryClient();
   queryClient.setQueryData(queryKeys.artists.detail(artist.id), artist);
-  queryClient.setQueryData(
-    queryKeys.artists.image(artist.id),
-    "https://img.jpg",
-  );
+  if (seedImage) {
+    queryClient.setQueryData(
+      queryKeys.artists.image(artist.id),
+      "https://img.jpg",
+    );
+  }
   const utils = await renderWithProviders(
     <ArtistScreen id={artist.id} onAlbumPress={onAlbumPress} />,
     { queryClient },
@@ -82,5 +100,52 @@ describe("ArtistScreen", () => {
   it("shows a filled heart when the artist is already starred", async () => {
     const { getByText } = await renderScreen(testArtist({ starred: true }));
     expect(getByText("heart.fill")).toBeTruthy();
+  });
+
+  it("renders the artist photo once its url resolves", async () => {
+    const { getByTestId } = await renderScreen(testArtist());
+
+    expect(getByTestId("expo-image").props.source).toEqual({
+      uri: "https://img.jpg",
+    });
+  });
+
+  it("holds the blurhash rather than the placeholder while the url is in flight", async () => {
+    const { getByTestId } = await renderScreen(testArtist(), jest.fn(), {
+      seedImage: false,
+    });
+
+    // The placeholder art is a transparent icon, so standing it in here would
+    // read as an empty hero for the whole request.
+    expect(getByTestId("expo-image").props.source).toBeUndefined();
+  });
+
+  it("falls back to the placeholder once the url resolves empty", async () => {
+    const artist = testArtist();
+    const queryClient: QueryClient = createTestQueryClient();
+    queryClient.setQueryData(queryKeys.artists.detail(artist.id), artist);
+    queryClient.setQueryData(queryKeys.artists.image(artist.id), "");
+
+    const { getByTestId } = await renderWithProviders(
+      <ArtistScreen id={artist.id} onAlbumPress={jest.fn()} />,
+      { queryClient },
+    );
+
+    // The bundled asset, not a uri — an artist who genuinely has no photo.
+    expect(getByTestId("expo-image").props.source).toBeDefined();
+    expect(getByTestId("expo-image").props.accessibilityLabel).toBeUndefined();
+  });
+
+  it("requests the artist photo without waiting on the artist query", async () => {
+    const { artistApi } = require("@/api/artists/api");
+    const queryClient: QueryClient = createTestQueryClient();
+
+    // Artist detail deliberately left unseeded and in flight: the image request
+    // should still go out rather than queueing behind it.
+    await renderWithProviders(<ArtistScreen id="ar1" onAlbumPress={jest.fn()} />, {
+      queryClient,
+    });
+
+    expect(artistApi.getImage).toHaveBeenCalledWith("ar1");
   });
 });

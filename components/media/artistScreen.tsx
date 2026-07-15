@@ -54,19 +54,32 @@ const ON_IMAGE_ICON = "#FFFFFF";
 const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artist, isLoading } = useArtist(id);
 
+  const { data: artistImageUrl, isPending: isImagePending } =
+    useArtistImage(id);
+
   // Gate the content behind loading: `ArtistScreenContent` owns the scroll ref
   // and `useScrollOffset`, so keeping it unmounted until the ScrollView actually
   // renders avoids reanimated warning that the animated ref isn't yet attached.
   if (isLoading) return <ArtistScreenSkeleton />;
 
   return (
-    <ArtistScreenContent id={id} artist={artist} onAlbumPress={onAlbumPress} />
+    <ArtistScreenContent
+      id={id}
+      artist={artist}
+      artistImageUrl={artistImageUrl}
+      isImagePending={isImagePending}
+      onAlbumPress={onAlbumPress}
+    />
   );
 };
 
 interface ArtistScreenContentProps extends ArtistScreenProps {
   /** The loaded artist; may be `undefined` if the fetch resolved without data. */
   artist: Artist | undefined;
+  /** The artist's photo URL; `undefined` while in flight or if they have none. */
+  artistImageUrl: string | undefined;
+  /** Whether the photo URL is still in flight, distinguishing it from "no photo". */
+  isImagePending: boolean;
 }
 
 /**
@@ -78,11 +91,11 @@ interface ArtistScreenContentProps extends ArtistScreenProps {
  * real {@link Animated.ScrollView} for the ref to attach to.
  */
 const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
-  id,
   artist,
+  artistImageUrl,
+  isImagePending,
   onAlbumPress,
 }) => {
-  const { data: artistImageUrl } = useArtistImage(id);
   const { mutate } = useArtistStar();
 
   const { colors } = useTheme();
@@ -127,12 +140,11 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
     if (!artist) return;
     mutate({ id: artist.id, starred: !!artist?.starred });
   };
-
   const imageSource = artistImageUrl
-    ? {
-        uri: artistImageUrl,
-      }
-    : require("../../assets/placeholders/artist-placeholder.png");
+    ? { uri: artistImageUrl }
+    : isImagePending
+      ? undefined
+      : require("../../assets/placeholders/artist-placeholder.png");
 
   return (
     <View style={styles.container}>
@@ -157,35 +169,39 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
             style={[styles.artistImage, { height: heroHeight }]}
           />
         </Animated.View>
-
-        <View style={styles.body}>
-          <View style={styles.artistInfoContainer}>
-            <Text style={styles.artistTitle} numberOfLines={1}>
-              {artist?.name}
-            </Text>
-            <Pressable onPress={onLikeButtonPress}>
-              <IconSymbol
-                name={artist?.starred ? "heart.fill" : "heart"}
-                size={40}
-                color={colors.primary}
-              />
-            </Pressable>
-          </View>
-        </View>
-
-        <View style={styles.albumSection}>
-          <Text style={styles.albumHeader}>Albums</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.albumScrollContent}
-          >
-            {artist?.albums?.map((album) => (
-              <Pressable key={album.id} onPress={() => onAlbumPress(album.id)}>
-                <AlbumItem id={album.id} />
+        <View style={styles.scrollingContent}>
+          <View style={styles.body}>
+            <View style={styles.artistInfoContainer}>
+              <Text style={styles.artistTitle} numberOfLines={1}>
+                {artist?.name}
+              </Text>
+              <Pressable onPress={onLikeButtonPress}>
+                <IconSymbol
+                  name={artist?.starred ? "heart.fill" : "heart"}
+                  size={40}
+                  color={colors.primary}
+                />
               </Pressable>
-            ))}
-          </ScrollView>
+            </View>
+          </View>
+
+          <View style={styles.albumSection}>
+            <Text style={styles.albumHeader}>Albums</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.albumScrollContent}
+            >
+              {artist?.albums?.map((album) => (
+                <Pressable
+                  key={album.id}
+                  onPress={() => onAlbumPress(album.id)}
+                >
+                  <AlbumItem id={album.id} />
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
         </View>
       </Animated.ScrollView>
 
@@ -209,10 +225,13 @@ const makeStyles = (colors: ThemeColors) =>
     },
     hero: {
       width: "100%",
-      marginBottom: 20,
     },
     artistImage: {
       width: "100%",
+    },
+    scrollingContent: {
+      backgroundColor: colors.background,
+      paddingTop: 20,
     },
     backButton: {
       position: "absolute",
