@@ -1,5 +1,6 @@
 import { useAlbumStar } from "@/api/albums/mutations";
 import { useAlbumCover } from "@/api/albums/queries";
+import TrackRow from "@/components/media/trackRow";
 import {
   STICKY_HEADER_CONTENT_HEIGHT,
   StickyHeader,
@@ -40,6 +41,8 @@ interface AlbumScreenProps {
  * navigation via `onArtistPress`, so the same screen backs the home, library, and
  * search album routes. Tapping a track plays the whole album from that index,
  * tagged with an `album` source; per-track overflow opens the album-track sheet.
+ * That same source tag is what lets the list mark the playing track, but only
+ * while this album is the thing being played.
  */
 const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { mutate: albumStar } = useAlbumStar();
@@ -51,7 +54,13 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   const { open } = useSheetModal();
   const releaseDate = formatDate(album?.releaseDate);
 
-  const { playQueue } = useAudioPlayerContext();
+  const { playQueue, currentTrack, isPlaying, source } =
+    useAudioPlayerContext();
+
+  // Only mark a track here if *this* album is what's playing. A track played
+  // from a playlist belongs to that playlist's page, even though the same track
+  // also sits in this list.
+  const isPlayingThisAlbum = source?.type === "album" && source.id === album.id;
 
   const { bottomInset } = useBottomInset();
 
@@ -131,29 +140,15 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
         <View style={styles.trackContainer}>
           {album?.tracks?.map((track, index) => {
             return (
-              <Pressable
+              <TrackRow
                 key={track.id}
-                style={styles.trackItem}
+                title={track.title}
+                artists={track.artists}
+                isActive={isPlayingThisAlbum && currentTrack?.id === track.id}
+                isPlaying={isPlaying}
                 onPress={() => onTrackPress(index)}
-              >
-                <View style={styles.trackInfo}>
-                  <View style={styles.trackLeftInfo}>
-                    <Text style={styles.trackTitle} numberOfLines={1}>
-                      {track.title}
-                    </Text>
-                    <Text style={styles.trackArtists} numberOfLines={1}>
-                      {track?.artists?.map((artist) => artist.name)?.join(", ")}
-                    </Text>
-                  </View>
-                  <Pressable onPress={() => onTrackOptionPress(track.id)}>
-                    <IconSymbol
-                      name={"ellipsis"}
-                      size={32}
-                      color={colors.primary}
-                    />
-                  </Pressable>
-                </View>
-              </Pressable>
+                onOptionsPress={() => onTrackOptionPress(track.id)}
+              />
             );
           })}
         </View>
@@ -211,41 +206,6 @@ const makeStyles = (colors: ThemeColors) =>
     trackContainer: {
       display: "flex",
       gap: 24,
-    },
-    trackHeader: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackItem: {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
-    },
-    trackNumber: {
-      color: colors.primary,
-      fontSize: 18,
-      width: 24,
-    },
-    trackInfo: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 12,
-    },
-    trackLeftInfo: {
-      flex: 1,
-      display: "flex",
-      gap: 4,
-    },
-    trackTitle: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackArtists: {
-      color: colors.secondary,
-      fontSize: 16,
     },
   });
 

@@ -2,6 +2,9 @@ import type { components } from "@/api/schema";
 
 /** Artist domain types, aliased from the generated backend schema (see {@link Track}). */
 
+/** Minimal reference (id and name), as carried by a track's `artists`. */
+export type ArtistRef = components["schemas"]["ArtistRef"];
+
 /** A single artist with their discography. */
 export type Artist = components["schemas"]["ArtistEntity"];
 /** The lighter artist shape returned in lists. */

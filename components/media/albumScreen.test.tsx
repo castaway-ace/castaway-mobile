@@ -1,5 +1,6 @@
 import { queryKeys } from "@/api/queryKeys";
 import AlbumScreen from "@/components/media/albumScreen";
+import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { SheetType } from "@/contexts/sheetModalContext";
 import { createTestQueryClient } from "@/test-utils/createTestQueryClient";
 import {
@@ -24,8 +25,17 @@ jest.mock("@/api/albums/mutations", () => ({
 }));
 
 jest.mock("@/contexts/audioPlayerContext", () => ({
-  useAudioPlayerContext: () => ({ playQueue: mockPlayQueue }),
+  useAudioPlayerContext: jest.fn(),
 }));
+
+const mockedPlayerContext = useAudioPlayerContext as jest.Mock;
+
+const idlePlayer = {
+  playQueue: mockPlayQueue,
+  currentTrack: null,
+  isPlaying: false,
+  source: null,
+};
 
 jest.mock("@/contexts/sheetModalContext", () => ({
   ...jest.requireActual("@/contexts/sheetModalContext"),
@@ -72,6 +82,10 @@ const renderScreen = async (
 };
 
 describe("AlbumScreen", () => {
+  beforeEach(() => {
+    mockedPlayerContext.mockReturnValue(idlePlayer);
+  });
+
   it("renders the album title, artist, release line, and tracks", async () => {
     const { getByText, getAllByText } = await renderScreen(makeTestAlbum());
 
@@ -132,6 +146,114 @@ describe("AlbumScreen", () => {
       type: SheetType.ALBUM_TRACK,
       id: "a1",
       trackId: "tk1",
+    });
+  });
+
+  describe("now playing indicator", () => {
+    const albumSource = { type: "album", id: "a1", name: "OK Computer" };
+
+    it("marks the playing track and leaves the rest of the list alone", async () => {
+      const album = makeTestAlbum();
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[1],
+        isPlaying: true,
+        source: albumSource,
+      });
+
+      const { getByLabelText, getByText } = await renderScreen(album);
+
+      expect(getByLabelText("Now playing")).toBeTruthy();
+      // Exactly one row is marked, and it's the one that's playing.
+      expect(
+        StyleSheet.flatten(getByText("Karma Police").props.style).color,
+      ).toBe("#AE0558");
+      expect(StyleSheet.flatten(getByText("Airbag").props.style).color).toBe(
+        "#1F1A1C",
+      );
+    });
+
+    it("reports the marked track as paused when playback is paused", async () => {
+      const album = makeTestAlbum();
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[0],
+        isPlaying: false,
+        source: albumSource,
+      });
+
+      const { getByLabelText, queryByLabelText } = await renderScreen(album);
+
+      expect(getByLabelText("Paused")).toBeTruthy();
+      expect(queryByLabelText("Now playing")).toBeNull();
+    });
+
+    it("follows the queue as it advances to the next track", async () => {
+      const album = makeTestAlbum();
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[0],
+        isPlaying: true,
+        source: albumSource,
+      });
+
+      const { getByText, rerender } = await renderScreen(album);
+      expect(StyleSheet.flatten(getByText("Airbag").props.style).color).toBe(
+        "#AE0558",
+      );
+
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[1],
+        isPlaying: true,
+        source: albumSource,
+      });
+      await rerender(<AlbumScreen album={album} onArtistPress={jest.fn()} />);
+
+      expect(StyleSheet.flatten(getByText("Airbag").props.style).color).toBe(
+        "#1F1A1C",
+      );
+      expect(
+        StyleSheet.flatten(getByText("Karma Police").props.style).color,
+      ).toBe("#AE0558");
+    });
+
+    it("marks nothing when the same track is playing from a playlist", async () => {
+      const album = makeTestAlbum();
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[0],
+        isPlaying: true,
+        source: { type: "playlist", id: "pl1", name: "Roadtrip" },
+      });
+
+      const { queryByLabelText, getByText } = await renderScreen(album);
+
+      expect(queryByLabelText("Now playing")).toBeNull();
+      expect(StyleSheet.flatten(getByText("Airbag").props.style).color).toBe(
+        "#1F1A1C",
+      );
+    });
+
+    it("marks nothing when a different album is playing", async () => {
+      const album = makeTestAlbum();
+      mockedPlayerContext.mockReturnValue({
+        ...idlePlayer,
+        currentTrack: album.tracks[0],
+        isPlaying: true,
+        source: { type: "album", id: "a2", name: "In Rainbows" },
+      });
+
+      const { queryByLabelText } = await renderScreen(album);
+
+      expect(queryByLabelText("Now playing")).toBeNull();
+    });
+
+    it("marks nothing when the player is idle", async () => {
+      const { queryByLabelText } = await renderScreen(makeTestAlbum());
+
+      expect(queryByLabelText("Now playing")).toBeNull();
+      expect(queryByLabelText("Paused")).toBeNull();
     });
   });
 });

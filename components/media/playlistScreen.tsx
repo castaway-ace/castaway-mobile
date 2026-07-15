@@ -1,4 +1,5 @@
 import { usePlaylist, usePlaylistTracks } from "@/api/playlists/queries";
+import TrackRow from "@/components/media/trackRow";
 import {
   STICKY_HEADER_CONTENT_HEIGHT,
   StickyHeader,
@@ -34,10 +35,11 @@ interface PlaylistScreenProps {
  * Presentational and router-free — it receives `id` as a prop and pulls all of
  * its data through the playlist query hooks. Tapping a track starts playback of
  * the whole list from that index, tagging the queue with a `playlist` source so
- * the player can show where playback came from. The overflow menus route to the
- * sheet modal rather than handling actions inline, and the edit affordance is
- * shown only for {@link PlaylistType.USER} playlists (system playlists such as
- * Liked Songs aren't user-editable).
+ * the player can show where playback came from — and so this list can mark the
+ * playing track, but only while this playlist is the thing being played. The
+ * overflow menus route to the sheet modal rather than handling actions inline,
+ * and the edit affordance is shown only for {@link PlaylistType.USER} playlists
+ * (system playlists such as Liked Songs aren't user-editable).
  *
  * @param props - See {@link PlaylistScreenProps}.
  */
@@ -73,7 +75,15 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
 
   const { open } = useSheetModal();
 
-  const { playQueue } = useAudioPlayerContext();
+  const { playQueue, currentTrack, isPlaying, source } =
+    useAudioPlayerContext();
+
+  // Only mark a track here if *this* playlist is what's playing — the same track
+  // played from its album belongs to the album's page, not this one. Gated on the
+  // `id` prop rather than `playlist?.id` because the tracks query can resolve
+  // before the metadata one, which would briefly drop the marker.
+  const isPlayingThisPlaylist =
+    source?.type === "playlist" && source.id === id;
 
   const { bottomInset } = useBottomInset();
 
@@ -136,33 +146,20 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
         <View style={styles.trackContainer}>
           {playlistTracks?.map((playlistTrack, index) => {
             return (
-              <Pressable
+              // Matched on the playlist-entry id, not the track id: the same
+              // track can sit in a playlist twice, and only the copy actually
+              // playing should be marked.
+              <TrackRow
                 key={playlistTrack.id}
-                style={styles.trackItem}
+                title={playlistTrack.title}
+                artists={playlistTrack.artists}
+                isActive={
+                  isPlayingThisPlaylist && currentTrack?.id === playlistTrack.id
+                }
+                isPlaying={isPlaying}
                 onPress={() => onTrackPress(index)}
-              >
-                <View style={styles.trackInfo}>
-                  <View style={styles.trackLeftInfo}>
-                    <Text style={styles.trackTitle} numberOfLines={1}>
-                      {playlistTrack.title}
-                    </Text>
-                    <Text style={styles.trackArtists} numberOfLines={1}>
-                      {playlistTrack?.artists
-                        ?.map((artist) => artist.name)
-                        ?.join(", ")}
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => onTrackOptionPress(playlistTrack.trackId)}
-                  >
-                    <IconSymbol
-                      name={"ellipsis"}
-                      size={32}
-                      color={colors.primary}
-                    />
-                  </Pressable>
-                </View>
-              </Pressable>
+                onOptionsPress={() => onTrackOptionPress(playlistTrack.trackId)}
+              />
             );
           })}
         </View>
@@ -209,36 +206,6 @@ const makeStyles = (colors: ThemeColors) =>
     trackContainer: {
       display: "flex",
       gap: 24,
-    },
-    trackHeader: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackItem: {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
-    },
-    trackInfo: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 12,
-    },
-    trackLeftInfo: {
-      flex: 1,
-      display: "flex",
-      gap: 4,
-    },
-    trackTitle: {
-      color: colors.primary,
-      fontSize: 18,
-    },
-    trackArtists: {
-      color: colors.secondary,
-      fontSize: 16,
     },
   });
 
