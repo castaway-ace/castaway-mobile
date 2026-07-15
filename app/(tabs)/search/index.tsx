@@ -1,4 +1,7 @@
+import { useAlbums } from "@/api/albums/queries";
+import { useUpdateAlbumInteraction } from "@/api/interactions/mutations";
 import { useSearch } from "@/api/search/queries";
+import AlbumItem from "@/components/media/albumItem";
 import SearchItem from "@/components/media/searchItem";
 import {
   AlbumItemSkeleton,
@@ -11,8 +14,8 @@ import {
   useBottomInset,
 } from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
-import { useDebouncedValue } from "@/utils/useDebouncedValue";
 import { useOrganizedSearch } from "@/utils/search";
+import { useDebouncedValue } from "@/utils/useDebouncedValue";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -24,9 +27,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAlbums } from "@/api/albums/queries";
-import { useUpdateAlbumInteraction } from "@/api/interactions/mutations";
-import AlbumItem from "@/components/media/albumItem";
 
 /**
  * Search tab: a query box that shows discovery content when empty and live
@@ -47,9 +47,7 @@ const Search = () => {
   const { data: searchData, isLoading: searchLoading } =
     useSearch(debouncedSearch);
 
-  const { data: albumsData, isLoading: albumsLoading } = useAlbums({
-    starred: true,
-  });
+  const { data: albumsData, isLoading: albumsLoading } = useAlbums();
 
   const { mutate: albumInteraction } = useUpdateAlbumInteraction();
 
