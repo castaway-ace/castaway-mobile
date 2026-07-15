@@ -38,7 +38,7 @@ describe("ArtistPage", () => {
 
   it("navigates to the album within the active tab", async () => {
     const { getByTestId } = await render(<ArtistPage />);
-    fireEvent.press(getByTestId("album-btn"));
+    await fireEvent.press(getByTestId("album-btn"));
 
     expect(router.navigate).toHaveBeenCalledWith("/(tabs)/library/albums/al9");
   });

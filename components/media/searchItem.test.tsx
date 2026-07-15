@@ -72,7 +72,7 @@ describe("SearchItem", () => {
       <SearchItem item={albumItem} />,
     );
 
-    fireEvent.press(getByText("Kid A"));
+    await fireEvent.press(getByText("Kid A"));
 
     await waitFor(() =>
       expect(mockAlbumInteraction).toHaveBeenCalledWith("al1"),
@@ -85,7 +85,7 @@ describe("SearchItem", () => {
       <SearchItem item={artistItem} />,
     );
 
-    fireEvent.press(getByText("Radiohead"));
+    await fireEvent.press(getByText("Radiohead"));
 
     await waitFor(() =>
       expect(mockArtistInteraction).toHaveBeenCalledWith("ar1"),
@@ -145,7 +145,7 @@ describe("SearchItem", () => {
     );
 
     await act(async () => {
-      fireEvent.press(getByText("Idioteque"));
+      await fireEvent.press(getByText("Idioteque"));
     });
 
     await waitFor(() =>

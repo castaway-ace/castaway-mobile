@@ -85,7 +85,7 @@ describe("ArtistScreen", () => {
   it("calls onAlbumPress when an album is tapped", async () => {
     const { getByText, onAlbumPress } = await renderScreen(testArtist());
 
-    fireEvent.press(getByText("al1"));
+    await fireEvent.press(getByText("al1"));
     expect(onAlbumPress).toHaveBeenCalledWith("al1");
   });
 
@@ -93,7 +93,7 @@ describe("ArtistScreen", () => {
     const { getByText } = await renderScreen(testArtist({ starred: false }));
 
     expect(getByText("heart")).toBeTruthy();
-    fireEvent.press(getByText("heart"));
+    await fireEvent.press(getByText("heart"));
     expect(mockArtistStar).toHaveBeenCalledWith({ id: "ar1", starred: false });
   });
 

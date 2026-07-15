@@ -95,7 +95,7 @@ describe("AlbumScreen", () => {
   it("calls onArtistPress when an artist is tapped", async () => {
     const { getByText, onArtistPress } = await renderScreen(makeTestAlbum());
 
-    fireEvent.press(getByText("Radiohead"));
+    await fireEvent.press(getByText("Radiohead"));
     expect(onArtistPress).toHaveBeenCalledWith("ar1");
   });
 
@@ -103,7 +103,7 @@ describe("AlbumScreen", () => {
     const album = makeTestAlbum();
     const { getByText } = await renderScreen(album);
 
-    fireEvent.press(getByText("Karma Police"));
+    await fireEvent.press(getByText("Karma Police"));
     expect(mockPlayQueue).toHaveBeenCalledWith(album.tracks, 1, {
       type: "album",
       name: "OK Computer",
@@ -114,7 +114,7 @@ describe("AlbumScreen", () => {
     const { getByText } = await renderScreen(makeTestAlbum({ starred: false }));
 
     expect(getByText("heart")).toBeTruthy();
-    fireEvent.press(getByText("heart"));
+    await fireEvent.press(getByText("heart"));
     expect(mockAlbumStar).toHaveBeenCalledWith({ id: "a1", starred: false });
   });
 
@@ -126,7 +126,7 @@ describe("AlbumScreen", () => {
   it("opens the album-track options sheet", async () => {
     const { getAllByText } = await renderScreen(makeTestAlbum());
 
-    fireEvent.press(getAllByText("ellipsis")[0]);
+    await fireEvent.press(getAllByText("ellipsis")[0]);
     expect(mockOpen).toHaveBeenCalledWith({
       type: SheetType.ALBUM_TRACK,
       id: "a1",

@@ -85,7 +85,7 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-artist"));
+    await fireEvent.press(await findByTestId("library-filter-artist"));
 
     await waitFor(() =>
       expect(mockGetAll).toHaveBeenCalledWith({
@@ -100,7 +100,7 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId, getByTestId, queryByText } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-album"));
+    await fireEvent.press(await findByTestId("library-filter-album"));
 
     await waitFor(() => expect(queryByText("Playlists")).toBeNull());
     expect(queryByText("Artists")).toBeNull();
@@ -112,10 +112,10 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId, getByText, queryByTestId } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-album"));
+    await fireEvent.press(await findByTestId("library-filter-album"));
     await waitFor(() => expect(mockGetAll).toHaveBeenCalledTimes(2));
 
-    fireEvent.press(await findByTestId("library-filter-clear"));
+    await fireEvent.press(await findByTestId("library-filter-clear"));
 
     await waitFor(() => expect(getByText("Playlists")).toBeTruthy());
     expect(getByText("Artists")).toBeTruthy();
@@ -129,11 +129,11 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId, getByText, queryByTestId } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-album"));
+    await fireEvent.press(await findByTestId("library-filter-album"));
     await waitFor(() => expect(queryByTestId("library-filter-clear")).toBeTruthy());
 
     // Re-tapping the only pill left standing means the same thing as clearing.
-    fireEvent.press(await findByTestId("library-filter-album"));
+    await fireEvent.press(await findByTestId("library-filter-album"));
 
     await waitFor(() => expect(getByText("Playlists")).toBeTruthy());
     expect(getByText("Artists")).toBeTruthy();
@@ -151,7 +151,7 @@ describe("Library filters", () => {
 
     // Never resolves, so the artists request stays in flight.
     mockGetAll.mockReturnValue(new Promise(() => {}));
-    fireEvent.press(await findByTestId("library-filter-artist"));
+    await fireEvent.press(await findByTestId("library-filter-artist"));
 
     // The whole point of keepPreviousData: tapping a pill must not tear the
     // list down to skeletons for a round trip.
@@ -164,7 +164,7 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId, findByText, getByTestId } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-artist"));
+    await fireEvent.press(await findByTestId("library-filter-artist"));
 
     expect(await findByText("No artists in your library")).toBeTruthy();
     // Without the clear pill an empty filter would be a dead end.
@@ -183,14 +183,14 @@ describe("Library filters", () => {
     mockGetAll.mockResolvedValue([]);
 
     const { findByTestId, queryByText } = await renderLibrary();
-    fireEvent.press(await findByTestId("library-filter-artist"));
+    await fireEvent.press(await findByTestId("library-filter-artist"));
     await findByTestId("library-filter-clear");
 
     // Artists resolved empty; albums is now in flight, so `items` still holds
     // the artists result and says nothing about albums yet.
     mockGetAll.mockReturnValue(new Promise(() => {}));
-    fireEvent.press(await findByTestId("library-filter-clear"));
-    fireEvent.press(await findByTestId("library-filter-album"));
+    await fireEvent.press(await findByTestId("library-filter-clear"));
+    await fireEvent.press(await findByTestId("library-filter-album"));
 
     await waitFor(() =>
       expect(queryByText("No artists in your library")).toBeNull(),

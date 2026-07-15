@@ -64,7 +64,7 @@ describe("AlbumPage", () => {
     });
 
     const { getByTestId } = await render(<AlbumPage />);
-    fireEvent.press(getByTestId("artist-btn"));
+    await fireEvent.press(getByTestId("artist-btn"));
 
     expect(mockArtistInteraction).toHaveBeenCalledWith("ar9");
     expect(router.navigate).toHaveBeenCalledWith("/(tabs)/search/artists/ar9");

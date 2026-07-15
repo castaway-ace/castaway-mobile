@@ -36,7 +36,7 @@ describe("FilterPill", () => {
       <FilterPill label="Albums" onPress={onPress} testID="pill" />,
     );
 
-    fireEvent.press(getByTestId("pill"));
+    await fireEvent.press(getByTestId("pill"));
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });

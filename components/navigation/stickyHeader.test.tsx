@@ -69,7 +69,7 @@ describe("StickyHeader", () => {
 
     expect(getByText("Road Trip")).toBeTruthy();
 
-    fireEvent.press(getByText("arrow.backward"));
+    await fireEvent.press(getByText("arrow.backward"));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 });

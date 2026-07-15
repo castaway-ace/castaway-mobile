@@ -75,7 +75,7 @@ describe("PlaylistScreen", () => {
     const ellipses = getAllByText("ellipsis");
     expect(ellipses).toHaveLength(2);
 
-    fireEvent.press(ellipses[0]);
+    await fireEvent.press(ellipses[0]);
     expect(mockOpen).toHaveBeenCalledWith({
       type: SheetType.PLAYLIST,
       id: "p1",
@@ -90,7 +90,7 @@ describe("PlaylistScreen", () => {
   it("plays the playlist starting at the tapped track", async () => {
     const { getByText } = await renderScreen();
 
-    fireEvent.press(getByText("Song A"));
+    await fireEvent.press(getByText("Song A"));
 
     expect(mockPlayQueue).toHaveBeenCalledWith(tracks, 0, {
       type: "playlist",
@@ -101,7 +101,7 @@ describe("PlaylistScreen", () => {
   it("opens the track options sheet from the per-track control", async () => {
     const { getAllByText } = await renderScreen(PlaylistType.USER);
 
-    fireEvent.press(getAllByText("ellipsis")[1]);
+    await fireEvent.press(getAllByText("ellipsis")[1]);
     expect(mockOpen).toHaveBeenCalledWith({
       type: SheetType.PLAYLIST_TRACK,
       id: "p1",
