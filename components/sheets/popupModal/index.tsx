@@ -1,10 +1,16 @@
-import { usePopupModal } from "@/contexts/popupModalContext";
+import { PopupContent, usePopupModal } from "@/contexts/popupModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { useBackHandler } from "@/utils/useBackHandler";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 import ConfirmContent from "./confirmContent";
 import CreatePlaylistContent from "./createPlaylistContent";
@@ -15,9 +21,12 @@ import { makePopupStyles } from "./popupStyles";
  * {@link PopupContent} variant over a dismiss-on-tap backdrop.
  *
  * @remarks
- * The centered counterpart to {@link SheetModal}. It's simpler because these
- * dialogs don't slide or measure: it just shows/hides. Tapping the backdrop or
- * pressing Android back closes it; the inner content owns its own buttons.
+ * The centered counterpart to {@link SheetModal}. Both fade their backdrop in
+ * lockstep with the card, but a centered dialog needs no layout measurement, so
+ * one `progress` value drives everything instead of a measured slide. Like the
+ * sheet, `displayed` deliberately lags `content` to keep the dialog mounted
+ * through its exit. Tapping the backdrop or pressing Android back closes it; the
+ * inner content owns its own buttons.
  */
 const PopupModal: FC = () => {
   const { colors } = useTheme();
@@ -26,22 +35,62 @@ const PopupModal: FC = () => {
 
   useBackHandler(content !== null, close);
 
+  const progress = useSharedValue(0);
+
+  const [displayed, setDisplayed] = useState<PopupContent | null>(null);
+
+  useEffect(() => {
+    if (content === null) {
+      progress.value = withTiming(0, { duration: 220 }, (finished) => {
+        if (finished) {
+          runOnJS(setDisplayed)(null);
+        }
+      });
+      return;
+    }
+
+    setDisplayed(content);
+    progress.value = withTiming(1, { duration: 280 });
+  }, [content, progress]);
+
   const tapBackdrop = Gesture.Tap().onEnd(() => {
     runOnJS(close)();
   });
 
-  if (content === null) return null;
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
+
+  const cardStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    transform: [
+      {
+        scale: interpolate(
+          progress.value,
+          [0, 1],
+          [0.92, 1],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }));
+
+  if (displayed === null) return null;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      pointerEvents={content === null ? "none" : "auto"}
+    >
       <GestureDetector gesture={tapBackdrop}>
-        <Animated.View style={styles.backdrop} />
+        <Animated.View style={[styles.backdrop, backdropStyle]} />
       </GestureDetector>
-      {/* Render the matching variant; the union narrows `content` for each child. */}
-      {content.variant === "createPlaylist" && (
-        <CreatePlaylistContent trackId={content.trackId} />
-      )}
-      {content.variant === "confirm" && <ConfirmContent content={content} />}
+      <Animated.View style={[styles.card, cardStyle]}>
+        {displayed.variant === "createPlaylist" && (
+          <CreatePlaylistContent trackId={displayed.trackId} />
+        )}
+        {displayed.variant === "confirm" && (
+          <ConfirmContent content={displayed} />
+        )}
+      </Animated.View>
     </View>
   );
 };

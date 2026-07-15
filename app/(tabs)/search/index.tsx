@@ -75,7 +75,8 @@ const Search = () => {
           <TextInput
             style={styles.search}
             placeholder="What do you want to listen to?"
-            placeholderTextColor={colors.primary}
+            placeholderTextColor={colors.secondary}
+            selectionColor={colors.accent}
             value={searchInput}
             onChangeText={setSearchInput}
           />
@@ -150,7 +151,7 @@ const makeStyles = (colors: ThemeColors) =>
       borderWidth: 1,
       marginBottom: 16,
       borderColor: colors.accent,
-      backgroundColor: colors.secondary,
+      backgroundColor: colors.surface,
     },
     search: {
       flex: 1,

@@ -74,19 +74,20 @@ const CreatePlaylistContent: FC<CreatePlaylistContentProps> = ({ trackId }) => {
 
   return (
     <View style={styles.sheet}>
-      <Text style={styles.title}>Create new Playlist</Text>
+      <Text style={styles.title}>Create New Playlist</Text>
       <View style={styles.textFieldContainer}>
         <TextInput
           style={styles.textField}
           placeholder="Enter Name"
-          placeholderTextColor={colors.primary}
+          placeholderTextColor={colors.secondary}
+          selectionColor={colors.accent}
           value={playlistName}
           onChangeText={setPlaylistName}
         />
       </View>
       <View style={styles.buttonContainer}>
         <Pressable style={styles.submitButton} onPress={onSubmitPress}>
-          <Text style={styles.buttonText}>Submit</Text>
+          <Text style={styles.primaryButtonText}>Submit</Text>
         </Pressable>
       </View>
     </View>

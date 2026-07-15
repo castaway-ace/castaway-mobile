@@ -17,8 +17,11 @@ export const makePopupStyles = (colors: ThemeColors) =>
       ...StyleSheet.absoluteFill,
       backgroundColor: colors.overlay,
     },
-    sheet: {
+    card: {
       width: "80%",
+    },
+    sheet: {
+      width: "100%",
       gap: 24,
       borderRadius: 16,
       overflow: "hidden",
@@ -42,7 +45,7 @@ export const makePopupStyles = (colors: ThemeColors) =>
       borderRadius: 8,
       borderWidth: 1,
       borderColor: colors.accent,
-      backgroundColor: colors.secondary,
+      backgroundColor: colors.surface,
     },
     textField: {
       flex: 1,
@@ -61,7 +64,7 @@ export const makePopupStyles = (colors: ThemeColors) =>
     submitButton: {
       padding: 16,
       borderRadius: 12,
-      backgroundColor: colors.secondary,
+      backgroundColor: colors.accent,
     },
     secondaryButton: {
       paddingVertical: 12,
