@@ -18,6 +18,7 @@ import {
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Album } from "@/types/albums";
+import { groupTracksByDisc } from "@/utils/albums";
 import { isVariousArtists } from "@/utils/artists";
 import { formatDate } from "@/utils/formatters";
 import { presignedImageSource } from "@/utils/images";
@@ -62,6 +63,14 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
   // from a playlist belongs to that playlist's page, even though the same track
   // also sits in this list.
   const isPlayingThisAlbum = source?.type === "album" && source.id === album.id;
+
+  // Split the flat track list into disc sections; each row keeps its original
+  // index into `album.tracks` so playback still starts on the right track.
+  const discGroups = useMemo(
+    () => groupTracksByDisc(album.tracks ?? []),
+    [album.tracks],
+  );
+  const showDiscHeaders = discGroups.length > 1;
 
   const { bottomInset } = useBottomInset();
 
@@ -146,19 +155,31 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
           </Pressable>
         </View>
         <View style={styles.trackContainer}>
-          {album?.tracks?.map((track, index) => {
-            return (
-              <TrackRow
-                key={track.id}
-                title={track.title}
-                artists={track.artists}
-                isActive={isPlayingThisAlbum && currentTrack?.id === track.id}
-                isPlaying={isPlaying}
-                onPress={() => onTrackPress(index)}
-                onOptionsPress={() => onTrackOptionPress(track.id)}
-              />
-            );
-          })}
+          {discGroups.map((group) => (
+            <View key={group.discNumber} style={styles.discSection}>
+              {showDiscHeaders && (
+                <View style={styles.discMiniSection}>
+                  <IconSymbol
+                    size={28}
+                    name={"opticaldisc.fill"}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.discLabel}>Disc {group.discNumber}</Text>
+                </View>
+              )}
+              {group.tracks.map(({ track, index }) => (
+                <TrackRow
+                  key={track.id}
+                  title={track.title}
+                  artists={track.artists}
+                  isActive={isPlayingThisAlbum && currentTrack?.id === track.id}
+                  isPlaying={isPlaying}
+                  onPress={() => onTrackPress(index)}
+                  onOptionsPress={() => onTrackOptionPress(track.id)}
+                />
+              ))}
+            </View>
+          ))}
         </View>
       </Animated.ScrollView>
 
@@ -213,7 +234,24 @@ const makeStyles = (colors: ThemeColors) =>
     },
     trackContainer: {
       display: "flex",
+      gap: 32,
+    },
+    discSection: {
+      display: "flex",
       gap: 24,
+    },
+    discMiniSection: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    discLabel: {
+      color: colors.secondary,
+      fontSize: 16,
+      fontWeight: 600,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
     },
   });
 

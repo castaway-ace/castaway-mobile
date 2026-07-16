@@ -141,6 +141,43 @@ describe("AlbumScreen", () => {
     });
   });
 
+  describe("multi-disc albums", () => {
+    const makeMultiDiscAlbum = () =>
+      makeTestAlbum({
+        tracks: [
+          makeAlbumTrack({ id: "tk1", title: "Disc-1 A", discNumber: 1 }),
+          makeAlbumTrack({ id: "tk2", title: "Disc-1 B", discNumber: 1 }),
+          makeAlbumTrack({ id: "tk3", title: "Disc-2 A", discNumber: 2 }),
+          makeAlbumTrack({ id: "tk4", title: "Disc-2 B", discNumber: 2 }),
+        ],
+      });
+
+    it("renders a header per disc when the album spans multiple discs", async () => {
+      const { getByText } = await renderScreen(makeMultiDiscAlbum());
+
+      expect(getByText("Disc 1")).toBeTruthy();
+      expect(getByText("Disc 2")).toBeTruthy();
+    });
+
+    it("shows no disc header for a single-disc album", async () => {
+      const { queryByText } = await renderScreen(makeTestAlbum());
+
+      expect(queryByText(/Disc \d/i)).toBeNull();
+    });
+
+    it("plays from the flat album index when a later disc's track is tapped", async () => {
+      const album = makeMultiDiscAlbum();
+      const { getByText } = await renderScreen(album);
+
+      await fireEvent.press(getByText("Disc-2 A"));
+      expect(mockPlayQueue).toHaveBeenCalledWith(album.tracks, 2, {
+        type: "album",
+        id: "a1",
+        name: "OK Computer",
+      });
+    });
+  });
+
   it("shows an outline heart and stars the album when unstarred", async () => {
     const { getByText } = await renderScreen(makeTestAlbum({ starred: false }));
 
