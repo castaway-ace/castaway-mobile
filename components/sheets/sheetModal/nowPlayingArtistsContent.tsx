@@ -6,6 +6,7 @@ import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { isVariousArtists } from "@/utils/artists";
 import { presignedImageSource } from "@/utils/images";
 import { useTabLocation } from "@/utils/useTabLocation";
 import { useQueries } from "@tanstack/react-query";
@@ -38,7 +39,10 @@ const NowPlayingArtistsContent: FC = () => {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const artists = useMemo(() => currentTrack?.artists ?? [], [currentTrack]);
+  const artists = useMemo(
+    () => (currentTrack?.artists ?? []).filter((a) => !isVariousArtists(a)),
+    [currentTrack],
+  );
 
   const artistImages = useQueries({
     queries: artists.map((artist) => artistImageQueryOptions(artist.id)),

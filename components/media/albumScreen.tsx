@@ -18,6 +18,7 @@ import {
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Album } from "@/types/albums";
+import { isVariousArtists } from "@/utils/artists";
 import { formatDate } from "@/utils/formatters";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
@@ -117,6 +118,13 @@ const AlbumScreen: FC<AlbumScreenProps> = ({ album, onArtistPress }) => {
             </Text>
             <View>
               {album?.artists.map((artist) => {
+                if (isVariousArtists(artist)) {
+                  return (
+                    <Text key={artist.id} style={styles.artistName}>
+                      {artist.name}
+                    </Text>
+                  );
+                }
                 return (
                   <Pressable
                     key={artist.id}

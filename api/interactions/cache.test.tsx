@@ -25,7 +25,7 @@ describe("useSeedInteractionArtwork", () => {
 
     seed(
       makeArtistInteraction({
-        artist: { id: "ar1", name: "Daft Punk" },
+        artist: { id: "ar1", name: "Daft Punk", isVarious: false },
         coverUrl: "https://feed-cover.jpg",
       }),
     );
@@ -57,7 +57,7 @@ describe("useSeedInteractionArtwork", () => {
 
     seed(
       makeArtistInteraction({
-        artist: { id: "ar1", name: "Daft Punk" },
+        artist: { id: "ar1", name: "Daft Punk", isVarious: false },
         coverUrl: "https://feed-cover.jpg",
       }),
     );
@@ -78,7 +78,7 @@ describe("useSeedInteractionArtwork", () => {
 
     seed(
       makeArtistInteraction({
-        artist: { id: "ar1", name: "Daft Punk" },
+        artist: { id: "ar1", name: "Daft Punk", isVarious: false },
         coverUrl: null,
       }),
     );

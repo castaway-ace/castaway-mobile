@@ -632,6 +632,8 @@ export interface components {
         ArtistRef: {
             id: string;
             name: string;
+            /** @description True for the synthetic "Various Artists" credit on compilation albums. The client treats it as display-only: never navigable to an artist page, never interactive, never listed as a browsable artist. */
+            isVarious: boolean;
         };
         TrackSummaryEntity: {
             id: string;
@@ -736,6 +738,8 @@ export interface components {
             id: string;
             name: string;
             starred: boolean;
+            /** @description True for the synthetic "Various Artists" credit; display-only, so it is filtered out of browsable artist lists. */
+            isVarious: boolean;
         };
         ArtistEntity: {
             id: string;
@@ -743,6 +747,8 @@ export interface components {
             bio: string | null;
             starred: boolean;
             albums: components["schemas"]["AlbumRef"][];
+            /** @description True for the synthetic "Various Artists" credit; display-only, so its detail page is unreachable (the client bounces back). */
+            isVarious: boolean;
         };
         SearchResultsEntity: {
             albums: components["schemas"]["AlbumSummaryEntity"][];

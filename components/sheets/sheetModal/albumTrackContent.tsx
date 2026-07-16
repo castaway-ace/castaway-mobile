@@ -1,21 +1,22 @@
-import { presignedImageSource } from "@/utils/images";
-import { Image } from "expo-image";
-import { router } from "expo-router";
-import { FC, useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
 import { useAlbumCover } from "@/api/albums/queries";
 import { useUpdateArtistInteraction } from "@/api/interactions/mutations";
 import { useTrackStar } from "@/api/tracks/mutations";
 import { useTrack } from "@/api/tracks/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
 import { blurHash } from "@/constants/blur";
 import {
-    SheetAlbumTrack,
-    SheetType,
-    useSheetModal,
+  SheetAlbumTrack,
+  SheetType,
+  useSheetModal,
 } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
-import { IconSymbol } from "@/components/ui/iconSymbol";
+import { isVariousArtists } from "@/utils/artists";
+import { presignedImageSource } from "@/utils/images";
 import { useTabLocation } from "@/utils/useTabLocation";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { FC, useMemo } from "react";
+import { Pressable, Text, View } from "react-native";
 import { makeTrackSheetStyles } from "./sheetStyles";
 
 interface AlbumTrackContentProps {
@@ -58,6 +59,9 @@ const AlbumTrackContent: FC<AlbumTrackContentProps> = ({ content }) => {
     close();
   };
 
+  const primaryArtist = track.artists[0];
+  const canGoToArtist = !!primaryArtist?.id && !isVariousArtists(primaryArtist);
+
   const onArtistPress = () => {
     const artistId = track.artists[0]?.id;
     if (!artistId) return;
@@ -99,10 +103,12 @@ const AlbumTrackContent: FC<AlbumTrackContentProps> = ({ content }) => {
             {starred ? "Remove from Liked Songs" : "Add to Liked Songs"}
           </Text>
         </Pressable>
-        <Pressable style={styles.bottomButton} onPress={onArtistPress}>
-          <IconSymbol size={28} name={"person"} color={colors.primary} />
-          <Text style={styles.text}>Go to Artist</Text>
-        </Pressable>
+        {canGoToArtist && (
+          <Pressable style={styles.bottomButton} onPress={onArtistPress}>
+            <IconSymbol size={28} name={"person"} color={colors.primary} />
+            <Text style={styles.text}>Go to Artist</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

@@ -1,16 +1,17 @@
 import {
-    useUpdateAlbumInteraction,
-    useUpdateArtistInteraction,
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
 } from "@/api/interactions/mutations";
 import { IconSymbol } from "@/components/ui/iconSymbol";
 import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { isVariousArtists } from "@/utils/artists";
+import { useTabLocation } from "@/utils/useTabLocation";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useTabLocation } from "@/utils/useTabLocation";
 import { makeTrackSheetStyles } from "./sheetStyles";
 
 /**
@@ -55,6 +56,9 @@ const NowPlayingContent: FC = () => {
     router.navigate(`/(tabs)/${location}/albums/${albumId}`);
   };
 
+  const primaryArtist = currentTrack.artists?.[0];
+  const canGoToArtist = !!primaryArtist?.id && !isVariousArtists(primaryArtist);
+
   const onArtistPress = () => {
     const artistId = currentTrack.artists?.[0]?.id;
     if (!artistId) return;
@@ -79,10 +83,12 @@ const NowPlayingContent: FC = () => {
           />
           <Text style={styles.text}>Go to Album</Text>
         </Pressable>
-        <Pressable style={styles.bottomButton} onPress={onArtistPress}>
-          <IconSymbol size={28} name={"person"} color={colors.primary} />
-          <Text style={styles.text}>Go to Artist</Text>
-        </Pressable>
+        {canGoToArtist && (
+          <Pressable style={styles.bottomButton} onPress={onArtistPress}>
+            <IconSymbol size={28} name={"person"} color={colors.primary} />
+            <Text style={styles.text}>Go to Artist</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

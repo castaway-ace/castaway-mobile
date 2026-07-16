@@ -1,7 +1,14 @@
 import { CAROUSEL_GAP } from "@/constants/player";
 import { PlayableTrack } from "@/contexts/audioPlayerContext";
+import { isVariousArtists } from "@/utils/artists";
 import { FC } from "react";
-import { Pressable, StyleProp, StyleSheet, TextStyle, View } from "react-native";
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  View,
+} from "react-native";
 import Animated from "react-native-reanimated";
 import { usePlayerForeground } from "./usePlayerForeground";
 // Type-only: importing a value from here would pull the audio engine in behind it.
@@ -44,21 +51,24 @@ const TrackInfoBlock: FC<TrackInfoBlockProps> = ({
   }
 
   const artistLine = (
-    <Animated.Text
-      style={[artistStyle, secondaryTextStyle]}
-      numberOfLines={1}
-    >
+    <Animated.Text style={[artistStyle, secondaryTextStyle]} numberOfLines={1}>
       {track.artists?.map((artist) => artist.name)?.join(", ")}
     </Animated.Text>
   );
+
+  const artistNavigable =
+    !!onArtistPress &&
+    !(track.artists?.length === 1 && isVariousArtists(track.artists[0]));
 
   return (
     <View style={[styles.block, { width }]}>
       <Animated.Text style={[titleStyle, primaryTextStyle]} numberOfLines={1}>
         {track.title}
       </Animated.Text>
-      {onArtistPress ? (
-        <Pressable onPress={() => onArtistPress(track)}>{artistLine}</Pressable>
+      {artistNavigable ? (
+        <Pressable onPress={() => onArtistPress?.(track)}>
+          {artistLine}
+        </Pressable>
       ) : (
         artistLine
       )}

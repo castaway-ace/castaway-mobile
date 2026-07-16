@@ -8,6 +8,7 @@ import {
 } from "@/test-utils/renderWithProviders";
 import type { Artist } from "@/types/artists";
 import type { QueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 
 const mockArtistStar = jest.fn();
 
@@ -80,6 +81,15 @@ describe("ArtistScreen", () => {
     expect(getByText("Albums")).toBeTruthy();
     expect(getByText("al1")).toBeTruthy();
     expect(getByText("al2")).toBeTruthy();
+  });
+
+  it("bounces back instead of rendering a Various Artists page", async () => {
+    const { queryByText } = await renderScreen(
+      testArtist({ id: "va", name: "Various Artists", isVarious: true }),
+    );
+
+    expect(router.back).toHaveBeenCalled();
+    expect(queryByText("Various Artists")).toBeNull();
   });
 
   it("shows an empty message when the artist has no albums", async () => {

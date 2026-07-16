@@ -80,6 +80,49 @@ describe("useOrganizedSearch", () => {
     });
   });
 
+  it("omits a Various Artists hit but keeps its name in album credit subtext", async () => {
+    const search = makeSearch({
+      albums: [
+        makeAlbumSummary({
+          id: "al1",
+          title: "Now That's Music",
+          artists: [
+            makeArtistRef({ name: "Various Artists", isVarious: true }),
+          ],
+        }),
+      ],
+      artists: [
+        makeArtistSummary({
+          id: "va",
+          name: "Various Artists",
+          isVarious: true,
+        }),
+      ],
+      tracks: [],
+    });
+
+    const queryClient = createTestQueryClient();
+    queryClient.setQueryData(queryKeys.albums.cover("al1"), "cover-al1");
+
+    const { result } = await renderHookWithProviders(
+      () => useOrganizedSearch(search),
+      { queryClient },
+    );
+
+    await waitFor(() => expect(result.current).toHaveLength(1));
+
+    // The album survives (and still credits "Various Artists" as text)...
+    const [album] = result.current;
+    expect(album).toMatchObject({
+      type: SearchItemType.ALBUM,
+      subText: "Album • Various Artists",
+    });
+    // ...but the entity never appears as its own artist result.
+    expect(
+      result.current.some((item) => item.type === SearchItemType.ARTIST),
+    ).toBe(false);
+  });
+
   it("shares one album cover between an album and a track from that album", async () => {
     const search = makeSearch({
       albums: [makeAlbumSummary({ id: "shared", title: "Shared" })],

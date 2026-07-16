@@ -11,6 +11,7 @@ import {
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
+import { isVariousArtists } from "@/utils/artists";
 import { useTabLocation } from "@/utils/useTabLocation";
 import { router } from "expo-router";
 import { FC, useCallback, useMemo } from "react";
@@ -103,11 +104,11 @@ const MusicPlayerModalContent: FC = () => {
       return;
     }
 
-    const artistId = artists[0]?.id;
-    if (!artistId) return;
+    const artist = artists[0];
+    if (!artist?.id || isVariousArtists(artist)) return;
     close();
-    artistInteraction(artistId);
-    router.navigate(`/(tabs)/${location}/artists/${artistId}`);
+    artistInteraction(artist.id);
+    router.navigate(`/(tabs)/${location}/artists/${artist.id}`);
   };
 
   const onSourcePress = () => {

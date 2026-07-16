@@ -1,6 +1,7 @@
 import { albumCoverQueryOptions } from "@/api/albums/queries";
 import { artistImageQueryOptions } from "@/api/artists/queries";
 import { Search } from "@/types/search";
+import { isVariousArtists } from "@/utils/artists";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -47,7 +48,10 @@ export type SearchItemElement = AlbumSearchItem | ArtistSearchItem | TrackSearch
  */
 export const useOrganizedSearch = (search: Search | undefined): SearchItemElement[] => {
   const albums = useMemo(() => search?.albums ?? [], [search]);
-  const artists = useMemo(() => search?.artists ?? [], [search]);
+  const artists = useMemo(
+    () => (search?.artists ?? []).filter((a) => !isVariousArtists(a)),
+    [search],
+  );
   const tracks = useMemo(() => search?.tracks ?? [], [search]);
 
   // Every distinct album whose cover we need — from album hits and from the

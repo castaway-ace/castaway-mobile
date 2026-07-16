@@ -1,28 +1,29 @@
+import { useAlbumCover } from "@/api/albums/queries";
+import {
+  useUpdateAlbumInteraction,
+  useUpdateArtistInteraction,
+} from "@/api/interactions/mutations";
 import { useRemoveTrackFromPlaylist } from "@/api/playlists/mutations";
 import { usePlaylist } from "@/api/playlists/queries";
 import { useTrackStar } from "@/api/tracks/mutations";
+import { useTrack } from "@/api/tracks/queries";
+import { IconSymbol } from "@/components/ui/iconSymbol";
+import { blurHash } from "@/constants/blur";
 import { usePopupModal } from "@/contexts/popupModalContext";
 import {
-    SheetPlaylistTrack,
-    SheetType,
-    useSheetModal,
+  SheetPlaylistTrack,
+  SheetType,
+  useSheetModal,
 } from "@/contexts/sheetModalContext";
+import { useTheme } from "@/contexts/themeContext";
 import { PlaylistType } from "@/types/playlist";
+import { isVariousArtists } from "@/utils/artists";
 import { presignedImageSource } from "@/utils/images";
+import { useTabLocation } from "@/utils/useTabLocation";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useAlbumCover } from "@/api/albums/queries";
-import {
-    useUpdateAlbumInteraction,
-    useUpdateArtistInteraction,
-} from "@/api/interactions/mutations";
-import { useTrack } from "@/api/tracks/queries";
-import { blurHash } from "@/constants/blur";
-import { useTheme } from "@/contexts/themeContext";
-import { IconSymbol } from "@/components/ui/iconSymbol";
-import { useTabLocation } from "@/utils/useTabLocation";
 import { makeTrackSheetStyles } from "./sheetStyles";
 
 interface PlaylistTrackContentProps {
@@ -93,6 +94,9 @@ const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
     router.navigate(`/(tabs)/${location}/albums/${albumId}`);
   };
 
+  const primaryArtist = track?.artists?.[0];
+  const canGoToArtist = !!primaryArtist?.id && !isVariousArtists(primaryArtist);
+
   const onArtistPress = () => {
     if (!track?.artists) return;
     const artistId = track.artists[0].id;
@@ -155,10 +159,12 @@ const PlaylistTrackContent: FC<PlaylistTrackContentProps> = ({ content }) => {
           />
           <Text style={styles.text}>Go to Album</Text>
         </Pressable>
-        <Pressable style={styles.bottomButton} onPress={onArtistPress}>
-          <IconSymbol size={28} name={"person"} color={colors.primary} />
-          <Text style={styles.text}>Go to Artist</Text>
-        </Pressable>
+        {canGoToArtist && (
+          <Pressable style={styles.bottomButton} onPress={onArtistPress}>
+            <IconSymbol size={28} name={"person"} color={colors.primary} />
+            <Text style={styles.text}>Go to Artist</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

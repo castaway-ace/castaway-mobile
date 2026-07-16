@@ -10,10 +10,11 @@ import {
 } from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Artist } from "@/types/artists";
+import { isVariousArtists } from "@/utils/artists";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import {
   Pressable,
   ScrollView,
@@ -61,10 +62,17 @@ const ArtistScreen: FC<ArtistScreenProps> = ({ id, onAlbumPress }) => {
   const { data: artistImageUrl, isPending: isImagePending } =
     useArtistImage(id);
 
+  const isVarious = isVariousArtists(artist);
+  useEffect(() => {
+    if (isVarious && router.canGoBack()) router.back();
+  }, [isVarious]);
+
   // Gate the content behind loading: `ArtistScreenContent` owns the scroll ref
   // and `useScrollOffset`, so keeping it unmounted until the ScrollView actually
   // renders avoids reanimated warning that the animated ref isn't yet attached.
   if (isLoading) return <ArtistScreenSkeleton />;
+
+  if (isVarious) return null;
 
   return (
     <ArtistScreenContent

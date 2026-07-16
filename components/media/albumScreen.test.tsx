@@ -113,6 +113,22 @@ describe("AlbumScreen", () => {
     expect(onArtistPress).toHaveBeenCalledWith("ar1");
   });
 
+  it("renders a Various Artists credit as plain, non-navigable text", async () => {
+    const album = makeTestAlbum({
+      artists: [
+        makeArtistRef({
+          id: "va",
+          name: "Various Artists",
+          isVarious: true,
+        }),
+      ],
+    });
+    const { getByText, onArtistPress } = await renderScreen(album);
+
+    await fireEvent.press(getByText("Various Artists"));
+    expect(onArtistPress).not.toHaveBeenCalled();
+  });
+
   it("plays the album starting at the tapped track", async () => {
     const album = makeTestAlbum();
     const { getByText } = await renderScreen(album);

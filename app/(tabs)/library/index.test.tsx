@@ -43,7 +43,7 @@ describe("Library screen", () => {
 
   it("renders playlists, albums, and artists in the order the server returned", async () => {
     mockGetAll.mockResolvedValue([
-      makeArtistLibraryItem({ artist: { id: "ar1", name: "My Artist" } }),
+      makeArtistLibraryItem({ artist: { id: "ar1", name: "My Artist", isVarious: false } }),
       makePlaylistLibraryItem({ playlist: { id: "pl1", name: "My Playlist" } }),
       makeAlbumLibraryItem({ album: { id: "al1", title: "My Album" } }),
     ]);

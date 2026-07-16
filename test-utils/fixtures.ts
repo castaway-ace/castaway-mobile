@@ -1,6 +1,6 @@
 import type { components } from "@/api/schema";
 import { Album, AlbumSummary, AlbumTrack } from "@/types/albums";
-import { Artist, ArtistSummary } from "@/types/artists";
+import { Artist, ArtistRef, ArtistSummary } from "@/types/artists";
 import {
   AlbumInteraction,
   ArtistInteraction,
@@ -26,7 +26,6 @@ import { Search } from "@/types/search";
 import { Track, TrackSummary } from "@/types/tracks";
 
 type AlbumRef = components["schemas"]["AlbumRef"];
-type ArtistRef = components["schemas"]["ArtistRef"];
 
 export const makeAlbumRef = (overrides: Partial<AlbumRef> = {}): AlbumRef => ({
   id: "album-1",
@@ -39,6 +38,7 @@ export const makeArtistRef = (
 ): ArtistRef => ({
   id: "artist-1",
   name: "Test Artist",
+  isVarious: false,
   ...overrides,
 });
 
@@ -116,6 +116,7 @@ export const makeArtistSummary = (
   id: "artist-1",
   name: "Test Artist",
   starred: false,
+  isVarious: false,
   ...overrides,
 });
 
@@ -125,6 +126,7 @@ export const makeArtist = (overrides: Partial<Artist> = {}): Artist => ({
   bio: "A test artist.",
   starred: false,
   albums: [makeAlbumRef()],
+  isVarious: false,
   ...overrides,
 });
 

@@ -26,6 +26,7 @@ import {
 } from "@/contexts/bottomInsetContext";
 import { useTheme } from "@/contexts/themeContext";
 import { Interaction, InteractionType } from "@/types/interactions";
+import { isVariousArtists } from "@/utils/artists";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -63,8 +64,9 @@ const HomeScreen = () => {
 
   const favoriteAlbums =
     favoriteAlbumsData?.pages.flatMap((page) => page) ?? [];
-  const favoriteArtists =
-    favoriteArtistsData?.pages.flatMap((page) => page) ?? [];
+  const favoriteArtists = (
+    favoriteArtistsData?.pages.flatMap((page) => page) ?? []
+  ).filter((artist) => !isVariousArtists(artist));
 
   const playlists = playlistData?.pages.flatMap((page) => page) ?? [];
 
