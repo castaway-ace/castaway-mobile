@@ -8,6 +8,7 @@ import {
   makePlaylist,
   makePlaylistTrack,
 } from "@/test-utils/fixtures";
+import { measureLikedCover } from "@/test-utils/measureLikedCover";
 import {
   fireEvent,
   renderWithProviders,
@@ -109,7 +110,9 @@ describe("PlaylistScreen", () => {
   });
 
   it("renders the heart mark instead of album art for LIKED playlists", async () => {
-    const { getByText, queryByTestId } = await renderScreen(PlaylistType.LIKED);
+    const { getByText, queryByTestId, getByTestId } =
+      await renderScreen(PlaylistType.LIKED);
+    await measureLikedCover(getByTestId);
 
     expect(getByText("heart.fill")).toBeTruthy();
     expect(queryByTestId("expo-image")).toBeNull();

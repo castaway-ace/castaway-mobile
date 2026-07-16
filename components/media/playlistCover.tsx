@@ -51,9 +51,18 @@ const PlaylistCover: FC<PlaylistCoverProps> = ({ urls, style, type }) => {
 
   if (type === PlaylistType.LIKED) {
     return (
-      <View style={[style, styles.likedCover]} onLayout={onLayout}>
-        {/* Renders at size 0 until the first layout pass measures the cover. */}
-        <IconSymbol name="heart.fill" size={heartSize} color={colors.onAccent} />
+      <View
+        style={[style, styles.likedCover]}
+        onLayout={onLayout}
+        testID="liked-cover"
+      >
+        {heartSize > 0 ? (
+          <IconSymbol
+            name="heart.fill"
+            size={heartSize}
+            color={colors.onAccent}
+          />
+        ) : null}
       </View>
     );
   }

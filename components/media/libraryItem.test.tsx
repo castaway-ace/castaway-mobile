@@ -7,6 +7,7 @@ import {
   makePlaylistLibraryItem,
   makePlaylistRef,
 } from "@/test-utils/fixtures";
+import { measureLikedCover } from "@/test-utils/measureLikedCover";
 import { renderWithProviders } from "@/test-utils/renderWithProviders";
 import { PlaylistType } from "@/types/playlist";
 
@@ -71,9 +72,10 @@ describe("LibraryItem", () => {
       playlistType: PlaylistType.LIKED,
     });
 
-    const { getByText, queryByTestId } = await renderWithProviders(
+    const { getByText, queryByTestId, getByTestId } = await renderWithProviders(
       <LibraryItem item={item} />,
     );
+    await measureLikedCover(getByTestId);
 
     expect(getByText("Liked Songs")).toBeTruthy();
     expect(getByText("heart.fill")).toBeTruthy();

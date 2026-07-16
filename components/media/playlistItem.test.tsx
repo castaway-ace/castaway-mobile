@@ -2,6 +2,7 @@ import { queryKeys } from "@/api/queryKeys";
 import PlaylistItem from "@/components/media/playlistItem";
 import { createTestQueryClient } from "@/test-utils/createTestQueryClient";
 import { makePlaylist } from "@/test-utils/fixtures";
+import { measureLikedCover } from "@/test-utils/measureLikedCover";
 import { renderWithProviders } from "@/test-utils/renderWithProviders";
 import { PlaylistType } from "@/types/playlist";
 
@@ -31,10 +32,11 @@ describe("PlaylistItem", () => {
       makePlaylist({ name: "Liked Songs", type: PlaylistType.LIKED }),
     );
 
-    const { getByText, queryByTestId } = await renderWithProviders(
+    const { getByText, queryByTestId, getByTestId } = await renderWithProviders(
       <PlaylistItem id="p1" />,
       { queryClient },
     );
+    await measureLikedCover(getByTestId);
 
     expect(getByText("Liked Songs")).toBeTruthy();
     expect(getByText("heart.fill")).toBeTruthy();

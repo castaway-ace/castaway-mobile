@@ -7,6 +7,7 @@ import {
   makePlaylistInteraction,
   makePlaylistRef,
 } from "@/test-utils/fixtures";
+import { measureLikedCover } from "@/test-utils/measureLikedCover";
 import { renderWithProviders } from "@/test-utils/renderWithProviders";
 import { PlaylistType } from "@/types/playlist";
 
@@ -73,9 +74,10 @@ describe("InteractionItem", () => {
       playlistType: PlaylistType.LIKED,
     });
 
-    const { getByText, queryByTestId } = await renderWithProviders(
+    const { getByText, queryByTestId, getByTestId } = await renderWithProviders(
       <InteractionItem interaction={interaction} />,
     );
+    await measureLikedCover(getByTestId);
 
     expect(getByText("Liked Songs")).toBeTruthy();
     expect(getByText("heart.fill")).toBeTruthy();

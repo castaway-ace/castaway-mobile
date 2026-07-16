@@ -1,18 +1,29 @@
 import PlaylistCover from "@/components/media/playlistCover";
+import { measureLikedCover } from "@/test-utils/measureLikedCover";
 import { render } from "@/test-utils/renderWithProviders";
 import { PlaylistType } from "@/types/playlist";
 
 describe("PlaylistCover", () => {
   it("renders the heart mark for Liked Songs, ignoring its album covers", async () => {
-    const { getByText, queryByTestId } = await render(
+    const { getByText, queryByTestId, getByTestId } = await render(
       <PlaylistCover
         urls={["a", "b", "c", "d"]}
         type={PlaylistType.LIKED}
         style={{}}
       />,
     );
+    await measureLikedCover(getByTestId);
+
     expect(getByText("heart.fill")).toBeTruthy();
     expect(queryByTestId("expo-image")).toBeNull();
+  });
+
+  it("withholds the heart until the cover is measured", async () => {
+    // A zero size reaches the icon font as fontSize: 0, which crashes Android.
+    const { queryByText } = await render(
+      <PlaylistCover urls={undefined} type={PlaylistType.LIKED} style={{}} />,
+    );
+    expect(queryByText("heart.fill")).toBeNull();
   });
 
   it("still tiles album covers for a user playlist", async () => {
