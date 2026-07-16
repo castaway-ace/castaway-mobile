@@ -21,20 +21,20 @@ and drives the generated TypeScript types.
 
 ## Tech stack
 
-| Area | Tools |
-| --- | --- |
-| Framework | [Expo](https://expo.dev) SDK 56, [React Native](https://reactnative.dev) 0.85 (New Architecture), React 19 |
-| Language | TypeScript |
-| Routing | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, typed routes) |
-| Server state | [TanStack Query](https://tanstack.com/query) + [axios](https://axios-http.com) |
-| Validation | [Zod](https://zod.dev) |
-| Audio | [`expo-audio`](https://docs.expo.dev/versions/latest/sdk/audio/) (background playback) |
-| Animation | [Reanimated 4](https://docs.swmansion.com/react-native-reanimated/) + `react-native-worklets`, `react-native-gesture-handler` |
-| Color extraction | `react-native-image-colors` |
-| Secure storage | `expo-secure-store`, `jwt-decode` |
-| API types | [`openapi-typescript`](https://openapi-ts.dev) (generated from the backend OpenAPI schema) |
-| Testing | [Jest](https://jestjs.io) + `jest-expo` + [React Native Testing Library](https://callstack.github.io/react-native-testing-library/) + `axios-mock-adapter` |
-| Tooling | ESLint (`eslint-config-expo`), [Bun](https://bun.sh) package manager, EAS Build |
+| Area             | Tools                                                                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework        | [Expo](https://expo.dev) SDK 56, [React Native](https://reactnative.dev) 0.85 (New Architecture), React 19                                                 |
+| Language         | TypeScript                                                                                                                                                 |
+| Routing          | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, typed routes)                                                                       |
+| Server state     | [TanStack Query](https://tanstack.com/query) + [axios](https://axios-http.com)                                                                             |
+| Validation       | [Zod](https://zod.dev)                                                                                                                                     |
+| Audio            | [`expo-audio`](https://docs.expo.dev/versions/latest/sdk/audio/) (background playback)                                                                     |
+| Animation        | [Reanimated 4](https://docs.swmansion.com/react-native-reanimated/) + `react-native-worklets`, `react-native-gesture-handler`                              |
+| Color extraction | `react-native-image-colors`                                                                                                                                |
+| Secure storage   | `expo-secure-store`, `jwt-decode`                                                                                                                          |
+| API types        | [`openapi-typescript`](https://openapi-ts.dev) (generated from the backend OpenAPI schema)                                                                 |
+| Testing          | [Jest](https://jestjs.io) + `jest-expo` + [React Native Testing Library](https://callstack.github.io/react-native-testing-library/) + `axios-mock-adapter` |
+| Tooling          | ESLint (`eslint-config-expo`), [Bun](https://bun.sh) package manager, EAS Build                                                                            |
 
 ## Project structure
 
@@ -67,7 +67,7 @@ test-utils/   Shared testing helpers
 2. Create a `.env` file pointing at your API:
 
    ```bash
-   EXPO_PUBLIC_API_URL="https://api-dev.anthonyostia.com"
+   EXPO_PUBLIC_API_URL="https://api.example.com"
    ```
 
 3. Build and launch the native dev client on a simulator/device:
@@ -85,15 +85,15 @@ test-utils/   Shared testing helpers
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `bun run start` | Start the Expo dev server |
-| `bun run ios` / `bun run android` | Build and run the native dev client |
-| `bun run lint` | Lint with ESLint (Expo config) |
-| `bun run test` | Run the Jest test suite |
-| `bun run test:watch` | Run tests in watch mode |
-| `bun run test:coverage` | Run tests with a coverage report |
-| `bun run generate:types` | Regenerate `api/schema.d.ts` from `api/schema.yaml` |
+| Command                           | Description                                         |
+| --------------------------------- | --------------------------------------------------- |
+| `bun run start`                   | Start the Expo dev server                           |
+| `bun run ios` / `bun run android` | Build and run the native dev client                 |
+| `bun run lint`                    | Lint with ESLint (Expo config)                      |
+| `bun run test`                    | Run the Jest test suite                             |
+| `bun run test:watch`              | Run tests in watch mode                             |
+| `bun run test:coverage`           | Run tests with a coverage report                    |
+| `bun run generate:types`          | Regenerate `api/schema.d.ts` from `api/schema.yaml` |
 
 ## Testing
 
