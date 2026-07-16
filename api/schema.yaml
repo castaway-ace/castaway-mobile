@@ -1952,12 +1952,16 @@ components:
           type: array
           items:
             type: string
+        playlistType:
+          allOf:
+            - $ref: '#/components/schemas/PlaylistType'
       required:
         - type
         - id
         - updatedAt
         - playlist
         - coverUrls
+        - playlistType
     InteractionTypeAlbum:
       type: string
       enum:
@@ -2029,6 +2033,9 @@ components:
           type: array
           items:
             type: string
+        playlistType:
+          allOf:
+            - $ref: '#/components/schemas/PlaylistType'
         lastInteractedAt:
           format: date-time
           type: string
@@ -2037,6 +2044,7 @@ components:
         - type
         - playlist
         - coverUrls
+        - playlistType
         - lastInteractedAt
     LibraryItemTypeAlbum:
       type: string

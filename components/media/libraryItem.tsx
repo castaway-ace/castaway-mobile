@@ -55,7 +55,13 @@ const LibraryItem: FC<LibraryItemProps> = ({ item }) => {
 
   const renderImage = () => {
     if (isPlaylist) {
-      return <PlaylistCover urls={item.coverUrls} style={styles.art} />;
+      return (
+        <PlaylistCover
+          urls={item.coverUrls}
+          type={item.playlistType}
+          style={styles.art}
+        />
+      );
     }
 
     const placeholder = isArtist ? ARTIST_PLACEHOLDER : ALBUM_PLACEHOLDER;

@@ -202,6 +202,7 @@ export const makePlaylistInteraction = (
   updatedAt: "2024-01-01T00:00:00.000Z",
   playlist: makePlaylistRef(),
   coverUrls: ["https://cover/1.jpg", "https://cover/2.jpg"],
+  playlistType: PlaylistType.USER,
   ...overrides,
 });
 
@@ -238,6 +239,7 @@ export const makePlaylistLibraryItem = (
   type: LibraryItemType.PLAYLIST,
   playlist: makePlaylistRef(),
   coverUrls: ["https://cover/1.jpg", "https://cover/2.jpg"],
+  playlistType: PlaylistType.USER,
   lastInteractedAt: null,
   ...overrides,
 });

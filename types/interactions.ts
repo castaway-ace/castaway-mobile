@@ -1,4 +1,5 @@
 import type { components } from "@/api/schema";
+import { PlaylistType } from "./playlist";
 
 /**
  * Tags which entity an interaction refers to; the discriminant for the
@@ -29,11 +30,18 @@ export type ArtistInteraction = Omit<
   "type"
 > & { type: InteractionType.ARTIST };
 
-/** A recent-engagement entry for a playlist. */
+/**
+ * A recent-engagement entry for a playlist.
+ *
+ * @remarks
+ * `playlistType` needs the same escape hatch as `type` — it distinguishes Liked
+ * Songs from a hand-made playlist, which decides whether the artwork is the
+ * heart mark or the usual album tiles.
+ */
 export type PlaylistInteraction = Omit<
   components["schemas"]["PlaylistInteractionEntity"],
-  "type"
-> & { type: InteractionType.PLAYLIST };
+  "type" | "playlistType"
+> & { type: InteractionType.PLAYLIST; playlistType: PlaylistType };
 
 /** One item in the interactions feed — an album, artist, or playlist engagement. */
 export type Interaction =

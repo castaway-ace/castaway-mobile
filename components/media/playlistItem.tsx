@@ -27,7 +27,11 @@ const PlaylistItem: FC<PlaylistItemProps> = ({ id }) => {
 
   return (
     <View style={styles.playlistContainer}>
-      <PlaylistCover urls={playlist?.albumCoverUrls} style={styles.playlistArt} />
+      <PlaylistCover
+        urls={playlist?.albumCoverUrls}
+        type={playlist?.type}
+        style={styles.playlistArt}
+      />
       <Text style={styles.playlistName}>{playlist?.name}</Text>
     </View>
   );

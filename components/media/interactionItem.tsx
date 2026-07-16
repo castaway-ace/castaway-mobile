@@ -60,6 +60,7 @@ const InteractionItem: FC<InteractionItemProps> = ({
       return (
         <PlaylistCover
           urls={interaction.coverUrls}
+          type={interaction.playlistType}
           style={styles.interactionArt}
         />
       );

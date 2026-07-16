@@ -108,6 +108,13 @@ describe("PlaylistScreen", () => {
     expect(getAllByText("ellipsis")).toHaveLength(1);
   });
 
+  it("renders the heart mark instead of album art for LIKED playlists", async () => {
+    const { getByText, queryByTestId } = await renderScreen(PlaylistType.LIKED);
+
+    expect(getByText("heart.fill")).toBeTruthy();
+    expect(queryByTestId("expo-image")).toBeNull();
+  });
+
   it("plays the playlist starting at the tapped track", async () => {
     const { getByText } = await renderScreen();
 

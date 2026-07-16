@@ -776,6 +776,7 @@ export interface components {
             updatedAt: string;
             playlist: components["schemas"]["PlaylistRef"];
             coverUrls: string[];
+            playlistType: components["schemas"]["PlaylistType"];
         };
         /** @enum {string} */
         InteractionTypeAlbum: "album";
@@ -815,6 +816,7 @@ export interface components {
             type: "playlist";
             playlist: components["schemas"]["PlaylistRef"];
             coverUrls: string[];
+            playlistType: components["schemas"]["PlaylistType"];
             /** Format: date-time */
             lastInteractedAt: string | null;
         };

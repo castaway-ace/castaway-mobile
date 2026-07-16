@@ -130,6 +130,7 @@ const PlaylistScreenContent: FC<PlaylistScreenContentProps> = ({
         <View style={styles.playlistArtContainer}>
           <PlaylistCover
             urls={playlist?.albumCoverUrls}
+            type={playlist?.type}
             style={styles.playlistArt}
           />
         </View>

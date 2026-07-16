@@ -1,4 +1,5 @@
 import type { components } from "@/api/schema";
+import { PlaylistType } from "./playlist";
 
 /**
  * Tags which entity a library item refers to; the discriminant for the
@@ -27,11 +28,17 @@ export type ArtistLibraryItem = Omit<
   "type"
 > & { type: LibraryItemType.ARTIST };
 
-/** One of the user's playlists, Liked Songs included. */
+/**
+ * One of the user's playlists, Liked Songs included.
+ *
+ * @remarks
+ * `playlistType` needs the same escape hatch as `type`; it's what tells Liked
+ * Songs apart here, since this item carries only a playlist ref and covers.
+ */
 export type PlaylistLibraryItem = Omit<
   components["schemas"]["PlaylistLibraryItemEntity"],
-  "type"
-> & { type: LibraryItemType.PLAYLIST };
+  "type" | "playlistType"
+> & { type: LibraryItemType.PLAYLIST; playlistType: PlaylistType };
 
 /**
  * One entry in the library — an album, artist, or playlist.

@@ -8,6 +8,7 @@ import {
   makePlaylistRef,
 } from "@/test-utils/fixtures";
 import { renderWithProviders } from "@/test-utils/renderWithProviders";
+import { PlaylistType } from "@/types/playlist";
 
 describe("InteractionItem", () => {
   it("renders an album interaction with title, artists, and cover", async () => {
@@ -64,6 +65,21 @@ describe("InteractionItem", () => {
     expect(getByText("Chill Vibes")).toBeTruthy();
     expect(getByText("Playlist")).toBeTruthy();
     expect(getAllByTestId("expo-image")).toHaveLength(4);
+  });
+
+  it("renders the heart mark for a Liked Songs interaction", async () => {
+    const interaction = makePlaylistInteraction({
+      playlist: makePlaylistRef({ name: "Liked Songs" }),
+      playlistType: PlaylistType.LIKED,
+    });
+
+    const { getByText, queryByTestId } = await renderWithProviders(
+      <InteractionItem interaction={interaction} />,
+    );
+
+    expect(getByText("Liked Songs")).toBeTruthy();
+    expect(getByText("heart.fill")).toBeTruthy();
+    expect(queryByTestId("expo-image")).toBeNull();
   });
 
   it("renders in the row variant", async () => {
