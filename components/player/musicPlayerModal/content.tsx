@@ -3,23 +3,27 @@ import {
   useUpdateArtistInteraction,
   useUpdatePlaylistInteraction,
 } from "@/api/interactions/mutations";
-import { blurHash } from "@/constants/blur";
 import { ThemeColors } from "@/constants/theme";
-import { useAudioPlayerContext } from "@/contexts/audioPlayerContext";
+import {
+  PlayableTrack,
+  useAudioPlayerContext,
+} from "@/contexts/audioPlayerContext";
 import { usePlayerModal } from "@/contexts/playerModalContext";
 import { SheetType, useSheetModal } from "@/contexts/sheetModalContext";
 import { useTheme } from "@/contexts/themeContext";
-import { presignedImageSource } from "@/utils/images";
 import { useTabLocation } from "@/utils/useTabLocation";
-import { Image } from "expo-image";
 import { router } from "expo-router";
-import { FC, useMemo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { FC, useCallback, useMemo } from "react";
+import { LayoutChangeEvent, Pressable, StyleSheet, View } from "react-native";
+import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CrossfadeIcon } from "../crossfadeIcon";
+import TrackInfoCarousel from "../trackInfoCarousel";
 import { useActiveTrackStar, usePlayPause } from "../useNowPlayingControls";
 import { usePlayerForeground } from "../usePlayerForeground";
+import { useCarouselStrip, useTrackSwipe } from "../useTrackSwipe";
+import CoverArtCarousel from "./coverArtCarousel";
 import ProgressBar from "./progressBar";
 
 /**
@@ -44,7 +48,8 @@ const MusicPlayerModalContent: FC = () => {
     next,
     previous,
     currentTrack,
-    coverArtUrl,
+    previousTrack,
+    nextTrack,
     coverColor,
     source,
     toggleShuffle,
@@ -69,6 +74,20 @@ const MusicPlayerModalContent: FC = () => {
   const { starred, toggleStar } = useActiveTrackStar();
   const handlePlayTrack = usePlayPause();
 
+  const swipe = useTrackSwipe();
+  const cover = useCarouselStrip(swipe);
+  const info = useCarouselStrip(swipe);
+  const { onSwipeScaleLayout } = swipe;
+  const { onViewportLayout: measureCover } = cover;
+
+  const onCoverViewportLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      measureCover(event);
+      onSwipeScaleLayout(event);
+    },
+    [measureCover, onSwipeScaleLayout],
+  );
+
   if (!currentTrack) {
     return null;
   }
@@ -77,9 +96,8 @@ const MusicPlayerModalContent: FC = () => {
     ? `Playing from ${source.type === "album" ? "Album" : "Playlist"}`
     : null;
 
-  const artists = currentTrack.artists ?? [];
-
-  const onArtistPress = () => {
+  const onArtistPress = (track: PlayableTrack) => {
+    const artists = track.artists ?? [];
     if (artists.length > 1) {
       openOptions({ type: SheetType.NOW_PLAYING_ARTISTS });
       return;
@@ -140,31 +158,30 @@ const MusicPlayerModalContent: FC = () => {
           <CrossfadeIcon size={32} name={"ellipsis"} color={palette.primary} />
         </Pressable>
       </View>
-      <View style={styles.albumArtContainer}>
-        <Image
-          source={coverArtUrl ? presignedImageSource(coverArtUrl) : undefined}
-          placeholder={blurHash}
-          style={styles.albumArt}
-        />
-      </View>
+      <GestureDetector gesture={swipe.pan}>
+        <View style={styles.albumArtContainer}>
+          <CoverArtCarousel
+            {...cover}
+            onViewportLayout={onCoverViewportLayout}
+            previousTrack={previousTrack}
+            currentTrack={currentTrack}
+            nextTrack={nextTrack}
+          />
+        </View>
+      </GestureDetector>
       <View style={styles.bottomContainer}>
         <View style={styles.middle}>
-          <View style={styles.trackInfoContainer}>
-            <Animated.Text
-              style={[styles.titleText, primaryTextStyle]}
-              numberOfLines={1}
-            >
-              {currentTrack.title}
-            </Animated.Text>
-            <Pressable onPress={onArtistPress}>
-              <Animated.Text
-                style={[styles.artistText, secondaryTextStyle]}
-                numberOfLines={1}
-              >
-                {artists.map((artist) => artist.name).join(", ")}
-              </Animated.Text>
-            </Pressable>
-          </View>
+          <TrackInfoCarousel
+            {...info}
+            previousTrack={previousTrack}
+            currentTrack={currentTrack}
+            nextTrack={nextTrack}
+            titleStyle={styles.titleText}
+            artistStyle={styles.artistText}
+            primaryTextStyle={primaryTextStyle}
+            secondaryTextStyle={secondaryTextStyle}
+            onArtistPress={onArtistPress}
+          />
           <Pressable onPress={toggleStar}>
             <CrossfadeIcon
               name={starred ? "heart.fill" : "heart"}
@@ -258,13 +275,7 @@ const makeStyles = (colors: ThemeColors) =>
     albumArtContainer: {
       flex: 1,
       justifyContent: "center",
-      alignItems: "center",
       marginBottom: 20,
-    },
-    albumArt: {
-      width: "100%",
-      aspectRatio: 800 / 800,
-      borderRadius: 16,
     },
     bottomContainer: {
       paddingBottom: 48,
@@ -273,17 +284,8 @@ const makeStyles = (colors: ThemeColors) =>
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
-    },
-    trackInfoContainer: {
-      flex: 1,
-      justifyContent: "center",
-      gap: 4,
-      marginBottom: 8,
-    },
-    scrollBarContainer: {
-      display: "flex",
-      justifyContent: "center",
       alignItems: "center",
+      marginBottom: 8,
     },
     titleText: {
       color: colors.primary,
@@ -294,9 +296,6 @@ const makeStyles = (colors: ThemeColors) =>
     artistText: {
       color: colors.secondary,
       fontSize: 18,
-    },
-    favoriteButton: {
-      flexShrink: 0,
     },
     musicPlayerButtonContainer: {
       display: "flex",

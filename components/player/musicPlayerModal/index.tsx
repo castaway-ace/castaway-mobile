@@ -14,6 +14,11 @@ import { useBackHandler } from "@/utils/useBackHandler";
 import { useAnimatedBackground } from "../useAnimatedBackground";
 import MusicPlayerModalContent from "./content";
 
+// Downward travel before the sheet starts following the finger.
+const ACTIVE_OFFSET_Y = 12;
+// Horizontal travel that hands the drag to the cover art's track-swipe instead.
+const FAIL_OFFSET_X = 20;
+
 /**
  * The full-screen now-playing player, presented as a slide-up sheet.
  *
@@ -58,6 +63,11 @@ const MusicPlayerModal: FC = () => {
   }, [isOpen, height, translateY]);
 
   const pan = Gesture.Pan()
+    // Claim downward drags only. Without these the sheet wins the gesture arena on
+    // *any* drag — including the horizontal ones the cover art needs for
+    // swipe-to-change-track — and that gesture would never activate at all.
+    .activeOffsetY(ACTIVE_OFFSET_Y)
+    .failOffsetX([-FAIL_OFFSET_X, FAIL_OFFSET_X])
     .onUpdate((event) => {
       // Track the finger, but only downward — the sheet can't be dragged above
       // its open position.

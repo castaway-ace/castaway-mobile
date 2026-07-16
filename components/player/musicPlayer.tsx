@@ -5,8 +5,14 @@ import { usePlayerModal } from "@/contexts/playerModalContext";
 import { useTheme } from "@/contexts/themeContext";
 import { presignedImageSource } from "@/utils/images";
 import { Image } from "expo-image";
-import { useMemo } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import {
+  ActivityIndicator,
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { CrossfadeIcon } from "./crossfadeIcon";
@@ -14,7 +20,7 @@ import TrackInfoCarousel from "./trackInfoCarousel";
 import { useAnimatedBackground } from "./useAnimatedBackground";
 import { useActiveTrackStar, usePlayPause } from "./useNowPlayingControls";
 import { usePlayerForeground } from "./usePlayerForeground";
-import { useTrackSwipe } from "./useTrackSwipe";
+import { useCarouselStrip, useTrackSwipe } from "./useTrackSwipe";
 
 /**
  * The persistent mini-player docked above the tab bar.
@@ -46,8 +52,20 @@ const MusicPlayer = () => {
   const { colors } = useTheme();
   const { starred, toggleStar } = useActiveTrackStar();
   const handlePlayTrack = usePlayPause();
-  const { pan, stripStyle, restingLeft, width, onViewportLayout } =
-    useTrackSwipe();
+  const swipe = useTrackSwipe();
+  const info = useCarouselStrip(swipe);
+  const { onSwipeScaleLayout } = swipe;
+  const { onViewportLayout: measureInfo } = info;
+  // The text strip is both the measured strip and the swipe's reference width, so
+  // the text keeps tracking the finger 1:1 even though the whole bar is the hit
+  // area.
+  const onViewportLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      measureInfo(event);
+      onSwipeScaleLayout(event);
+    },
+    [measureInfo, onSwipeScaleLayout],
+  );
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const backgroundStyle = useAnimatedBackground(coverColor, colors.background);
   const {
@@ -71,7 +89,7 @@ const MusicPlayer = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.secondaryContainer, backgroundStyle]}>
-        <GestureDetector gesture={pan}>
+        <GestureDetector gesture={swipe.pan}>
           <View style={styles.contentContainer}>
             <Pressable style={styles.leftContainer} onPress={open}>
               <Image
@@ -82,15 +100,15 @@ const MusicPlayer = () => {
                 style={styles.albumArt}
               />
               <TrackInfoCarousel
+                {...info}
+                onViewportLayout={onViewportLayout}
                 previousTrack={previousTrack}
                 currentTrack={currentTrack}
                 nextTrack={nextTrack}
+                titleStyle={styles.titleText}
+                artistStyle={styles.artistText}
                 primaryTextStyle={primaryTextStyle}
                 secondaryTextStyle={secondaryTextStyle}
-                stripStyle={stripStyle}
-                restingLeft={restingLeft}
-                width={width}
-                onViewportLayout={onViewportLayout}
               />
             </Pressable>
             <View style={styles.buttonContainer}>
@@ -162,6 +180,15 @@ const makeStyles = (colors: ThemeColors) =>
       width: 48,
       height: 48,
       borderRadius: 4,
+    },
+    titleText: {
+      fontWeight: 700,
+      fontSize: 18,
+      color: colors.primary,
+    },
+    artistText: {
+      fontSize: 14,
+      color: colors.secondary,
     },
     buttonContainer: {
       flexDirection: "row",

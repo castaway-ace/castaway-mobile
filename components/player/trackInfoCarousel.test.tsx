@@ -27,6 +27,8 @@ const baseProps: CarouselProps = {
   previousTrack: previous,
   currentTrack: current,
   nextTrack: next,
+  titleStyle: { fontSize: 18 },
+  artistStyle: { fontSize: 14 },
   primaryTextStyle: animatedTextStyle,
   secondaryTextStyle: animatedTextStyle,
   stripStyle: animatedStripStyle,
@@ -80,5 +82,24 @@ describe("TrackInfoCarousel", () => {
 
     expect(getByText("Nude")).toBeTruthy();
     expect(queryByText("House of Cards")).toBeNull();
+  });
+
+  it("hands the artist press the track it came from", async () => {
+    const onArtistPress = jest.fn();
+    const { getByText } = await render(
+      <TrackInfoCarousel
+        {...baseProps}
+        width={300}
+        onArtistPress={onArtistPress}
+      />,
+    );
+
+    await fireEvent.press(getByText("Radiohead"));
+    expect(onArtistPress).toHaveBeenCalledWith(current);
+
+    // The whole reason the handler takes a track: a peeking neighbor's line has to
+    // navigate to its own artist, not the centered track's.
+    await fireEvent.press(getByText("Thom Yorke"));
+    expect(onArtistPress).toHaveBeenLastCalledWith(previous);
   });
 });

@@ -9,6 +9,8 @@ const mockClose = jest.fn();
 const mockOpenOptions = jest.fn();
 const mockNext = jest.fn();
 const mockPrevious = jest.fn();
+const mockSkipNext = jest.fn();
+const mockSkipPrevious = jest.fn();
 const mockToggleShuffle = jest.fn();
 const mockCycleRepeat = jest.fn();
 const mockToggleStar = jest.fn();
@@ -44,6 +46,11 @@ jest.mock("@/components/player/useNowPlayingControls", () => ({
   usePlayPause: () => mockPlayPause,
 }));
 jest.mock("@/utils/useTabLocation", () => ({ useTabLocation: () => "home" }));
+// Mandatory, not tidiness: these tests use plain RTL `render`, so there's no
+// QueryClientProvider and the cover carousel's real query would throw.
+jest.mock("@/api/albums/queries", () => ({
+  useAlbumCover: () => ({ data: "https://cover.jpg" }),
+}));
 jest.mock("@/api/interactions/mutations", () => ({
   useUpdateAlbumInteraction: () => ({ mutate: mockAlbumInteraction }),
   useUpdateArtistInteraction: () => ({ mutate: mockArtistInteraction }),
@@ -58,11 +65,17 @@ const track = makeTrack({
   artists: [makeArtistRef({ id: "ar1", name: "Radiohead" })],
 });
 
+// Neighbors stay null so both carousels render only the current track, keeping the
+// `getByText` lookups below unambiguous; the strips are covered in their own tests.
 const baseState = {
   isPlaying: false,
   next: mockNext,
   previous: mockPrevious,
+  skipNext: mockSkipNext,
+  skipPrevious: mockSkipPrevious,
   currentTrack: track,
+  previousTrack: null,
+  nextTrack: null,
   coverArtUrl: "https://cover.jpg",
   coverColor: "#123456",
   source: { type: "album", id: "al1", name: "In Rainbows" },
