@@ -82,6 +82,13 @@ describe("ArtistScreen", () => {
     expect(getByText("al2")).toBeTruthy();
   });
 
+  it("shows an empty message when the artist has no albums", async () => {
+    const { getByText } = await renderScreen(testArtist({ albums: [] }));
+
+    expect(getByText("Albums")).toBeTruthy();
+    expect(getByText("No albums available")).toBeTruthy();
+  });
+
   it("calls onAlbumPress when an album is tapped", async () => {
     const { getByText, onAlbumPress } = await renderScreen(testArtist());
 

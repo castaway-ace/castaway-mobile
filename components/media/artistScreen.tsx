@@ -195,20 +195,24 @@ const ArtistScreenContent: FC<ArtistScreenContentProps> = ({
 
           <View style={styles.albumSection}>
             <Text style={styles.albumHeader}>Albums</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.albumScrollContent}
-            >
-              {artist?.albums?.map((album) => (
-                <Pressable
-                  key={album.id}
-                  onPress={() => onAlbumPress(album.id)}
-                >
-                  <AlbumItem id={album.id} />
-                </Pressable>
-              ))}
-            </ScrollView>
+            {artist?.albums?.length ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.albumScrollContent}
+              >
+                {artist.albums.map((album) => (
+                  <Pressable
+                    key={album.id}
+                    onPress={() => onAlbumPress(album.id)}
+                  >
+                    <AlbumItem id={album.id} />
+                  </Pressable>
+                ))}
+              </ScrollView>
+            ) : (
+              <Text style={styles.albumEmpty}>No albums available</Text>
+            )}
           </View>
         </View>
       </Animated.ScrollView>
@@ -278,6 +282,11 @@ const makeStyles = (colors: ThemeColors) =>
     albumScrollContent: {
       flexDirection: "row",
       gap: 16,
+      paddingHorizontal: 16,
+    },
+    albumEmpty: {
+      fontSize: 16,
+      color: colors.secondary,
       paddingHorizontal: 16,
     },
   });
