@@ -6,22 +6,19 @@ import { jwtDecode } from "jwt-decode";
 /**
  * Shared Axios instance for every authenticated backend call.
  *
- * Beyond a configured base URL and timeout, this module owns the token
- * lifecycle so no call site has to think about it: each request is signed with
- * the stored access token, and a `401` transparently triggers a single
- * refresh-and-retry. When the refresh itself is rejected as unauthorized the
- * stored tokens are cleared and the registered auth-failure handler runs,
- * returning the user to sign-in.
+ * The module owns the token lifecycle so no call site has to: each request is
+ * signed with the stored access token, and a `401` triggers a single
+ * refresh-and-retry. If the refresh is itself rejected as unauthorized, the
+ * stored tokens are cleared and the registered auth-failure handler returns the
+ * user to sign-in.
  *
  * @packageDocumentation
  */
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-// Augment Axios' request config with a per-request flag the response
-// interceptor uses to guarantee a request is only ever retried once (see the
-// refresh flow below). Declared here so it travels with the client that relies
-// on it.
+// Per-request flag the response interceptor uses to cap retries at one (see the
+// refresh flow below).
 declare module "axios" {
   export interface AxiosRequestConfig {
     _retry?: boolean;
@@ -31,13 +28,12 @@ declare module "axios" {
 type RefreshResponse = components["schemas"]["AuthTokensEntity"];
 
 /**
- * Signals that the session is genuinely over — no refresh token is stored, or
- * the backend rejected the one we hold.
+ * Signals that the session is over because no refresh token is stored locally.
  *
  * @remarks
- * Distinguished from generic/transport errors so the interceptor can log the
- * user out only on a real authentication failure, and leave transient network
- * faults to bubble up untouched.
+ * A distinct type so the interceptor logs the user out on a genuine auth failure
+ * but lets transient network faults bubble up untouched. A refresh token the
+ * backend *rejects* instead arrives as an Axios 401/403, handled separately.
  */
 class SessionExpiredError extends Error {
   constructor(message = "Session expired") {
@@ -51,25 +47,20 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
-// Single in-flight refresh shared by all callers. Multiple requests can fail
-// with 401 at once (e.g. a screen firing several queries); funnelling them
-// through one promise means we hit `/auth/refresh` exactly once and avoid
-// racing writes to secure storage.
+// Single in-flight refresh shared by all callers; started and cleared via
+// refreshOnce.
 let refreshPromise: Promise<string> | null = null;
 
 let onAuthFailure: (() => void) | null = null;
 
 /**
- * Registers the callback fired when a refresh fails irrecoverably (the session
- * is over), or clears it with `null`.
+ * Registers the callback fired on terminal auth failure (the session is over),
+ * or clears it with `null`.
  *
  * @remarks
- * Held as module state, and injected rather than imported, so this low-level
- * client never depends on React or the auth context. The auth provider wires
- * itself in on mount and clears the handler on unmount, which keeps the
- * dependency arrow pointing one way (auth → client, never the reverse).
- *
- * @param handler - Invoked with no arguments on terminal auth failure.
+ * Injected rather than imported so this low-level client never depends on React
+ * or the auth context: the auth provider wires itself in on mount and clears the
+ * handler on unmount, keeping the dependency arrow one-way (auth → client).
  */
 export const setAuthFailureHandler = (handler: (() => void) | null) => {
   onAuthFailure = handler;
@@ -90,6 +81,8 @@ export const refreshTokens = async (): Promise<string> => {
     throw new SessionExpiredError("No refresh token available");
   }
 
+  // Raw axios, not apiClient: the refresh must skip the interceptors, or a 401
+  // from /auth/refresh would recurse straight back into another refresh.
   const { data } = await axios.post<RefreshResponse>(
     `${BASE_URL}/auth/refresh`,
     { refreshToken },
@@ -102,6 +95,19 @@ export const refreshTokens = async (): Promise<string> => {
   await SecureStore.setItemAsync("accessToken", data.accessToken);
   await SecureStore.setItemAsync("refreshToken", data.refreshToken);
   return data.accessToken;
+};
+
+// Start a refresh if none is in flight; otherwise join the running one. One
+// shared promise means concurrent 401s — or a proactive check racing the
+// interceptor — hit /auth/refresh exactly once and never race writes to secure
+// storage. The slot is cleared once settled so the next expiry starts fresh.
+const refreshOnce = (): Promise<string> => {
+  if (!refreshPromise) {
+    refreshPromise = refreshTokens().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
 };
 
 // Refresh slightly before the token's real expiry so a request that leaves on a
@@ -128,35 +134,27 @@ const isExpiringSoon = (token: string): boolean => {
 };
 
 /**
- * Returns an access token guaranteed valid for at least the next
- * {@link TOKEN_EXPIRY_BUFFER_SECONDS}, refreshing first when the stored one has
- * expired or is about to.
+ * Returns an access token good for at least the next
+ * {@link TOKEN_EXPIRY_BUFFER_SECONDS}, refreshing first if the stored one is
+ * expired or about to be.
  *
  * @remarks
  * Axios call sites don't need this — the response interceptor refreshes
- * reactively on a `401`. It exists for requests that *bypass* this client, above
- * all the authenticated audio stream the native player fetches itself: those
- * never surface a `401` the interceptor can catch, so an access token that goes
- * stale during uninterrupted playback would simply fail to load the next track.
- * Checking expiry up front keeps that path alive. Shares the single-flight
- * {@link refreshPromise} with the interceptor so a concurrent reactive refresh
- * is never duplicated.
+ * reactively on a `401`. It exists for requests that bypass this client, above
+ * all the native audio player fetching its own stream: those never surface a
+ * `401` to catch, so a token going stale mid-playback would silently fail the
+ * next track. Checking up front keeps that path alive.
  *
- * @returns A fresh-enough access token, `null` when no session is stored, or —
- * if a needed refresh fails — the stored token unchanged, leaving the request to
- * fail exactly as it would have before rather than blocking playback outright.
+ * @returns A fresh-enough token; `null` when no session is stored; or the stored
+ * token unchanged if a needed refresh fails, so the request fails as it would
+ * have rather than blocking playback.
  */
 export const getValidAccessToken = async (): Promise<string | null> => {
   const token = await SecureStore.getItemAsync("accessToken");
   if (!token || !isExpiringSoon(token)) return token;
 
   try {
-    if (!refreshPromise) {
-      refreshPromise = refreshTokens().finally(() => {
-        refreshPromise = null;
-      });
-    }
-    return await refreshPromise;
+    return await refreshOnce();
   } catch {
     return token;
   }
@@ -193,16 +191,7 @@ apiClient.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        // Reuse the in-flight refresh if one is already running; otherwise
-        // start it and clear the slot once it settles, so the next expiry
-        // starts a fresh refresh.
-        if (!refreshPromise) {
-          refreshPromise = refreshTokens().finally(() => {
-            refreshPromise = null;
-          });
-        }
-
-        const newToken = await refreshPromise;
+        const newToken = await refreshOnce();
 
         originalRequest.headers = originalRequest.headers ?? {};
         originalRequest.headers.Authorization = `Bearer ${newToken}`;

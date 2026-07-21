@@ -1,4 +1,4 @@
-import apiClient, {
+  import apiClient, {
   getValidAccessToken,
   refreshTokens,
   setAuthFailureHandler,
@@ -151,7 +151,7 @@ describe("getValidAccessToken", () => {
   });
 });
 
-describe("response interceptor — 401 handling", () => {
+describe("response interceptor", () => {
   it("refreshes the token then retries the original request", async () => {
     await seedTokens("old-access", "refresh-token");
     clientMock.onGet("/protected").replyOnce(401);
@@ -190,6 +190,25 @@ describe("response interceptor — 401 handling", () => {
 
     expect(onAuthFailure).toHaveBeenCalledTimes(1);
     await expect(SecureStore.getItemAsync("accessToken")).resolves.toBeNull();
+    await expect(SecureStore.getItemAsync("refreshToken")).resolves.toBeNull();
+  });
+
+  it("keeps tokens and does not log out when the refresh fails transiently", async () => {
+    await seedTokens("old-access", "refresh-token");
+    clientMock.onGet("/protected").reply(401);
+    // A 5xx (or network failure) during refresh is not an auth rejection: the
+    // session may still be valid, so tokens must survive and no logout fires.
+    axiosMock.onPost(REFRESH_URL).reply(500);
+
+    await expect(apiClient.get("/protected")).rejects.toBeDefined();
+
+    expect(onAuthFailure).not.toHaveBeenCalled();
+    await expect(SecureStore.getItemAsync("accessToken")).resolves.toBe(
+      "old-access",
+    );
+    await expect(SecureStore.getItemAsync("refreshToken")).resolves.toBe(
+      "refresh-token",
+    );
   });
 
   it("refreshes only once for concurrent 401s (single-flight)", async () => {
@@ -223,5 +242,13 @@ describe("response interceptor — 401 handling", () => {
 
     await expect(apiClient.get("/protected")).rejects.toBeDefined();
     expect(axiosMock.history.post).toHaveLength(1);
+  });
+
+  it("passes non-401 errors through without attempting a refresh", async () => {
+    await seedTokens("access", "refresh-token");
+    clientMock.onGet("/protected").reply(500);
+
+    await expect(apiClient.get("/protected")).rejects.toBeDefined();
+    expect(axiosMock.history.post).toHaveLength(0);
   });
 });
