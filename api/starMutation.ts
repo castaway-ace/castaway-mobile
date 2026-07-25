@@ -30,20 +30,11 @@ interface StarContext {
  * artists.
  *
  * @remarks
- * Starring is a one-tap action where users expect the icon to fill instantly,
- * so the update is applied optimistically and reconciled with the server after
- * the fact:
- *
- * 1. `onMutate` cancels in-flight detail fetches (so a slow response can't land
- *    on top of our optimistic value), snapshots the current state, and flips the
- *    cached `starred` flag immediately.
- * 2. `onError` restores that snapshot and surfaces a toast — the tap is undone
- *    and the UI never gets stuck in a wrong state.
- * 3. `onSettled` invalidates the configured keys regardless of outcome, so the
- *    optimistic value is replaced by authoritative server data.
- *
- * The three entity types differ only in their {@link StarMutationConfig}, which
- * keeps this cache choreography in exactly one place.
+ * Starring is one tap and users expect the icon to fill instantly, so the toggle
+ * is applied optimistically and reconciled on settle: the cached `starred` flag
+ * flips immediately, a failure rolls it back, and the configured keys are
+ * invalidated either way. The three entity types differ only in their
+ * {@link StarMutationConfig}, keeping this choreography in one place.
  */
 export const useStarMutation = ({
   star,
