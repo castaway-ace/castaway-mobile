@@ -13,7 +13,7 @@ const barStyles = (indicator: { children: unknown[] }): ViewStyle[] =>
   indicator.children.map((bar) =>
     StyleSheet.flatten(
       (bar as { props: { style: StyleProp<ViewStyle> } }).props.style,
-    ),
+    ) ?? {},
   );
 
 /**
