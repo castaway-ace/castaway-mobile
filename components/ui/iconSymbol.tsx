@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SymbolWeight } from "expo-symbols";
 import { ComponentProps } from "react";
-import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
+import { type ColorValue, type StyleProp, type TextStyle } from "react-native";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -66,11 +66,16 @@ export const IconSymbol = ({
 }: {
   name: IconSymbolName;
   size?: number;
-  color: string | OpaqueColorValue;
+  color: ColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) => {
   return (
-    <Ionicons color={color} size={size} name={MAPPING[name]} style={style} />
+    <Ionicons
+      color={color as string}
+      size={size}
+      name={MAPPING[name]}
+      style={style}
+    />
   );
 };

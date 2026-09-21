@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputInstance,
   TextInputProps,
   View,
 } from "react-native";
@@ -28,7 +29,7 @@ export interface AuthFieldProps extends TextInputProps {
  * on submit. The border color encodes state (error → focused → idle). See
  * `handleChangeText` for the toggle-clear workaround it guards against.
  */
-const AuthField = forwardRef<TextInput, AuthFieldProps>((
+const AuthField = forwardRef<TextInputInstance, AuthFieldProps>((
   {
     label,
     error,

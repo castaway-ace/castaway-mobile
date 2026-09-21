@@ -8,7 +8,7 @@ import { LoginSchema } from "@/constants/validation";
 import { useTheme } from "@/contexts/themeContext";
 import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, type TextInputInstance, View } from "react-native";
 
 /**
  * Login screen.
@@ -30,7 +30,7 @@ const Login = () => {
   const { errors, clearError, validate } = useAuthForm(LoginSchema);
 
   // Lets the email field's "next" key jump focus to the password field.
-  const passwordRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInputInstance>(null);
 
   const {
     mutateAsync: login,

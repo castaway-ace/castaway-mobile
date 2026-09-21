@@ -30,7 +30,7 @@ const renderRow = async (props: Partial<Parameters<typeof TrackRow>[0]> = {}) =>
  * without wrestling its test-renderer types.
  */
 const styleOf = (node: { props: Record<string, unknown> }): TextStyle =>
-  StyleSheet.flatten(node.props.style as StyleProp<TextStyle>);
+  StyleSheet.flatten(node.props.style as StyleProp<TextStyle>) ?? {};
 
 describe("TrackRow", () => {
   it("renders the title and a comma-joined byline", async () => {

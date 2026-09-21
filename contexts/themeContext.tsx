@@ -11,7 +11,7 @@ interface ThemeContextProps {
 
 // Collapse the platform's tri-state scheme (light | dark | null) to a concrete
 // theme, treating "unknown" as light so there's always a definite value.
-const normalizeScheme = (scheme: ColorSchemeName): ThemeName =>
+const normalizeScheme = (scheme: ColorSchemeName | null): ThemeName =>
   scheme === "dark" ? "dark" : "light";
 
 // Seeded with a real light-theme value rather than `undefined`, so this context

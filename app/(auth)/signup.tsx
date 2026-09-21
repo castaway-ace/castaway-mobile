@@ -9,7 +9,7 @@ import { SignUpSchema } from "@/constants/validation";
 import { useTheme } from "@/contexts/themeContext";
 import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, type TextInputInstance, View } from "react-native";
 
 /**
  * Signup screen.
@@ -30,8 +30,8 @@ const Signup = () => {
 
   const { errors, clearError, validate } = useAuthForm(SignUpSchema);
 
-  const userNameRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const userNameRef = useRef<TextInputInstance>(null);
+  const passwordRef = useRef<TextInputInstance>(null);
 
   const {
     mutateAsync: signup,
