@@ -13,7 +13,7 @@ and drives the generated TypeScript types.
 ## Features
 
 - **Authentication** — email/password login and signup with JWT stored in the device secure store.
-- **Home / Search / Library** — three primary tabs, each with its own navigation stack for artist, album, and playlist detail pages.
+- **Home / Search / Library** — three primary tabs, each with its own navigation stack for artist, album, and playlist detail pages, plus a **Settings** tab for signing out.
 - **Playback** — streaming audio with background playback, lock-screen controls, and crossfade between tracks.
 - **Now Playing** — a swipe-up player modal with dynamic backgrounds extracted from album art.
 - **Library & interactions** — like tracks, manage playlists (add/remove tracks), and see them reflected across the app.
@@ -23,7 +23,7 @@ and drives the generated TypeScript types.
 
 | Area             | Tools                                                                                                                                                      |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Framework        | [Expo](https://expo.dev) SDK 56, [React Native](https://reactnative.dev) 0.85 (New Architecture), React 19                                                 |
+| Framework        | [Expo](https://expo.dev) SDK 58, [React Native](https://reactnative.dev) 0.88 (New Architecture), React 19                                                 |
 | Language         | TypeScript                                                                                                                                                 |
 | Routing          | [Expo Router](https://docs.expo.dev/router/introduction/) (file-based, typed routes)                                                                       |
 | Server state     | [TanStack Query](https://tanstack.com/query) + [axios](https://axios-http.com)                                                                             |
@@ -39,12 +39,13 @@ and drives the generated TypeScript types.
 ## Project structure
 
 ```
-app/          Expo Router routes — (auth) and (tabs)/{home,search,library}
+app/          Expo Router routes — (auth) and (tabs)/{home,search,library,settings}
 api/          Per-domain API clients, TanStack Query hooks, and generated schema types
-components/   UI grouped by role: ui / navigation / player / sheets / media / pages
+components/   UI grouped by role: ui / navigation / player / sheets / media / pages / auth
 contexts/     App-wide providers (auth, audio player, theme, modals, toasts)
-constants/    Theme, query, validation, and API config
+constants/    Theme, player, query, validation, and API config
 utils/        Formatters, hooks, and helpers
+types/        Shared domain types for albums, artists, playlists, and tracks
 test-utils/   Shared testing helpers
 ```
 
